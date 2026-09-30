@@ -82,7 +82,7 @@ export default function LessonRunner({
   const [missedThisSession, setMissedThisSession] = useState<string[]>([]);
   const [clearedCount, setClearedCount] = useState(0);
   const [firstTryCorrect, setFirstTryCorrect] = useState(0);
-  const [streak, setStreak] = useState({ count: 0, increasedToday: false });
+  const [streak, setStreak] = useState<{ count: number; note?: string }>({ count: 0 });
 
   function nextIntro() {
     if (introIndex < signs.length - 1) {
@@ -124,7 +124,16 @@ export default function LessonRunner({
         clearMistakes(cleared);
         setClearedCount(cleared.length);
       }
-      setStreak({ count: result.streak, increasedToday: result.increasedToday });
+      setStreak({
+        count: result.streak,
+        note: result.earnedFreeze
+          ? "Earned a freeze!"
+          : result.usedFreezes > 0
+            ? "Freeze saved it!"
+            : result.increasedToday
+              ? "+1 today!"
+              : undefined,
+      });
       setPhase("complete");
     }
   }
@@ -208,7 +217,7 @@ export default function LessonRunner({
               <Stat
                 label="Streak"
                 value={`${streak.count} ${streak.count === 1 ? "day" : "days"}`}
-                note={streak.increasedToday ? "+1 today!" : undefined}
+                note={streak.note}
                 className="bg-white ring-1 ring-sand"
               />
             </div>

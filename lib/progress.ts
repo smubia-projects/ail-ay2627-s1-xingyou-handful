@@ -5,16 +5,21 @@ export type Progress = {
   completedLessons: string[];
   xp: number;
   // lastDay is the learner's local date ("2026-09-30") of the last finished lesson.
-  streak: { count: number; lastDay: string | null };
+  // freezes each cover one missed day, so the streak survives it.
+  streak: { count: number; lastDay: string | null; freezes: number };
   // Sign IDs the learner got wrong, most recent first.
   mistakes: string[];
 };
 
 const STORAGE_KEY = "signpath:progress";
+
+// A streak freeze is earned every 7 streak days, holding at most 2.
+export const MAX_FREEZES = 2;
+const DAYS_PER_FREEZE = 7;
 const EMPTY: Progress = {
   completedLessons: [],
   xp: 0,
-  streak: { count: 0, lastDay: null },
+  streak: { count: 0, lastDay: null, freezes: 0 },
   mistakes: [],
 };
 
@@ -35,9 +40,12 @@ function parseProgress(raw: string | null): Progress {
   const completedLessons = stringList(parsed?.completedLessons);
   const mistakes = stringList(parsed?.mistakes);
   const xp = Number.isFinite(parsed?.xp) && parsed.xp > 0 ? parsed.xp : 0;
+  const freezes = Number.isInteger(parsed?.streak?.freezes)
+    ? Math.min(Math.max(parsed.streak.freezes, 0), MAX_FREEZES)
+    : 0;
   const streak =
     Number.isInteger(parsed?.streak?.count) && typeof parsed?.streak?.lastDay === "string"
-      ? { count: parsed.streak.count, lastDay: parsed.streak.lastDay }
+      ? { count: parsed.streak.count, lastDay: parsed.streak.lastDay, freezes }
       : EMPTY.streak;
   return { completedLessons, xp, streak, mistakes };
 }
@@ -94,24 +102,41 @@ function daysBetween(from: string, to: string): number {
   return Math.round((toUtc(to) - toUtc(from)) / 86_400_000);
 }
 
-// The streak as it stands today: it's broken once a whole day passes with no lesson.
-export function currentStreak(streak: Progress["streak"], today = dayKey()): number {
-  if (!streak.lastDay) return 0;
-  return daysBetween(streak.lastDay, today) <= 1 ? streak.count : 0;
+// Whether the streak is still alive today: each missed day needs a freeze to cover it.
+function survives(streak: Progress["streak"], today: string) {
+  if (!streak.lastDay) return { alive: false, freezesLeft: streak.freezes, used: 0 };
+  const missedDays = Math.max(0, daysBetween(streak.lastDay, today) - 1);
+  if (missedDays <= streak.freezes) {
+    return { alive: true, freezesLeft: streak.freezes - missedDays, used: missedDays };
+  }
+  return { alive: false, freezesLeft: streak.freezes, used: 0 };
 }
 
-// The streak after finishing a lesson today: +1 once per day, or back to 1 after a missed day.
-export function nextStreak(streak: Progress["streak"], today = dayKey()): Progress["streak"] {
-  if (streak.lastDay === today) return streak;
-  const continues = streak.lastDay !== null && daysBetween(streak.lastDay, today) === 1;
-  return { count: continues ? streak.count + 1 : 1, lastDay: today };
+// The streak and freezes as they stand today, before any lesson is finished.
+export function currentStreak(streak: Progress["streak"], today = dayKey()) {
+  const { alive, freezesLeft } = survives(streak, today);
+  return { count: alive ? streak.count : 0, freezes: freezesLeft };
+}
+
+// The streak after finishing a lesson today: +1 once per day (using freezes for missed days),
+// or back to 1 when there weren't enough freezes. Every 7th day earns a freeze, up to the max.
+export function nextStreak(streak: Progress["streak"], today = dayKey()) {
+  if (streak.lastDay === today) return { streak, usedFreezes: 0, earnedFreeze: false };
+  const { alive, freezesLeft, used } = survives(streak, today);
+  const count = alive ? streak.count + 1 : 1;
+  const earnedFreeze = count % DAYS_PER_FREEZE === 0 && freezesLeft < MAX_FREEZES;
+  return {
+    streak: { count, lastDay: today, freezes: freezesLeft + (earnedFreeze ? 1 : 0) },
+    usedFreezes: used,
+    earnedFreeze,
+  };
 }
 
 // Saves a finished lesson (or practice session, when lessonId is null) and its XP.
-// Returns the new streak and whether it went up today.
+// Returns the new streak, whether it went up today, and any freezes used or earned.
 export function recordLessonComplete(lessonId: string | null, xpEarned: number) {
   const progress = readProgress();
-  const streak = nextStreak(progress.streak);
+  const { streak, usedFreezes, earnedFreeze } = nextStreak(progress.streak);
   writeProgress({
     ...progress,
     completedLessons:
@@ -121,7 +146,12 @@ export function recordLessonComplete(lessonId: string | null, xpEarned: number) 
     xp: progress.xp + xpEarned,
     streak,
   });
-  return { streak: streak.count, increasedToday: streak.lastDay !== progress.streak.lastDay };
+  return {
+    streak: streak.count,
+    increasedToday: streak.lastDay !== progress.streak.lastDay,
+    usedFreezes,
+    earnedFreeze,
+  };
 }
 
 // Adds signs to the mistakes list, moving them to the front if they're already there.
