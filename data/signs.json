@@ -1,0 +1,42 @@
+[
+  {
+    "id": "hello",
+    "word": "Hello",
+    "handshape": "Flat hand",
+    "location": "forehead",
+    "movement": "Touch fingertips to the side of the forehead, then move outward",
+    "tip": "A friendly salute"
+  },
+  {
+    "id": "thank-you",
+    "word": "Thank you",
+    "handshape": "Flat hand",
+    "location": "chin",
+    "movement": "Touch fingertips to the chin, then move the hand forward and down",
+    "tip": "Sending thanks from your lips"
+  },
+  {
+    "id": "please",
+    "word": "Please",
+    "handshape": "Flat hand",
+    "location": "chest",
+    "movement": "Rub the palm in a circle on the chest",
+    "tip": "Warming your heart to ask nicely"
+  },
+  {
+    "id": "sorry",
+    "word": "Sorry",
+    "handshape": "A-hand (fist)",
+    "location": "chest",
+    "movement": "Rub the fist in a circle on the chest",
+    "tip": "A fist circling a heavy heart"
+  },
+  {
+    "id": "goodbye",
+    "word": "Goodbye",
+    "handshape": "Open hand",
+    "location": "space",
+    "movement": "Open and close the fingers against the palm",
+    "tip": "A wave goodbye"
+  }
+]
