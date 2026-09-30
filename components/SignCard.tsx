@@ -7,6 +7,9 @@ export type Sign = {
   location: SignLocation;
   movement: string;
   tip: string;
+  // Optional until filmed. See docs/VIDEO_GUIDELINES.md.
+  video?: string;
+  signer?: string;
 };
 
 // Dot position for each location, in the body diagram's 200x200 viewBox.
@@ -58,14 +61,28 @@ export default function SignCard({ sign }: { sign: Sign }) {
       </span>
       <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-ink">{sign.word}</h2>
 
-      <div className="mt-5 flex aspect-video flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-sand-dark bg-cream text-sm font-semibold text-muted">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
-          <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 fill-sage" aria-hidden="true">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </span>
-        Video coming soon
-      </div>
+      {/* Every video shows in the same 16:9 frame, never cropped. */}
+      {sign.video ? (
+        <video
+          src={sign.video}
+          aria-label={`Video of the sign for ${sign.word}`}
+          className="mt-5 aspect-video w-full rounded-2xl bg-cream object-contain"
+          controls
+          loop
+          muted
+          playsInline
+          preload="metadata"
+        />
+      ) : (
+        <div className="mt-5 flex aspect-video flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-sand-dark bg-cream text-sm font-semibold text-muted">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
+            <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 fill-sage" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+          Video coming soon
+        </div>
+      )}
 
       <div className="mt-5 grid gap-5 sm:grid-cols-[auto_1fr] sm:items-center">
         <div className="flex justify-center rounded-2xl bg-cream p-3">
