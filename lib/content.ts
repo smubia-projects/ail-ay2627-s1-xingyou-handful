@@ -32,6 +32,30 @@ for (const unit of units) {
   }
 }
 
+export function getAllSigns(): Sign[] {
+  return signs;
+}
+
+export function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+// Without videos, two signs with the same location and handshape look identical as diagrams.
+function looksAlike(a: Sign, b: Sign): boolean {
+  return !a.video && !b.video && a.location === b.location && a.handshape === b.handshape;
+}
+
+// The answer plus up to count - 1 wrong choices that don't look like it, in random order.
+export function pickOptions(answer: Sign, count = 4): Sign[] {
+  const wrong = shuffle(signs.filter((sign) => sign.id !== answer.id && !looksAlike(sign, answer)));
+  return shuffle([answer, ...wrong.slice(0, count - 1)]);
+}
+
 export function getUnits(): Unit[] {
   return units;
 }

@@ -21,12 +21,18 @@ const LOCATION_POINTS: Record<SignLocation, { x: number; y: number }> = {
   space: { x: 165, y: 110 },
 };
 
-function BodyDiagram({ location }: { location: SignLocation }) {
+export function BodyDiagram({
+  location,
+  className = "h-40 w-40",
+}: {
+  location: SignLocation;
+  className?: string;
+}) {
   const dot = LOCATION_POINTS[location];
   return (
     <svg
       viewBox="0 0 200 200"
-      className="h-40 w-40"
+      className={className}
       role="img"
       aria-label={`Body outline with the sign location at the ${location}`}
     >
