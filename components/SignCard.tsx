@@ -10,6 +10,8 @@ export type Sign = {
   // Optional until filmed. See docs/VIDEO_GUIDELINES.md.
   video?: string;
   signer?: string;
+  // True once a Deaf ASL signer has checked the description (required before release).
+  reviewed?: boolean;
 };
 
 // Dot position for each location, in the body diagram's 200x200 viewBox.

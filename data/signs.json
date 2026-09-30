@@ -5,7 +5,8 @@
     "handshape": "Flat hand",
     "location": "forehead",
     "movement": "Touch fingertips to the side of the forehead, then move outward",
-    "tip": "A friendly salute"
+    "tip": "A friendly salute",
+    "reviewed": false
   },
   {
     "id": "thank-you",
@@ -13,7 +14,8 @@
     "handshape": "Flat hand",
     "location": "chin",
     "movement": "Touch fingertips to the chin, then move the hand forward and down",
-    "tip": "Sending thanks from your lips"
+    "tip": "Sending thanks from your lips",
+    "reviewed": false
   },
   {
     "id": "please",
@@ -21,7 +23,8 @@
     "handshape": "Flat hand",
     "location": "chest",
     "movement": "Rub the palm in a circle on the chest",
-    "tip": "Warming your heart to ask nicely"
+    "tip": "Warming your heart to ask nicely",
+    "reviewed": false
   },
   {
     "id": "sorry",
@@ -29,7 +32,8 @@
     "handshape": "A-hand (fist)",
     "location": "chest",
     "movement": "Rub the fist in a circle on the chest",
-    "tip": "A fist circling a heavy heart"
+    "tip": "A fist circling a heavy heart",
+    "reviewed": false
   },
   {
     "id": "goodbye",
@@ -37,6 +41,142 @@
     "handshape": "Open hand",
     "location": "space",
     "movement": "Open and close the fingers against the palm",
-    "tip": "A wave goodbye"
+    "tip": "A wave goodbye",
+    "reviewed": false
+  },
+  {
+    "id": "yes",
+    "word": "Yes",
+    "handshape": "S-hand (fist)",
+    "location": "space",
+    "movement": "Bend the wrist so the fist nods up and down",
+    "tip": "Your fist is a head nodding yes",
+    "reviewed": false
+  },
+  {
+    "id": "no",
+    "word": "No",
+    "handshape": "Index, middle finger and thumb",
+    "location": "space",
+    "movement": "Snap the index and middle fingers down onto the thumb",
+    "tip": "A little mouth snapping shut",
+    "reviewed": false
+  },
+  {
+    "id": "name",
+    "word": "Name",
+    "handshape": "H-hand (index and middle fingers together)",
+    "location": "space",
+    "movement": "Tap the middle finger of one H-hand twice across the index finger of the other, forming an X",
+    "tip": "Two fingers cross like signing your name",
+    "reviewed": false
+  },
+  {
+    "id": "help",
+    "word": "Help",
+    "handshape": "A-hand (thumb up) on a flat palm",
+    "location": "space",
+    "movement": "Rest the thumbs-up fist on the other flat palm and lift both hands up together",
+    "tip": "One hand gives the other a lift",
+    "reviewed": false
+  },
+  {
+    "id": "more",
+    "word": "More",
+    "handshape": "Flat O-hand (fingertips together)",
+    "location": "space",
+    "movement": "Tap the fingertips of both hands together a few times",
+    "tip": "Adding more and more to the pile",
+    "reviewed": false
+  },
+  {
+    "id": "mother",
+    "word": "Mother",
+    "handshape": "5-hand (open, fingers spread)",
+    "location": "chin",
+    "movement": "Tap the thumb on the chin twice",
+    "tip": "Female family signs sit at the chin",
+    "reviewed": false
+  },
+  {
+    "id": "father",
+    "word": "Father",
+    "handshape": "5-hand (open, fingers spread)",
+    "location": "forehead",
+    "movement": "Tap the thumb on the forehead twice",
+    "tip": "Male family signs sit at the forehead",
+    "reviewed": false
+  },
+  {
+    "id": "family",
+    "word": "Family",
+    "handshape": "F-hand (thumb and index touching) on both hands",
+    "location": "space",
+    "movement": "Start with both F-hands together, then circle them outward until the little fingers meet",
+    "tip": "Your hands draw a circle around everyone",
+    "reviewed": false
+  },
+  {
+    "id": "friend",
+    "word": "Friend",
+    "handshape": "X-hand (hooked index finger)",
+    "location": "space",
+    "movement": "Hook the index fingers together, then flip and hook them the other way",
+    "tip": "Two people hooked together",
+    "reviewed": false
+  },
+  {
+    "id": "baby",
+    "word": "Baby",
+    "handshape": "Flat hands, one arm resting on the other",
+    "location": "space",
+    "movement": "Cradle one forearm on the other and rock them side to side",
+    "tip": "Rocking a baby to sleep",
+    "reviewed": false
+  },
+  {
+    "id": "happy",
+    "word": "Happy",
+    "handshape": "Flat hand",
+    "location": "chest",
+    "movement": "Brush the palm upward on the chest a few times, with a smile",
+    "tip": "Joy bubbling up from your heart",
+    "reviewed": false
+  },
+  {
+    "id": "sad",
+    "word": "Sad",
+    "handshape": "5-hand on both hands, palms facing you",
+    "location": "mouth",
+    "movement": "Hold both open hands in front of the face, then draw them slowly down",
+    "tip": "Your whole face drooping",
+    "reviewed": false
+  },
+  {
+    "id": "tired",
+    "word": "Tired",
+    "handshape": "Bent hands on both sides",
+    "location": "chest",
+    "movement": "Rest the fingertips on the chest, then let the hands drop as the shoulders slump",
+    "tip": "Your energy draining away",
+    "reviewed": false
+  },
+  {
+    "id": "love",
+    "word": "Love",
+    "handshape": "S-hands (fists), arms crossed",
+    "location": "chest",
+    "movement": "Cross both fists over the heart and hug them to the chest",
+    "tip": "Hugging something you love",
+    "reviewed": false
+  },
+  {
+    "id": "excited",
+    "word": "Excited",
+    "handshape": "Open-8 hands (middle finger bent forward)",
+    "location": "chest",
+    "movement": "Brush the middle fingers up the chest in alternating circles",
+    "tip": "Your heart racing",
+    "reviewed": false
   }
 ]

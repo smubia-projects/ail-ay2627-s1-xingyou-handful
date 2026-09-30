@@ -59,7 +59,11 @@ export function buildExercises(practiceSigns: Sign[]): Exercise[] {
     { type: "meaning", sign, options: pickOptions(sign) },
     { type: "pick-sign", sign, options: pickOptions(sign) },
   ]);
-  if (practiceSigns.length >= 3) {
+  // Match pairs only when every sign looks different, or two pairs could be swapped.
+  const allDistinct = practiceSigns.every((a, i) =>
+    practiceSigns.slice(i + 1).every((b) => !looksAlike(a, b)),
+  );
+  if (practiceSigns.length >= 3 && allDistinct) {
     exercises.push({ type: "match", signs: shuffle(practiceSigns), words: shuffle(practiceSigns) });
   }
   return shuffle(exercises);
