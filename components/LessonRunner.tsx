@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BottomBar, ExerciseView, PRIMARY_BUTTON, type Exercise } from "@/components/Exercises";
 import SignCard, { type Sign } from "@/components/SignCard";
 import { buildLessonExercises, reshuffleExercise, type Lesson } from "@/lib/content";
+import { markLessonComplete } from "@/lib/progress";
 
 const XP_PER_FIRST_TRY = 5;
 const XP_FOR_FINISHING = 10;
@@ -72,8 +73,12 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
     if (!comesBack) setCompleted((count) => count + 1);
     setQueue(nextQueue);
 
-    if (position + 1 < nextQueue.length) setPosition(position + 1);
-    else setPhase("complete");
+    if (position + 1 < nextQueue.length) {
+      setPosition(position + 1);
+    } else {
+      markLessonComplete(lesson.id);
+      setPhase("complete");
+    }
   }
 
   const progress = phase === "complete" ? 1 : total > 0 ? completed / total : 0;

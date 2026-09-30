@@ -1,12 +1,6 @@
-import Link from "next/link";
-import { getLessonSigns, getUnits } from "@/lib/content";
-
-// Gentle zigzag so the lessons read as a winding path.
-const PATH_OFFSETS = ["translate-x-0", "translate-x-14", "translate-x-0", "-translate-x-14"];
+import LessonPath from "@/components/LessonPath";
 
 export default function Home() {
-  const units = getUnits();
-
   return (
     <div className="flex flex-1 flex-col">
       <header className="sticky top-0 z-10 border-b border-sand bg-cream/85 backdrop-blur">
@@ -18,45 +12,8 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-md flex-col gap-12 px-5 py-8">
-        {units.map((unit, unitIndex) => (
-          <section key={unit.id}>
-            <div className="rounded-3xl bg-sage-light px-6 py-5">
-              <p className="text-xs font-extrabold uppercase tracking-widest text-sage-dark">
-                Unit {unitIndex + 1}
-              </p>
-              <h1 className="mt-1 text-2xl font-extrabold text-ink">{unit.title}</h1>
-              <p className="mt-1 text-sm text-muted">
-                {unit.lessons.length} lessons ·{" "}
-                {unit.lessons.reduce((total, lesson) => total + lesson.signIds.length, 0)} signs
-              </p>
-            </div>
-
-            <ol className="mt-10 flex flex-col items-center gap-10">
-              {unit.lessons.map((lesson, lessonIndex) => (
-                <li
-                  key={lesson.id}
-                  className={PATH_OFFSETS[lessonIndex % PATH_OFFSETS.length]}
-                >
-                  <Link
-                    href={`/lesson/${lesson.id}`}
-                    className="group flex flex-col items-center rounded-3xl text-center"
-                  >
-                    <span className="flex h-20 w-20 items-center justify-center rounded-full bg-sage text-2xl font-extrabold text-white shadow-[0_6px_0_0_var(--color-sage-dark)] ring-8 ring-sage-light transition group-hover:brightness-105 group-active:translate-y-1 group-active:shadow-none">
-                      {lessonIndex + 1}
-                    </span>
-                    <h2 className="mt-4 font-extrabold text-ink">{lesson.title}</h2>
-                    <p className="text-sm text-muted">
-                      {getLessonSigns(lesson)
-                        .map((sign) => sign.word)
-                        .join(" · ")}
-                    </p>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </section>
-        ))}
+      <main className="mx-auto flex w-full max-w-md flex-col gap-12 px-5 py-8 pb-16">
+        <LessonPath />
       </main>
     </div>
   );

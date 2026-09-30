@@ -18,6 +18,17 @@
 
 @theme {
   --animate-shake: shake 0.35s ease-in-out;
+  --animate-bob: bob 1.6s ease-in-out infinite;
+
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
 
   @keyframes shake {
     0%,
