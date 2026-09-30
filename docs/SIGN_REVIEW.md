@@ -12,9 +12,11 @@ For each sign:
 2. Tick **Approved** if it is correct as written. Otherwise tick **Needs changes** and write the correction in **Notes**.
 3. Also check the **memory tip**. It should be accurate, respectful and not misleading about the sign's origin.
 
-The app shows location as one dot on a simple body outline, and only knows 5 locations: **forehead, mouth, chin, chest**, or **space** (in front of the body). If none of these fits, please say so in the notes.
+The app shows location as one dot on a simple body outline, and only knows 5 locations: **forehead, mouth, chin, chest**, or **in front of the body**. If none of these fits, please say so in the notes.
 
 If a sign has common regional or variant forms, note which one you'd recommend teaching first.
+
+Each sign also has a **dictionary pre-check** note. The descriptions were compared against the [Lifeprint ASL dictionary](https://www.lifeprint.com/) and other dictionary sources, and some wording was corrected. This is only a first pass. It does not replace your review.
 
 ## Unit 1: Greetings
 
@@ -29,6 +31,8 @@ If a sign has common regional or variant forms, note which one you'd recommend t
 | Movement | Touch fingertips to the side of the forehead, then move outward |
 | Memory tip | A friendly salute |
 
+> **Dictionary pre-check:** Salute from the forehead is a common form. A plain side-to-side wave is also used. Please confirm which to teach first.
+
 - [ ] Approved
 - [ ] Needs changes
 
@@ -42,10 +46,12 @@ Notes:
 
 | | |
 |---|---|
-| Handshape | Open hand |
-| Location | Space |
-| Movement | Open and close the fingers against the palm |
+| Handshape | Open hand, palm facing out |
+| Location | In front of the body |
+| Movement | Wave by bending the fingers down and up at the knuckles a few times |
 | Memory tip | A wave goodbye |
+
+> **Dictionary pre-check:** Wording corrected to a wave that bends at the knuckles (Lifeprint). Previously described as 'open and close the fingers against the palm'.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -65,6 +71,8 @@ Notes:
 | Movement | Rub the palm in a circle on the chest |
 | Memory tip | Warming your heart to ask nicely |
 
+> **Dictionary pre-check:** Matches Lifeprint: flat hand circling on the chest.
+
 - [ ] Approved
 - [ ] Needs changes
 
@@ -80,8 +88,10 @@ Notes:
 |---|---|
 | Handshape | Flat hand |
 | Location | Chin |
-| Movement | Touch fingertips to the chin, then move the hand forward and down |
+| Movement | Touch the fingertips to the chin or lips, then move the hand forward and down toward the person |
 | Memory tip | Sending thanks from your lips |
+
+> **Dictionary pre-check:** Wording corrected: Lifeprint starts near the lips, other sources at the chin. Now says 'chin or lips'. The app diagram marks the chin.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -101,6 +111,8 @@ Notes:
 | Movement | Rub the fist in a circle on the chest |
 | Memory tip | A fist circling a heavy heart |
 
+> **Dictionary pre-check:** Matches Lifeprint: A-hand circling on the chest, with a sorry facial expression.
+
 - [ ] Approved
 - [ ] Needs changes
 
@@ -117,9 +129,11 @@ Notes:
 | | |
 |---|---|
 | Handshape | S-hand (fist) |
-| Location | Space |
+| Location | In front of the body |
 | Movement | Bend the wrist so the fist nods up and down |
 | Memory tip | Your fist is a head nodding yes |
+
+> **Dictionary pre-check:** Matches Lifeprint: S-hand nodding at the wrist.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -135,9 +149,11 @@ Notes:
 | | |
 |---|---|
 | Handshape | Index, middle finger and thumb |
-| Location | Space |
+| Location | In front of the body |
 | Movement | Snap the index and middle fingers down onto the thumb |
 | Memory tip | A little mouth snapping shut |
+
+> **Dictionary pre-check:** Consistent with Lifeprint's images. The page stresses single vs double movement and the headshake.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -153,9 +169,11 @@ Notes:
 | | |
 |---|---|
 | Handshape | H-hand (index and middle fingers together) |
-| Location | Space |
+| Location | In front of the body |
 | Movement | Tap the middle finger of one H-hand twice across the index finger of the other, forming an X |
 | Memory tip | Two fingers cross like signing your name |
+
+> **Dictionary pre-check:** Matches Lifeprint: H-hands, double tap (single tap when used as a verb).
 
 - [ ] Approved
 - [ ] Needs changes
@@ -171,9 +189,11 @@ Notes:
 | | |
 |---|---|
 | Handshape | A-hand (thumb up) on a flat palm |
-| Location | Space |
+| Location | In front of the body |
 | Movement | Rest the thumbs-up fist on the other flat palm and lift both hands up together |
 | Memory tip | One hand gives the other a lift |
+
+> **Dictionary pre-check:** Matches Lifeprint: loose A-hand lifted by the other hand. Note that it is directional (I-help-you vs you-help-me).
 
 - [ ] Approved
 - [ ] Needs changes
@@ -189,9 +209,11 @@ Notes:
 | | |
 |---|---|
 | Handshape | Flat O-hand (fingertips together) |
-| Location | Space |
+| Location | In front of the body |
 | Movement | Tap the fingertips of both hands together a few times |
 | Memory tip | Adding more and more to the pile |
+
+> **Dictionary pre-check:** Matches Lifeprint: flattened O-hands tapping together.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -213,6 +235,8 @@ Notes:
 | Movement | Tap the thumb on the chin twice |
 | Memory tip | Female family signs sit at the chin |
 
+> **Dictionary pre-check:** Matches common dictionary descriptions: 5-hand, thumb taps the chin.
+
 - [ ] Approved
 - [ ] Needs changes
 
@@ -231,6 +255,8 @@ Notes:
 | Movement | Tap the thumb on the forehead twice |
 | Memory tip | Male family signs sit at the forehead |
 
+> **Dictionary pre-check:** Matches common dictionary descriptions: 5-hand, thumb taps the forehead.
+
 - [ ] Approved
 - [ ] Needs changes
 
@@ -245,9 +271,11 @@ Notes:
 | | |
 |---|---|
 | Handshape | Flat hands, one arm resting on the other |
-| Location | Space |
+| Location | In front of the body |
 | Movement | Cradle one forearm on the other and rock them side to side |
 | Memory tip | Rocking a baby to sleep |
+
+> **Dictionary pre-check:** Matches Lifeprint: arms cradled and rocked. Often only the hands overlap in everyday signing.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -263,9 +291,11 @@ Notes:
 | | |
 |---|---|
 | Handshape | F-hand (thumb and index touching) on both hands |
-| Location | Space |
+| Location | In front of the body |
 | Movement | Start with both F-hands together, then circle them outward until the little fingers meet |
 | Memory tip | Your hands draw a circle around everyone |
+
+> **Dictionary pre-check:** Matches Lifeprint: F-hands tracing a circle.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -281,9 +311,11 @@ Notes:
 | | |
 |---|---|
 | Handshape | X-hand (hooked index finger) |
-| Location | Space |
+| Location | In front of the body |
 | Movement | Hook the index fingers together, then flip and hook them the other way |
 | Memory tip | Two people hooked together |
+
+> **Dictionary pre-check:** Matches Lifeprint: index fingers hook together, then swap.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -300,10 +332,12 @@ Notes:
 
 | | |
 |---|---|
-| Handshape | Flat hand |
+| Handshape | Flat hand, palm toward you |
 | Location | Chest |
-| Movement | Brush the palm upward on the chest a few times, with a smile |
+| Movement | Brush the hand up the chest in small forward circles, with a smile. Often done with both hands |
 | Memory tip | Joy bubbling up from your heart |
+
+> **Dictionary pre-check:** Wording corrected: Lifeprint describes forward circles brushing up the chest, one or two hands. Previously 'brush upward'.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -323,6 +357,8 @@ Notes:
 | Movement | Cross both fists over the heart and hug them to the chest |
 | Memory tip | Hugging something you love |
 
+> **Dictionary pre-check:** Matches Lifeprint: hands crossed over the chest. Fists or flat hands are both seen.
+
 - [ ] Approved
 - [ ] Needs changes
 
@@ -340,6 +376,8 @@ Notes:
 | Location | Chest |
 | Movement | Brush the middle fingers up the chest in alternating circles |
 | Memory tip | Your heart racing |
+
+> **Dictionary pre-check:** Matches Lifeprint: middle fingers bent, alternating circles.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -359,6 +397,8 @@ Notes:
 | Movement | Hold both open hands in front of the face, then draw them slowly down |
 | Memory tip | Your whole face drooping |
 
+> **Dictionary pre-check:** Matches Lifeprint: both hands, palms in, drawn down the face, with a sad expression.
+
 - [ ] Approved
 - [ ] Needs changes
 
@@ -374,8 +414,10 @@ Notes:
 |---|---|
 | Handshape | Bent hands on both sides |
 | Location | Chest |
-| Movement | Rest the fingertips on the chest, then let the hands drop as the shoulders slump |
+| Movement | Rest the bent fingertips on the chest, then rotate the hands downward as the shoulders slump |
 | Memory tip | Your energy draining away |
+
+> **Dictionary pre-check:** Wording refined: Lifeprint starts like HAVE and the hands rotate downward rather than sliding.
 
 - [ ] Approved
 - [ ] Needs changes

@@ -13,7 +13,7 @@
     "word": "Thank you",
     "handshape": "Flat hand",
     "location": "chin",
-    "movement": "Touch fingertips to the chin, then move the hand forward and down",
+    "movement": "Touch the fingertips to the chin or lips, then move the hand forward and down toward the person",
     "tip": "Sending thanks from your lips",
     "reviewed": false
   },
@@ -38,9 +38,9 @@
   {
     "id": "goodbye",
     "word": "Goodbye",
-    "handshape": "Open hand",
+    "handshape": "Open hand, palm facing out",
     "location": "space",
-    "movement": "Open and close the fingers against the palm",
+    "movement": "Wave by bending the fingers down and up at the knuckles a few times",
     "tip": "A wave goodbye",
     "reviewed": false
   },
@@ -137,9 +137,9 @@
   {
     "id": "happy",
     "word": "Happy",
-    "handshape": "Flat hand",
+    "handshape": "Flat hand, palm toward you",
     "location": "chest",
-    "movement": "Brush the palm upward on the chest a few times, with a smile",
+    "movement": "Brush the hand up the chest in small forward circles, with a smile. Often done with both hands",
     "tip": "Joy bubbling up from your heart",
     "reviewed": false
   },
@@ -157,7 +157,7 @@
     "word": "Tired",
     "handshape": "Bent hands on both sides",
     "location": "chest",
-    "movement": "Rest the fingertips on the chest, then let the hands drop as the shoulders slump",
+    "movement": "Rest the bent fingertips on the chest, then rotate the hands downward as the shoulders slump",
     "tip": "Your energy draining away",
     "reviewed": false
   },
