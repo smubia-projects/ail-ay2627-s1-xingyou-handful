@@ -2,20 +2,55 @@
 
 import Link from "next/link";
 import { getLessonSigns, getSign, getUnits, type Lesson } from "@/lib/content";
-import { useProgress } from "@/lib/progress";
+import { useProgress, useProgressLoaded } from "@/lib/progress";
 
 type LessonState = "completed" | "current" | "locked";
+
+// Each unit gets its own soft accent, cycling if there are more units than colors.
+type UnitTheme = { banner: string; circle: string; ring: string; dot: string; label: string };
+const UNIT_THEMES: UnitTheme[] = [
+  {
+    banner: "bg-sage-light",
+    circle: "bg-sage shadow-[0_6px_0_0_var(--color-sage-dark)]",
+    ring: "ring-sage-light",
+    dot: "bg-sage",
+    label: "text-sage-dark",
+  },
+  {
+    banner: "bg-clay-light",
+    circle: "bg-clay shadow-[0_6px_0_0_var(--color-clay-dark)]",
+    ring: "ring-clay-light",
+    dot: "bg-clay",
+    label: "text-clay-dark",
+  },
+  {
+    banner: "bg-lavender-light",
+    circle: "bg-lavender shadow-[0_6px_0_0_var(--color-lavender-dark)]",
+    ring: "ring-lavender-light",
+    dot: "bg-lavender",
+    label: "text-lavender-dark",
+  },
+  {
+    banner: "bg-ice-light",
+    circle: "bg-ice shadow-[0_6px_0_0_var(--color-ice-dark)]",
+    ring: "ring-ice-light",
+    dot: "bg-ice",
+    label: "text-ice-dark",
+  },
+];
 
 // Gentle zigzag so the lessons read as a winding path.
 const PATH_OFFSETS = ["translate-x-0", "translate-x-14", "translate-x-0", "-translate-x-14"];
 // Moves the connecting dots (relative to the lesson above them) halfway to the next lesson.
 const CONNECTOR_OFFSETS = ["translate-x-7", "-translate-x-7", "-translate-x-7", "translate-x-7"];
 
-const CIRCLE_STYLES: Record<LessonState, string> = {
-  completed: "h-20 w-20 bg-sage text-white shadow-[0_6px_0_0_var(--color-sage-dark)] ring-sage-light",
-  current: "h-24 w-24 bg-sage text-white shadow-[0_6px_0_0_var(--color-sage-dark)] ring-peach-light",
-  locked: "h-20 w-20 bg-sand text-muted shadow-[0_6px_0_0_var(--color-sand-dark)] ring-transparent",
-};
+function circleStyle(state: LessonState, theme: UnitTheme) {
+  if (state === "locked") {
+    return "h-20 w-20 bg-sand text-muted shadow-[0_6px_0_0_var(--color-sand-dark)] ring-transparent";
+  }
+  const size = state === "current" ? "h-24 w-24 ring-peach-light" : `h-20 w-20 ${theme.ring}`;
+  return `${size} ${theme.circle} text-white`;
+}
 
 function CheckIcon() {
   return (
@@ -40,7 +75,17 @@ function LockIcon() {
   );
 }
 
-function LessonNode({ lesson, number, state }: { lesson: Lesson; number: number; state: LessonState }) {
+function LessonNode({
+  lesson,
+  number,
+  state,
+  theme,
+}: {
+  lesson: Lesson;
+  number: number;
+  state: LessonState;
+  theme: UnitTheme;
+}) {
   const words = getLessonSigns(lesson)
     .map((sign) => sign.word)
     .join(" · ");
@@ -50,13 +95,15 @@ function LessonNode({ lesson, number, state }: { lesson: Lesson; number: number;
       <span className="relative">
         {state === "current" && (
           <span className="absolute -top-12 left-1/2 -translate-x-1/2 motion-safe:animate-bob">
-            <span className="block rounded-xl bg-white px-3 py-1.5 text-sm font-extrabold uppercase tracking-wide text-sage-dark shadow-sm ring-2 ring-sand">
+            <span
+              className={`block rounded-xl bg-white px-3 py-1.5 text-sm font-extrabold uppercase tracking-wide shadow-sm ring-2 ring-sand ${theme.label}`}
+            >
               Start
             </span>
           </span>
         )}
         <span
-          className={`flex items-center justify-center rounded-full text-2xl font-extrabold ring-8 transition ${CIRCLE_STYLES[state]} ${
+          className={`flex items-center justify-center rounded-full text-2xl font-extrabold ring-8 transition ${circleStyle(state, theme)} ${
             state === "locked" ? "" : "group-hover:brightness-105 group-active:translate-y-1 group-active:shadow-none"
           }`}
         >
@@ -130,6 +177,7 @@ function PracticeCard({ count }: { count: number }) {
 export default function LessonPath() {
   const units = getUnits();
   const { completedLessons, mistakes } = useProgress();
+  const loaded = useProgressLoaded();
   // Ignore saved mistakes for signs that have since been removed from data/signs.json.
   const mistakeCount = mistakes.filter((id) => getSign(id) !== undefined).length;
 
@@ -144,50 +192,58 @@ export default function LessonPath() {
   }
 
   return (
-    <>
+    <div className={`flex flex-col gap-12 ${loaded ? "motion-safe:animate-fade-in" : "invisible"}`}>
       <PracticeCard count={mistakeCount} />
-      {units.map((unit, unitIndex) => (
-        <section key={unit.id}>
-          <div className="rounded-3xl bg-sage-light px-6 py-5">
-            <p className="text-xs font-extrabold uppercase tracking-widest text-sage-dark">
-              Unit {unitIndex + 1}
-            </p>
-            <h1 className="mt-1 text-2xl font-extrabold text-ink">{unit.title}</h1>
-            <p className="mt-1 text-sm text-muted">
-              {unit.lessons.length} lessons ·{" "}
-              {unit.lessons.reduce((total, lesson) => total + lesson.signIds.length, 0)} signs
-            </p>
-          </div>
-
-          <ol className="mt-16 flex flex-col items-center gap-5">
-            {unit.lessons.map((lesson, lessonIndex) => {
-              const state = stateOf(lesson.id);
-              const isLast = lessonIndex === unit.lessons.length - 1;
-              return (
-                <li
-                  key={lesson.id}
-                  className={`flex flex-col items-center ${PATH_OFFSETS[lessonIndex % PATH_OFFSETS.length]}`}
-                >
-                  <LessonNode lesson={lesson} number={lessonIndex + 1} state={state} />
-                  {!isLast && (
-                    <span
-                      aria-hidden="true"
-                      className={`mt-5 flex flex-col gap-2 ${CONNECTOR_OFFSETS[lessonIndex % CONNECTOR_OFFSETS.length]}`}
-                    >
-                      {[0, 1, 2].map((dot) => (
-                        <span
-                          key={dot}
-                          className={`h-2.5 w-2.5 rounded-full ${state === "completed" ? "bg-sage" : "bg-sand-dark"}`}
-                        />
-                      ))}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      ))}
-    </>
+      {units.map((unit, unitIndex) => {
+        const theme = UNIT_THEMES[unitIndex % UNIT_THEMES.length];
+        return (
+          <section key={unit.id}>
+            <div className={`rounded-3xl px-6 py-5 ${theme.banner}`}>
+              <p className="text-xs font-extrabold uppercase tracking-widest text-ink">
+                Unit {unitIndex + 1}
+              </p>
+              <h1 className="mt-1 text-2xl font-extrabold text-ink">{unit.title}</h1>
+              <p className="mt-1 text-sm text-muted">
+                {unit.lessons.length} lessons ·{" "}
+                {unit.lessons.reduce((total, lesson) => total + lesson.signIds.length, 0)} signs
+              </p>
+            </div>
+  
+            <ol className="mt-16 flex flex-col items-center gap-5">
+              {unit.lessons.map((lesson, lessonIndex) => {
+                const state = stateOf(lesson.id);
+                const isLast = lessonIndex === unit.lessons.length - 1;
+                return (
+                  <li
+                    key={lesson.id}
+                    className={`flex flex-col items-center ${PATH_OFFSETS[lessonIndex % PATH_OFFSETS.length]}`}
+                  >
+                    <LessonNode
+                      lesson={lesson}
+                      number={lessonIndex + 1}
+                      state={state}
+                      theme={theme}
+                    />
+                    {!isLast && (
+                      <span
+                        aria-hidden="true"
+                        className={`mt-5 flex flex-col gap-2 ${CONNECTOR_OFFSETS[lessonIndex % CONNECTOR_OFFSETS.length]}`}
+                      >
+                        {[0, 1, 2].map((dot) => (
+                          <span
+                            key={dot}
+                            className={`h-2.5 w-2.5 rounded-full ${state === "completed" ? theme.dot : "bg-sand-dark"}`}
+                          />
+                        ))}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        );
+      })}
+    </div>
   );
 }

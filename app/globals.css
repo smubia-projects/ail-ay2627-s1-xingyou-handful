@@ -12,7 +12,14 @@
   --color-peach: #f2a97e;
   --color-peach-dark: #e0875a;
   --color-peach-light: #fcebdf;
+  --color-clay: #c2714f;
+  --color-clay-dark: #a35a3b;
+  --color-clay-light: #f6e4da;
+  --color-lavender: #8672b8;
+  --color-lavender-dark: #6a5899;
+  --color-lavender-light: #ece7f6;
   --color-ice: #4f8fb0;
+  --color-ice-dark: #3b7191;
   --color-ice-light: #e1eef5;
   --color-ink: #3b342c;
   --color-muted: #756a5d;
@@ -21,6 +28,16 @@
 @theme {
   --animate-shake: shake 0.35s ease-in-out;
   --animate-bob: bob 1.6s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.25s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
   @keyframes bob {
     0%,

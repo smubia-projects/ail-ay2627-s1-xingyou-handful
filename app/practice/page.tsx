@@ -6,12 +6,13 @@ import { BottomBar, PRIMARY_BUTTON } from "@/components/Exercises";
 import LessonRunner from "@/components/LessonRunner";
 import type { Sign } from "@/components/SignCard";
 import { getSign } from "@/lib/content";
-import { useProgress } from "@/lib/progress";
+import { useProgress, useProgressLoaded } from "@/lib/progress";
 
 const MAX_PRACTICE_SIGNS = 5;
 
 export default function PracticePage() {
   const { mistakes } = useProgress();
+  const loaded = useProgressLoaded();
   // The signs are fixed when the session starts, so saving new mistakes mid-session doesn't change it.
   const [sessionSigns, setSessionSigns] = useState<Sign[] | null>(null);
 
@@ -43,7 +44,7 @@ export default function PracticePage() {
 
       <h1 className="mt-8 text-3xl font-extrabold text-ink">Practice mistakes</h1>
 
-      {signs.length === 0 ? (
+      {!loaded ? null : signs.length === 0 ? (
         <>
           <p className="mt-2 text-muted">No mistakes to review. Nice work!</p>
           <BottomBar>

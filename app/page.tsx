@@ -14,7 +14,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-md flex-col gap-12 px-5 py-8 pb-16">
+      <main className="mx-auto w-full max-w-md px-5 py-8 pb-16">
         <LessonPath />
       </main>
     </div>

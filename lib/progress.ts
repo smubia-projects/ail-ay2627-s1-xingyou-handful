@@ -87,6 +87,18 @@ export function useProgress(): Progress {
   return useSyncExternalStore(subscribe, readProgress, () => EMPTY);
 }
 
+const subscribeToNothing = () => () => {};
+
+// False while the page is prepared on the server and during the first paint, before saved
+// progress is read. Hide progress-based UI until then, so it doesn't flash the empty state.
+export function useProgressLoaded(): boolean {
+  return useSyncExternalStore(
+    subscribeToNothing,
+    () => true,
+    () => false,
+  );
+}
+
 // The learner's local calendar date, so a new day starts at their own midnight.
 export function dayKey(date = new Date()): string {
   const month = String(date.getMonth() + 1).padStart(2, "0");

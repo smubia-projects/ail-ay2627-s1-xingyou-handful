@@ -1,13 +1,16 @@
 "use client";
 
-import { currentStreak, useProgress } from "@/lib/progress";
+import { currentStreak, useProgress, useProgressLoaded } from "@/lib/progress";
 
 export default function HeaderStats() {
   const progress = useProgress();
   const { count: streak, freezes } = currentStreak(progress.streak);
+  const loaded = useProgressLoaded();
 
   return (
-    <div className="ml-auto flex items-center gap-4 font-extrabold">
+    <div
+      className={`ml-auto flex items-center gap-4 font-extrabold ${loaded ? "motion-safe:animate-fade-in" : "invisible"}`}
+    >
       <span className="flex items-center gap-1">
         <svg
           viewBox="0 0 24 24"
