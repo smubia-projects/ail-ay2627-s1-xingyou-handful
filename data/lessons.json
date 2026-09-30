@@ -1,0 +1,10 @@
+[
+  {
+    "id": "greetings",
+    "title": "Greetings",
+    "lessons": [
+      { "id": "greetings-1", "title": "Hi and bye", "signIds": ["hello", "goodbye"] },
+      { "id": "greetings-2", "title": "Being polite", "signIds": ["please", "thank-you", "sorry"] }
+    ]
+  }
+]

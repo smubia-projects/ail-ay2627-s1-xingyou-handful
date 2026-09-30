@@ -23,11 +23,11 @@ function BodyDiagram({ location }: { location: SignLocation }) {
   return (
     <svg
       viewBox="0 0 200 200"
-      className="h-48 w-48"
+      className="h-40 w-40"
       role="img"
       aria-label={`Body outline with the sign location at the ${location}`}
     >
-      <g className="fill-none stroke-zinc-400" strokeWidth={3} strokeLinecap="round">
+      <g className="fill-none stroke-sand-dark" strokeWidth={4} strokeLinecap="round">
         {/* Head */}
         <ellipse cx={100} cy={55} rx={30} ry={36} />
         {/* Neck */}
@@ -35,40 +35,57 @@ function BodyDiagram({ location }: { location: SignLocation }) {
         {/* Shoulders and torso */}
         <path d="M88 104 C60 106 40 112 30 130 V200 M112 104 C140 106 160 112 170 130 V200" />
       </g>
-      <circle cx={dot.x} cy={dot.y} r={9} className="fill-emerald-500" />
+      <circle cx={dot.x} cy={dot.y} r={16} className="fill-peach/35" />
+      <circle cx={dot.x} cy={dot.y} r={8} className="fill-peach-dark" />
     </svg>
+  );
+}
+
+function Detail({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <dt className="text-xs font-extrabold uppercase tracking-widest text-muted">{label}</dt>
+      <dd className="mt-0.5 font-semibold text-ink">{children}</dd>
+    </div>
   );
 }
 
 export default function SignCard({ sign }: { sign: Sign }) {
   return (
-    <article className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-      <h2 className="text-center text-3xl font-bold text-zinc-900">{sign.word}</h2>
+    <article className="w-full rounded-3xl bg-white p-6 shadow-[0_12px_32px_-16px_rgba(59,52,44,0.35)] ring-1 ring-sand">
+      <span className="inline-block rounded-full bg-peach-light px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-ink">
+        New sign
+      </span>
+      <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-ink">{sign.word}</h2>
 
-      <div className="mt-4 flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-100 text-sm text-zinc-500">
+      <div className="mt-5 flex aspect-video flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-sand-dark bg-cream text-sm font-semibold text-muted">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
+          <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 fill-sage" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
         Video coming soon
       </div>
 
-      <div className="mt-4 flex justify-center">
-        <BodyDiagram location={sign.location} />
+      <div className="mt-5 grid gap-5 sm:grid-cols-[auto_1fr] sm:items-center">
+        <div className="flex justify-center rounded-2xl bg-cream p-3">
+          <BodyDiagram location={sign.location} />
+        </div>
+        <dl className="space-y-3">
+          <Detail label="Handshape">{sign.handshape}</Detail>
+          <Detail label="Location">
+            <span className="capitalize">{sign.location}</span>
+          </Detail>
+          <Detail label="Movement">{sign.movement}</Detail>
+        </dl>
       </div>
 
-      <dl className="mt-4 space-y-3 text-zinc-700">
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Handshape</dt>
-          <dd>{sign.handshape}</dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Location</dt>
-          <dd className="capitalize">{sign.location}</dd>
-        </div>
-        <div>
-          <dt className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Movement</dt>
-          <dd>{sign.movement}</dd>
-        </div>
-      </dl>
-
-      <p className="mt-4 rounded-lg bg-emerald-50 p-3 text-emerald-800">💡 {sign.tip}</p>
+      <div className="mt-5 rounded-2xl bg-peach-light p-4">
+        <p className="text-xs font-extrabold uppercase tracking-widest text-muted">
+          Memory tip
+        </p>
+        <p className="mt-1 font-semibold text-ink">{sign.tip}</p>
+      </div>
     </article>
   );
 }
