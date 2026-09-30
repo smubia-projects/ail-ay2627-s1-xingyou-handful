@@ -1,3 +1,4 @@
+import HeaderStats from "@/components/HeaderStats";
 import LessonPath from "@/components/LessonPath";
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
             S
           </span>
           <span className="text-xl font-extrabold tracking-tight text-sage-dark">SignPath</span>
+          <HeaderStats />
         </div>
       </header>
 

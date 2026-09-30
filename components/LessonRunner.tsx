@@ -5,12 +5,16 @@ import { useState } from "react";
 import { BottomBar, ExerciseView, PRIMARY_BUTTON, type Exercise } from "@/components/Exercises";
 import SignCard, { type Sign } from "@/components/SignCard";
 import { buildLessonExercises, reshuffleExercise, type Lesson } from "@/lib/content";
-import { markLessonComplete } from "@/lib/progress";
+import { recordLessonComplete } from "@/lib/progress";
 
 const XP_PER_FIRST_TRY = 5;
 const XP_FOR_FINISHING = 10;
 
 type QueueItem = { exercise: Exercise; retry: boolean };
+
+function xpFor(firstTryCorrect: number) {
+  return firstTryCorrect * XP_PER_FIRST_TRY + XP_FOR_FINISHING;
+}
 
 function ProgressBar({ value }: { value: number }) {
   return (
@@ -30,11 +34,22 @@ function ProgressBar({ value }: { value: number }) {
   );
 }
 
-function Stat({ label, value, className }: { label: string; value: string; className: string }) {
+function Stat({
+  label,
+  value,
+  note,
+  className,
+}: {
+  label: string;
+  value: string;
+  note?: string;
+  className: string;
+}) {
   return (
-    <div className={`rounded-2xl p-4 text-center ${className}`}>
-      <p className="text-xs font-extrabold uppercase tracking-widest text-muted">{label}</p>
-      <p className="mt-1 text-3xl font-extrabold text-ink">{value}</p>
+    <div className={`rounded-2xl px-2 py-4 text-center ${className}`}>
+      <p className="text-xs font-extrabold uppercase tracking-wider text-muted">{label}</p>
+      <p className="mt-1 text-2xl font-extrabold text-ink">{value}</p>
+      {note && <p className="text-xs font-bold text-muted">{note}</p>}
     </div>
   );
 }
@@ -47,6 +62,7 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
   const [total, setTotal] = useState(0);
   const [completed, setCompleted] = useState(0);
   const [firstTryCorrect, setFirstTryCorrect] = useState(0);
+  const [streak, setStreak] = useState({ count: 0, increasedToday: false });
 
   function nextIntro() {
     if (introIndex < signs.length - 1) {
@@ -62,7 +78,8 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
 
   function finishExercise(correct: boolean) {
     const item = queue[position];
-    if (correct && !item.retry) setFirstTryCorrect((count) => count + 1);
+    const firstTry = correct && !item.retry;
+    if (firstTry) setFirstTryCorrect((count) => count + 1);
 
     // Missed multiple-choice questions come back at the end until answered correctly.
     // Match pairs is already finished once every pair is matched.
@@ -76,13 +93,15 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
     if (position + 1 < nextQueue.length) {
       setPosition(position + 1);
     } else {
-      markLessonComplete(lesson.id);
+      const xpEarned = xpFor(firstTryCorrect + (firstTry ? 1 : 0));
+      const result = recordLessonComplete(lesson.id, xpEarned);
+      setStreak({ count: result.streak, increasedToday: result.increasedToday });
       setPhase("complete");
     }
   }
 
   const progress = phase === "complete" ? 1 : total > 0 ? completed / total : 0;
-  const xp = firstTryCorrect * XP_PER_FIRST_TRY + XP_FOR_FINISHING;
+  const xp = xpFor(firstTryCorrect);
   const accuracy = total > 0 ? Math.round((firstTryCorrect / total) * 100) : 0;
   const current = queue[position];
 
@@ -147,9 +166,15 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
             </span>
             <h1 className="mt-8 text-3xl font-extrabold text-ink">Lesson complete!</h1>
             <p className="mt-1 text-muted">{lesson.title}</p>
-            <div className="mt-8 grid w-full grid-cols-2 gap-3">
+            <div className="mt-8 grid w-full grid-cols-3 gap-3">
               <Stat label="XP earned" value={`+${xp}`} className="bg-peach-light" />
               <Stat label="First try" value={`${accuracy}%`} className="bg-sage-light" />
+              <Stat
+                label="Streak"
+                value={`${streak.count} ${streak.count === 1 ? "day" : "days"}`}
+                note={streak.increasedToday ? "+1 today!" : undefined}
+                className="bg-white ring-1 ring-sand"
+              />
             </div>
             <BottomBar>
               <Link href="/" className={`ml-auto ${PRIMARY_BUTTON}`}>
