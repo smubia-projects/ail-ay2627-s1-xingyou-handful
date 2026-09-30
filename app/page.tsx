@@ -1,12 +1,11 @@
-import SignCard from "@/components/SignCard";
-import { getLessonSigns, getSign, getUnits } from "@/lib/content";
+import Link from "next/link";
+import { getLessonSigns, getUnits } from "@/lib/content";
 
 // Gentle zigzag so the lessons read as a winding path.
 const PATH_OFFSETS = ["translate-x-0", "translate-x-14", "translate-x-0", "-translate-x-14"];
 
 export default function Home() {
   const units = getUnits();
-  const hello = getSign("hello")!;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -37,29 +36,27 @@ export default function Home() {
               {unit.lessons.map((lesson, lessonIndex) => (
                 <li
                   key={lesson.id}
-                  className={`flex flex-col items-center text-center ${PATH_OFFSETS[lessonIndex % PATH_OFFSETS.length]}`}
+                  className={PATH_OFFSETS[lessonIndex % PATH_OFFSETS.length]}
                 >
-                  <span className="flex h-20 w-20 items-center justify-center rounded-full bg-sage text-2xl font-extrabold text-white shadow-[0_6px_0_0_var(--color-sage-dark)] ring-8 ring-sage-light">
-                    {lessonIndex + 1}
-                  </span>
-                  <h2 className="mt-4 font-extrabold text-ink">{lesson.title}</h2>
-                  <p className="text-sm text-muted">
-                    {getLessonSigns(lesson)
-                      .map((sign) => sign.word)
-                      .join(" · ")}
-                  </p>
+                  <Link
+                    href={`/lesson/${lesson.id}`}
+                    className="group flex flex-col items-center rounded-3xl text-center"
+                  >
+                    <span className="flex h-20 w-20 items-center justify-center rounded-full bg-sage text-2xl font-extrabold text-white shadow-[0_6px_0_0_var(--color-sage-dark)] ring-8 ring-sage-light transition group-hover:brightness-105 group-active:translate-y-1 group-active:shadow-none">
+                      {lessonIndex + 1}
+                    </span>
+                    <h2 className="mt-4 font-extrabold text-ink">{lesson.title}</h2>
+                    <p className="text-sm text-muted">
+                      {getLessonSigns(lesson)
+                        .map((sign) => sign.word)
+                        .join(" · ")}
+                    </p>
+                  </Link>
                 </li>
               ))}
             </ol>
           </section>
         ))}
-
-        <section>
-          <h2 className="mb-4 text-sm font-extrabold uppercase tracking-widest text-muted">
-            Sign spotlight
-          </h2>
-          <SignCard sign={hello} />
-        </section>
       </main>
     </div>
   );

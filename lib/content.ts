@@ -1,3 +1,4 @@
+import type { Exercise } from "@/components/Exercises";
 import type { Sign } from "@/components/SignCard";
 import signsData from "@/data/signs.json";
 import unitsData from "@/data/lessons.json";
@@ -54,6 +55,27 @@ function looksAlike(a: Sign, b: Sign): boolean {
 export function pickOptions(answer: Sign, count = 4): Sign[] {
   const wrong = shuffle(signs.filter((sign) => sign.id !== answer.id && !looksAlike(sign, answer)));
   return shuffle([answer, ...wrong.slice(0, count - 1)]);
+}
+
+// Two multiple-choice exercises per sign, plus match pairs for lessons with 3+ signs, in random order.
+export function buildLessonExercises(lesson: Lesson): Exercise[] {
+  const lessonSigns = getLessonSigns(lesson);
+  const exercises: Exercise[] = lessonSigns.flatMap((sign): Exercise[] => [
+    { type: "meaning", sign, options: pickOptions(sign) },
+    { type: "pick-sign", sign, options: pickOptions(sign) },
+  ]);
+  if (lessonSigns.length >= 3) {
+    exercises.push({ type: "match", signs: shuffle(lessonSigns), words: shuffle(lessonSigns) });
+  }
+  return shuffle(exercises);
+}
+
+// The same exercise with its choices in a new order, for when a mistake comes back.
+export function reshuffleExercise(exercise: Exercise): Exercise {
+  if (exercise.type === "match") {
+    return { ...exercise, signs: shuffle(exercise.signs), words: shuffle(exercise.words) };
+  }
+  return { ...exercise, options: shuffle(exercise.options) };
 }
 
 export function getUnits(): Unit[] {

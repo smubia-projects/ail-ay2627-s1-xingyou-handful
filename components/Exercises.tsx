@@ -56,7 +56,29 @@ function Prompt({ children }: { children: React.ReactNode }) {
   return <h1 className="text-2xl font-extrabold text-ink">{children}</h1>;
 }
 
-// Duolingo-style bar fixed to the bottom: Check while answering, then feedback and Continue.
+export const PRIMARY_BUTTON =
+  "rounded-2xl bg-sage px-8 py-3 font-extrabold uppercase tracking-wide text-white shadow-[0_4px_0_0_var(--color-sage-dark)] transition active:translate-y-1 active:shadow-none";
+
+// Bar fixed to the bottom of the screen, holding feedback and the main button.
+export function BottomBar({
+  className = "bg-cream",
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`fixed inset-x-0 bottom-0 border-t-2 border-sand px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] ${className}`}
+    >
+      <div className="mx-auto flex max-w-md flex-wrap items-center justify-between gap-3">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Duolingo-style bar: Check while answering, then feedback and Continue.
 function CheckBar({
   status,
   title,
@@ -79,27 +101,23 @@ function CheckBar({
   const button =
     status === "wrong"
       ? "bg-peach text-ink shadow-[0_4px_0_0_var(--color-peach-dark)]"
-      : "bg-sage text-white shadow-[0_4px_0_0_var(--color-sage-dark)]";
+      : "";
 
   return (
-    <div
-      className={`fixed inset-x-0 bottom-0 border-t-2 border-sand px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] ${background}`}
-    >
-      <div className="mx-auto flex max-w-md flex-wrap items-center justify-between gap-3">
-        <div role="status" aria-live="polite">
-          {title && <p className="text-lg font-extrabold text-ink">{title}</p>}
-          {detail && <p className="text-sm font-semibold text-muted">{detail}</p>}
-        </div>
-        <button
-          type="button"
-          disabled={status === "answering" && !canCheck}
-          onClick={status === "answering" ? onCheck : onContinue}
-          className={`rounded-2xl px-8 py-3 font-extrabold uppercase tracking-wide transition active:translate-y-1 active:shadow-none disabled:bg-sand disabled:text-muted disabled:shadow-none disabled:active:translate-y-0 ${button}`}
-        >
-          {status === "answering" ? "Check" : "Continue"}
-        </button>
+    <BottomBar className={background}>
+      <div role="status" aria-live="polite">
+        {title && <p className="text-lg font-extrabold text-ink">{title}</p>}
+        {detail && <p className="text-sm font-semibold text-muted">{detail}</p>}
       </div>
-    </div>
+      <button
+        type="button"
+        disabled={status === "answering" && !canCheck}
+        onClick={status === "answering" ? onCheck : onContinue}
+        className={`${PRIMARY_BUTTON} disabled:bg-sand disabled:text-muted disabled:shadow-none disabled:active:translate-y-0 ${button}`}
+      >
+        {status === "answering" ? "Check" : "Continue"}
+      </button>
+    </BottomBar>
   );
 }
 
@@ -298,61 +316,19 @@ function MatchExercise({
   );
 }
 
-// Plays exercises one after another with a progress bar. The lesson runner (step 4) builds on this.
-export function ExerciseSequence({ exercises }: { exercises: Exercise[] }) {
-  const [index, setIndex] = useState(0);
-  const [firstTryCorrect, setFirstTryCorrect] = useState(0);
-
-  function next(correct: boolean) {
-    if (correct) setFirstTryCorrect((count) => count + 1);
-    setIndex((i) => i + 1);
+// Shows one exercise of any type. onDone reports whether it was answered correctly.
+export function ExerciseView({
+  exercise,
+  onDone,
+}: {
+  exercise: Exercise;
+  onDone: (correct: boolean) => void;
+}) {
+  if (exercise.type === "meaning") {
+    return <MeaningExercise sign={exercise.sign} options={exercise.options} onDone={onDone} />;
   }
-
-  function restart() {
-    setIndex(0);
-    setFirstTryCorrect(0);
+  if (exercise.type === "pick-sign") {
+    return <PickSignExercise sign={exercise.sign} options={exercise.options} onDone={onDone} />;
   }
-
-  const exercise = exercises[index];
-
-  return (
-    <div>
-      <div
-        className="h-4 overflow-hidden rounded-full bg-sand"
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={exercises.length}
-        aria-valuenow={index}
-      >
-        <div
-          className="h-full rounded-full bg-sage transition-all duration-500"
-          style={{ width: `${(index / exercises.length) * 100}%` }}
-        />
-      </div>
-
-      <div className="mt-8">
-        {!exercise ? (
-          <div className="rounded-3xl bg-white p-8 text-center ring-1 ring-sand">
-            <p className="text-2xl font-extrabold text-ink">Practice complete</p>
-            <p className="mt-2 text-muted">
-              {firstTryCorrect} of {exercises.length} right on the first try
-            </p>
-            <button
-              type="button"
-              onClick={restart}
-              className="mt-6 rounded-2xl bg-sage px-8 py-3 font-extrabold uppercase tracking-wide text-white shadow-[0_4px_0_0_var(--color-sage-dark)] active:translate-y-1 active:shadow-none"
-            >
-              Start again
-            </button>
-          </div>
-        ) : exercise.type === "meaning" ? (
-          <MeaningExercise key={index} sign={exercise.sign} options={exercise.options} onDone={next} />
-        ) : exercise.type === "pick-sign" ? (
-          <PickSignExercise key={index} sign={exercise.sign} options={exercise.options} onDone={next} />
-        ) : (
-          <MatchExercise key={index} signs={exercise.signs} words={exercise.words} onDone={next} />
-        )}
-      </div>
-    </div>
-  );
+  return <MatchExercise signs={exercise.signs} words={exercise.words} onDone={onDone} />;
 }
