@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { getLessonSigns, getUnits, type Lesson } from "@/lib/content";
+import { getLessonSigns, getSign, getUnits, type Lesson } from "@/lib/content";
 import { useProgress } from "@/lib/progress";
 
 type LessonState = "completed" | "current" | "locked";
@@ -83,9 +83,55 @@ function LessonNode({ lesson, number, state }: { lesson: Lesson; number: number;
   );
 }
 
+function PracticeCard({ count }: { count: number }) {
+  const content = (
+    <>
+      <span
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${count > 0 ? "bg-peach-light text-peach-dark" : "bg-sand text-muted"}`}
+      >
+        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" aria-hidden="true">
+          <path
+            d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      <span className="flex-1">
+        <span className="block font-extrabold text-ink">Practice mistakes</span>
+        <span className="block text-sm text-muted">
+          {count > 0
+            ? `${count} ${count === 1 ? "sign" : "signs"} to review`
+            : "No mistakes to review"}
+        </span>
+      </span>
+      {count > 0 && (
+        <svg viewBox="0 0 24 24" className="h-6 w-6 text-muted" fill="none" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" />
+        </svg>
+      )}
+    </>
+  );
+
+  const card = "flex items-center gap-4 rounded-3xl bg-white p-4 ring-1 ring-sand";
+  if (count === 0) return <div className={card}>{content}</div>;
+  return (
+    <Link
+      href="/practice"
+      className={`${card} shadow-[0_4px_0_0_var(--color-sand)] transition hover:bg-cream active:translate-y-1 active:shadow-none`}
+    >
+      {content}
+    </Link>
+  );
+}
+
 export default function LessonPath() {
   const units = getUnits();
-  const { completedLessons } = useProgress();
+  const { completedLessons, mistakes } = useProgress();
+  // Ignore saved mistakes for signs that have since been removed from data/signs.json.
+  const mistakeCount = mistakes.filter((id) => getSign(id) !== undefined).length;
 
   // Lessons unlock in order across all units: the first unfinished one is current.
   const currentId = units
@@ -99,6 +145,7 @@ export default function LessonPath() {
 
   return (
     <>
+      <PracticeCard count={mistakeCount} />
       {units.map((unit, unitIndex) => (
         <section key={unit.id}>
           <div className="rounded-3xl bg-sage-light px-6 py-5">

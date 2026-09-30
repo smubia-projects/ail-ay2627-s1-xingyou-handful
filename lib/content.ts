@@ -33,10 +33,6 @@ for (const unit of units) {
   }
 }
 
-export function getAllSigns(): Sign[] {
-  return signs;
-}
-
 export function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -57,15 +53,14 @@ export function pickOptions(answer: Sign, count = 4): Sign[] {
   return shuffle([answer, ...wrong.slice(0, count - 1)]);
 }
 
-// Two multiple-choice exercises per sign, plus match pairs for lessons with 3+ signs, in random order.
-export function buildLessonExercises(lesson: Lesson): Exercise[] {
-  const lessonSigns = getLessonSigns(lesson);
-  const exercises: Exercise[] = lessonSigns.flatMap((sign): Exercise[] => [
+// Two multiple-choice exercises per sign, plus match pairs for 3+ signs, in random order.
+export function buildExercises(practiceSigns: Sign[]): Exercise[] {
+  const exercises: Exercise[] = practiceSigns.flatMap((sign): Exercise[] => [
     { type: "meaning", sign, options: pickOptions(sign) },
     { type: "pick-sign", sign, options: pickOptions(sign) },
   ]);
-  if (lessonSigns.length >= 3) {
-    exercises.push({ type: "match", signs: shuffle(lessonSigns), words: shuffle(lessonSigns) });
+  if (practiceSigns.length >= 3) {
+    exercises.push({ type: "match", signs: shuffle(practiceSigns), words: shuffle(practiceSigns) });
   }
   return shuffle(exercises);
 }

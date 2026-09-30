@@ -9,6 +9,8 @@ export type Exercise =
   | { type: "match"; signs: Sign[]; words: Sign[] };
 
 type Status = "answering" | "correct" | "wrong";
+// Reports whether the exercise was right first time, and which signs the learner got wrong.
+export type OnDone = (correct: boolean, missedSignIds: string[]) => void;
 type ChoiceState = "idle" | "selected" | "correct" | "wrong" | "done";
 
 const CHOICE_STYLES: Record<ChoiceState, string> = {
@@ -146,7 +148,7 @@ function MeaningExercise({
 }: {
   sign: Sign;
   options: Sign[];
-  onDone: (correct: boolean) => void;
+  onDone: OnDone;
 }) {
   const { selected, setSelected, status, stateOf, check } = useMultipleChoice(sign.id);
 
@@ -175,7 +177,7 @@ function MeaningExercise({
         detail={status === "wrong" ? `Correct answer: ${sign.word}` : undefined}
         canCheck={selected !== null}
         onCheck={check}
-        onContinue={() => onDone(status === "correct")}
+        onContinue={() => onDone(status === "correct", status === "correct" ? [] : [sign.id])}
       />
     </>
   );
@@ -188,7 +190,7 @@ function PickSignExercise({
 }: {
   sign: Sign;
   options: Sign[];
-  onDone: (correct: boolean) => void;
+  onDone: OnDone;
 }) {
   const { selected, setSelected, status, stateOf, check } = useMultipleChoice(sign.id);
 
@@ -215,7 +217,7 @@ function PickSignExercise({
         detail={status === "wrong" ? "The correct sign is highlighted in green" : undefined}
         canCheck={selected !== null}
         onCheck={check}
-        onContinue={() => onDone(status === "correct")}
+        onContinue={() => onDone(status === "correct", status === "correct" ? [] : [sign.id])}
       />
     </>
   );
@@ -228,13 +230,14 @@ function MatchExercise({
 }: {
   signs: Sign[];
   words: Sign[];
-  onDone: (correct: boolean) => void;
+  onDone: OnDone;
 }) {
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [selectedSign, setSelectedSign] = useState<string | null>(null);
   const [matched, setMatched] = useState<string[]>([]);
   const [wrongPair, setWrongPair] = useState<{ word: string; sign: string } | null>(null);
   const [mistakes, setMistakes] = useState(0);
+  const [missed, setMissed] = useState<string[]>([]);
 
   const done = matched.length === signs.length;
 
@@ -245,6 +248,8 @@ function MatchExercise({
       setMatched((ids) => [...ids, wordId]);
     } else {
       setMistakes((count) => count + 1);
+      // The sign whose word was paired wrongly is the one the learner doesn't know yet.
+      setMissed((ids) => (ids.includes(wordId) ? ids : [...ids, wordId]));
       setWrongPair({ word: wordId, sign: signId });
       setTimeout(() => setWrongPair(null), 500);
     }
@@ -310,7 +315,7 @@ function MatchExercise({
         detail={
           done && mistakes > 0 ? `${mistakes} wrong ${mistakes === 1 ? "try" : "tries"}` : undefined
         }
-        onContinue={() => onDone(mistakes === 0)}
+        onContinue={() => onDone(mistakes === 0, missed)}
       />
     </>
   );
@@ -322,7 +327,7 @@ export function ExerciseView({
   onDone,
 }: {
   exercise: Exercise;
-  onDone: (correct: boolean) => void;
+  onDone: OnDone;
 }) {
   if (exercise.type === "meaning") {
     return <MeaningExercise sign={exercise.sign} options={exercise.options} onDone={onDone} />;

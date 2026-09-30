@@ -6,10 +6,17 @@ export type Progress = {
   xp: number;
   // lastDay is the learner's local date ("2026-09-30") of the last finished lesson.
   streak: { count: number; lastDay: string | null };
+  // Sign IDs the learner got wrong, most recent first.
+  mistakes: string[];
 };
 
 const STORAGE_KEY = "signpath:progress";
-const EMPTY: Progress = { completedLessons: [], xp: 0, streak: { count: 0, lastDay: null } };
+const EMPTY: Progress = {
+  completedLessons: [],
+  xp: 0,
+  streak: { count: 0, lastDay: null },
+  mistakes: [],
+};
 
 const listeners = new Set<() => void>();
 let cachedRaw: string | null = null;
@@ -23,15 +30,16 @@ function parseProgress(raw: string | null): Progress {
   } catch {
     return EMPTY;
   }
-  const completedLessons = Array.isArray(parsed?.completedLessons)
-    ? parsed.completedLessons.filter((id: unknown) => typeof id === "string")
-    : [];
+  const stringList = (value: unknown): string[] =>
+    Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  const completedLessons = stringList(parsed?.completedLessons);
+  const mistakes = stringList(parsed?.mistakes);
   const xp = Number.isFinite(parsed?.xp) && parsed.xp > 0 ? parsed.xp : 0;
   const streak =
     Number.isInteger(parsed?.streak?.count) && typeof parsed?.streak?.lastDay === "string"
       ? { count: parsed.streak.count, lastDay: parsed.streak.lastDay }
       : EMPTY.streak;
-  return { completedLessons, xp, streak };
+  return { completedLessons, xp, streak, mistakes };
 }
 
 function readProgress(): Progress {
@@ -99,16 +107,36 @@ export function nextStreak(streak: Progress["streak"], today = dayKey()): Progre
   return { count: continues ? streak.count + 1 : 1, lastDay: today };
 }
 
-// Saves a finished lesson and its XP. Returns the new streak and whether it went up today.
-export function recordLessonComplete(lessonId: string, xpEarned: number) {
+// Saves a finished lesson (or practice session, when lessonId is null) and its XP.
+// Returns the new streak and whether it went up today.
+export function recordLessonComplete(lessonId: string | null, xpEarned: number) {
   const progress = readProgress();
   const streak = nextStreak(progress.streak);
   writeProgress({
-    completedLessons: progress.completedLessons.includes(lessonId)
-      ? progress.completedLessons
-      : [...progress.completedLessons, lessonId],
+    ...progress,
+    completedLessons:
+      lessonId === null || progress.completedLessons.includes(lessonId)
+        ? progress.completedLessons
+        : [...progress.completedLessons, lessonId],
     xp: progress.xp + xpEarned,
     streak,
   });
   return { streak: streak.count, increasedToday: streak.lastDay !== progress.streak.lastDay };
+}
+
+// Adds signs to the mistakes list, moving them to the front if they're already there.
+export function recordMistakes(signIds: string[]) {
+  if (signIds.length === 0) return;
+  const progress = readProgress();
+  const fresh = [...new Set(signIds)];
+  writeProgress({
+    ...progress,
+    mistakes: [...fresh, ...progress.mistakes.filter((id) => !fresh.includes(id))],
+  });
+}
+
+export function clearMistakes(signIds: string[]) {
+  const progress = readProgress();
+  const mistakes = progress.mistakes.filter((id) => !signIds.includes(id));
+  if (mistakes.length !== progress.mistakes.length) writeProgress({ ...progress, mistakes });
 }

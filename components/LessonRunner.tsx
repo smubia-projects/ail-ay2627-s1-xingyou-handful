@@ -4,13 +4,17 @@ import Link from "next/link";
 import { useState } from "react";
 import { BottomBar, ExerciseView, PRIMARY_BUTTON, type Exercise } from "@/components/Exercises";
 import SignCard, { type Sign } from "@/components/SignCard";
-import { buildLessonExercises, reshuffleExercise, type Lesson } from "@/lib/content";
-import { recordLessonComplete } from "@/lib/progress";
+import { buildExercises, reshuffleExercise } from "@/lib/content";
+import { clearMistakes, recordLessonComplete, recordMistakes } from "@/lib/progress";
 
 const XP_PER_FIRST_TRY = 5;
 const XP_FOR_FINISHING = 10;
 
 type QueueItem = { exercise: Exercise; retry: boolean };
+
+function toQueue(exercises: Exercise[]): QueueItem[] {
+  return exercises.map((exercise) => ({ exercise, retry: false }));
+}
 
 function xpFor(firstTryCorrect: number) {
   return firstTryCorrect * XP_PER_FIRST_TRY + XP_FOR_FINISHING;
@@ -54,13 +58,29 @@ function Stat({
   );
 }
 
-export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs: Sign[] }) {
-  const [phase, setPhase] = useState<"intro" | "exercises" | "complete">("intro");
+// Runs a lesson, or a practice session when lessonId is null. Practice skips the intro cards:
+// it only mounts in the browser after a click, so building its random exercises up front is safe.
+export default function LessonRunner({
+  lessonId,
+  title,
+  signs,
+}: {
+  lessonId: string | null;
+  title: string;
+  signs: Sign[];
+}) {
+  const isPractice = lessonId === null;
+  const [phase, setPhase] = useState<"intro" | "exercises" | "complete">(
+    isPractice ? "exercises" : "intro",
+  );
   const [introIndex, setIntroIndex] = useState(0);
-  const [queue, setQueue] = useState<QueueItem[]>([]);
+  const [queue, setQueue] = useState<QueueItem[]>(() =>
+    isPractice ? toQueue(buildExercises(signs)) : [],
+  );
   const [position, setPosition] = useState(0);
-  const [total, setTotal] = useState(0);
   const [completed, setCompleted] = useState(0);
+  const [missedThisSession, setMissedThisSession] = useState<string[]>([]);
+  const [clearedCount, setClearedCount] = useState(0);
   const [firstTryCorrect, setFirstTryCorrect] = useState(0);
   const [streak, setStreak] = useState({ count: 0, increasedToday: false });
 
@@ -70,16 +90,19 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
       return;
     }
     // Built on click, not during render, so the random order can't differ between server and browser.
-    const exercises = buildLessonExercises(lesson);
-    setQueue(exercises.map((exercise) => ({ exercise, retry: false })));
-    setTotal(exercises.length);
+    setQueue(toQueue(buildExercises(signs)));
     setPhase("exercises");
   }
 
-  function finishExercise(correct: boolean) {
+  function finishExercise(correct: boolean, missedSignIds: string[]) {
     const item = queue[position];
     const firstTry = correct && !item.retry;
     if (firstTry) setFirstTryCorrect((count) => count + 1);
+
+    // Saved straight away, so mistakes count even if the learner quits mid-lesson.
+    recordMistakes(missedSignIds);
+    const missed = [...missedThisSession, ...missedSignIds];
+    setMissedThisSession(missed);
 
     // Missed multiple-choice questions come back at the end until answered correctly.
     // Match pairs is already finished once every pair is matched.
@@ -94,12 +117,19 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
       setPosition(position + 1);
     } else {
       const xpEarned = xpFor(firstTryCorrect + (firstTry ? 1 : 0));
-      const result = recordLessonComplete(lesson.id, xpEarned);
+      const result = recordLessonComplete(lessonId, xpEarned);
+      // A practiced sign leaves the mistakes list once all its questions were right first time.
+      if (isPractice) {
+        const cleared = signs.filter((sign) => !missed.includes(sign.id)).map((sign) => sign.id);
+        clearMistakes(cleared);
+        setClearedCount(cleared.length);
+      }
       setStreak({ count: result.streak, increasedToday: result.increasedToday });
       setPhase("complete");
     }
   }
 
+  const total = queue.filter((item) => !item.retry).length;
   const progress = phase === "complete" ? 1 : total > 0 ? completed / total : 0;
   const xp = xpFor(firstTryCorrect);
   const accuracy = total > 0 ? Math.round((firstTryCorrect / total) * 100) : 0;
@@ -129,7 +159,7 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
         {phase === "intro" && (
           <>
             <p className="mb-4 text-sm font-extrabold uppercase tracking-widest text-muted">
-              {lesson.title} · {introIndex + 1} of {signs.length}
+              {title} · {introIndex + 1} of {signs.length}
             </p>
             <SignCard key={signs[introIndex].id} sign={signs[introIndex]} />
             <BottomBar>
@@ -164,8 +194,14 @@ export default function LessonRunner({ lesson, signs }: { lesson: Lesson; signs:
                 />
               </svg>
             </span>
-            <h1 className="mt-8 text-3xl font-extrabold text-ink">Lesson complete!</h1>
-            <p className="mt-1 text-muted">{lesson.title}</p>
+            <h1 className="mt-8 text-3xl font-extrabold text-ink">
+              {isPractice ? "Practice complete!" : "Lesson complete!"}
+            </h1>
+            <p className="mt-1 text-muted">
+              {isPractice
+                ? `${clearedCount} of ${signs.length} ${signs.length === 1 ? "sign" : "signs"} cleared from your mistakes`
+                : title}
+            </p>
             <div className="mt-8 grid w-full grid-cols-3 gap-3">
               <Stat label="XP earned" value={`+${xp}`} className="bg-peach-light" />
               <Stat label="First try" value={`${accuracy}%`} className="bg-sage-light" />
