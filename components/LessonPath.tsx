@@ -92,23 +92,19 @@ function LessonNode({
 
   const content = (
     <>
-      <span className="relative">
-        {state === "current" && (
-          <span className="absolute -top-12 left-1/2 -translate-x-1/2 motion-safe:animate-bob">
-            <span
-              className={`block rounded-xl bg-white px-3 py-1.5 text-sm font-extrabold uppercase tracking-wide shadow-sm ring-2 ring-sand ${theme.label}`}
-            >
-              Start
-            </span>
-          </span>
-        )}
+      {state === "current" && (
+        <span
+          className={`mb-4 rounded-xl bg-white px-3 py-1.5 text-sm font-extrabold uppercase tracking-wide shadow-sm ring-2 ring-sand motion-safe:animate-bob ${theme.label}`}
+        >
+          Start
+        </span>
+      )}
         <span
           className={`flex items-center justify-center rounded-full text-2xl font-extrabold ring-8 transition ${circleStyle(state, theme)} ${
             state === "locked" ? "" : "group-hover:brightness-105 group-active:translate-y-1 group-active:shadow-none"
           }`}
         >
-          {state === "completed" ? <CheckIcon /> : state === "locked" ? <LockIcon /> : number}
-        </span>
+        {state === "completed" ? <CheckIcon /> : state === "locked" ? <LockIcon /> : number}
       </span>
       <h2 className={`mt-4 font-extrabold ${state === "locked" ? "text-muted" : "text-ink"}`}>
         {lesson.title}
@@ -196,6 +192,7 @@ export default function LessonPath() {
       <PracticeCard count={mistakeCount} />
       {units.map((unit, unitIndex) => {
         const theme = UNIT_THEMES[unitIndex % UNIT_THEMES.length];
+        const done = unit.lessons.filter((lesson) => completedLessons.includes(lesson.id)).length;
         return (
           <section key={unit.id}>
             <div className={`rounded-3xl px-6 py-5 ${theme.banner}`}>
@@ -207,9 +204,20 @@ export default function LessonPath() {
                 {unit.lessons.length} lessons ·{" "}
                 {unit.lessons.reduce((total, lesson) => total + lesson.signIds.length, 0)} signs
               </p>
+              <div className="mt-3 flex items-center gap-3">
+                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/80">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${theme.dot}`}
+                    style={{ width: `${(done / unit.lessons.length) * 100}%` }}
+                  />
+                </div>
+                <span className="text-xs font-extrabold text-ink">
+                  {done === unit.lessons.length ? "Complete" : `${done}/${unit.lessons.length}`}
+                </span>
+              </div>
             </div>
   
-            <ol className="mt-16 flex flex-col items-center gap-5">
+            <ol className="mt-10 flex flex-col items-center gap-5">
               {unit.lessons.map((lesson, lessonIndex) => {
                 const state = stateOf(lesson.id);
                 const isLast = lessonIndex === unit.lessons.length - 1;

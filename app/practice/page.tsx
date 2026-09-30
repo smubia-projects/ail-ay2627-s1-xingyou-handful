@@ -42,7 +42,18 @@ export default function PracticePage() {
         </svg>
       </Link>
 
-      <h1 className="mt-8 text-3xl font-extrabold text-ink">Practice mistakes</h1>
+      <span className="mt-8 flex h-16 w-16 items-center justify-center rounded-3xl bg-peach-light text-peach-dark">
+        <svg viewBox="0 0 24 24" className="h-9 w-9" fill="none" aria-hidden="true">
+          <path
+            d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      <h1 className="mt-5 text-3xl font-extrabold text-ink">Practice mistakes</h1>
 
       {!loaded ? null : signs.length === 0 ? (
         <>

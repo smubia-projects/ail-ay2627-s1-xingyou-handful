@@ -14,13 +14,21 @@ export type Sign = {
   reviewed?: boolean;
 };
 
+export const LOCATION_LABELS: Record<SignLocation, string> = {
+  forehead: "Forehead",
+  mouth: "Mouth",
+  chin: "Chin",
+  chest: "Chest",
+  space: "In front of the body",
+};
+
 // Dot position for each location, in the body diagram's 200x200 viewBox.
 const LOCATION_POINTS: Record<SignLocation, { x: number; y: number }> = {
   forehead: { x: 100, y: 38 },
   mouth: { x: 100, y: 72 },
   chin: { x: 100, y: 86 },
-  chest: { x: 100, y: 150 },
-  space: { x: 165, y: 110 },
+  chest: { x: 100, y: 140 },
+  space: { x: 100, y: 176 },
 };
 
 export function BodyDiagram({
@@ -36,7 +44,7 @@ export function BodyDiagram({
       viewBox="0 0 200 200"
       className={className}
       role="img"
-      aria-label={`Body outline with the sign location at the ${location}`}
+      aria-label={`Body outline marking the sign location: ${LOCATION_LABELS[location].toLowerCase()}`}
     >
       <g className="fill-none stroke-sand-dark" strokeWidth={4} strokeLinecap="round">
         {/* Head */}
@@ -46,7 +54,20 @@ export function BodyDiagram({
         {/* Shoulders and torso */}
         <path d="M88 104 C60 106 40 112 30 130 V200 M112 104 C140 106 160 112 170 130 V200" />
       </g>
-      <circle cx={dot.x} cy={dot.y} r={16} className="fill-peach/35" />
+      {location === "space" ? (
+        // Signing space in front of the body: a dashed zone rather than a spot on the body.
+        <ellipse
+          cx={dot.x}
+          cy={dot.y}
+          rx={52}
+          ry={20}
+          strokeWidth={3}
+          strokeDasharray="6 6"
+          className="fill-peach/20 stroke-peach-dark"
+        />
+      ) : (
+        <circle cx={dot.x} cy={dot.y} r={16} className="fill-peach/35" />
+      )}
       <circle cx={dot.x} cy={dot.y} r={8} className="fill-peach-dark" />
     </svg>
   );
@@ -82,8 +103,8 @@ export default function SignCard({ sign }: { sign: Sign }) {
           preload="metadata"
         />
       ) : (
-        <div className="mt-5 flex aspect-video flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-sand-dark bg-cream text-sm font-semibold text-muted">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
+        <div className="mt-5 flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-sand-dark bg-cream py-4 text-sm font-semibold text-muted">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
             <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 fill-sage" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
@@ -99,7 +120,7 @@ export default function SignCard({ sign }: { sign: Sign }) {
         <dl className="space-y-3">
           <Detail label="Handshape">{sign.handshape}</Detail>
           <Detail label="Location">
-            <span className="capitalize">{sign.location}</span>
+            {LOCATION_LABELS[sign.location]}
           </Detail>
           <Detail label="Movement">{sign.movement}</Detail>
         </dl>

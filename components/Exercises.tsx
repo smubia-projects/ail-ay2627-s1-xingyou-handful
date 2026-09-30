@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BodyDiagram, type Sign } from "@/components/SignCard";
+import { BodyDiagram, LOCATION_LABELS, type Sign } from "@/components/SignCard";
 
 export type Exercise =
   | { type: "meaning"; sign: Sign; options: Sign[] }
@@ -204,7 +204,7 @@ function PickSignExercise({
             type="button"
             disabled={status !== "answering"}
             onClick={() => setSelected(option.id)}
-            aria-label={`Option ${index + 1}: ${option.handshape} at the ${option.location}`}
+            aria-label={`Option ${index + 1}: ${option.handshape}, ${LOCATION_LABELS[option.location].toLowerCase()}`}
             className={choiceClass(stateOf(option.id))}
           >
             <SignPicture sign={option} size="small" />
@@ -298,7 +298,7 @@ function MatchExercise({
               type="button"
               disabled={matched.includes(sign.id) || wrongPair !== null}
               onClick={() => pickSign(sign.id)}
-              aria-label={`Sign ${index + 1}: ${sign.handshape} at the ${sign.location}`}
+              aria-label={`Sign ${index + 1}: ${sign.handshape}, ${LOCATION_LABELS[sign.location].toLowerCase()}`}
               className={choiceClass(
                 stateOf(sign.id, selectedSign, wrongPair?.sign),
                 wrongPair?.sign === sign.id ? "motion-safe:animate-shake" : "",
