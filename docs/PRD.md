@@ -7,7 +7,10 @@ Learning ASL means hopping between YouTube videos with no structure, no repetiti
 One place to learn ASL in short Duolingo-style lessons.
 
 ## Not in scope for now
-Live camera correction, accounts, backend, leaderboards, full ASL grammar.
+Accounts, backend, leaderboards, full ASL grammar.
+
+## Camera check (added 2026-10-01)
+Learners can sign to their camera, or pick a video file, and get practice feedback. It runs entirely in the browser with hand tracking; the video never leaves the device. It is feedback to practise with, not an authoritative grade: it never blocks progress, and self-rating ("Got it" / "Not yet") always remains available. Starts with fingerspelled letters (still handshapes), then word signs.
 
 ## Screens
 1. Path: a vertical skill map of units and lessons. Lessons unlock in order; states are locked, current, completed.
