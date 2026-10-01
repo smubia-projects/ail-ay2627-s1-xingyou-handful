@@ -119,8 +119,7 @@ const PAGE_HELPERS = `
   window.__solve = async (wrong) => {
     const h = __heading();
     if (h === 'What does this sign mean?') {
-      const body = document.body.innerText;
-      const sign = __SIGNS.filter(s => body.includes(s.movement) && body.includes(s.handshape)).sort((a, b) => b.handshape.length - a.handshape.length)[0];
+      const sign = __SIGNS.find(s => s.id === document.querySelector('[data-sign]').dataset.sign);
       const opts = [...document.querySelectorAll('.grid button')];
       opts.find(b => wrong ? b.innerText.trim() !== sign.word : b.innerText.trim() === sign.word).click();
       await __sleep(100);
@@ -129,6 +128,9 @@ const PAGE_HELPERS = `
     if (h.startsWith('Which is the sign for')) {
       const sign = __byWord(h.match(/“(.+)”/)[1]);
       const opts = [...document.querySelectorAll('.grid button')];
+      // Choices must all be videos or all be drawings; a mix gives the answer away.
+      const withVideo = opts.filter(b => b.querySelector('video')).length;
+      if (withVideo !== 0 && withVideo !== opts.length) window.__mixedMedia = true;
       opts.find(b => { const hit = b.getAttribute('aria-label').endsWith(__signLabel(sign)); return wrong ? !hit : hit; }).click();
       await __sleep(100);
       return 'pick:' + sign.id;
@@ -330,7 +332,7 @@ check("I4 no sideways scrolling", !(await ev("document.documentElement.scrollWid
 await go("/lesson/alphabet-1");
 t = await text();
 check("J1 four letters per lesson", /new sign 1 of 4/i.test(t));
-check("J2 sign card fits a phone screen", await ev(`(() => { const tip=[...document.querySelectorAll('p')].find(p=>p.innerText.includes('Memory tip')); const bar=document.querySelector('[data-primary]'); return tip.getBoundingClientRect().bottom <= bar.getBoundingClientRect().top + 4; })()`));
+check("J2 sign card fits a phone screen", await ev(`(() => { const tip=[...document.querySelectorAll('p')].find(p=>p.innerText.includes('Memory tip')).parentElement; const bar=document.querySelector('[data-primary]').closest('.fixed'); return tip.getBoundingClientRect().bottom <= bar.getBoundingClientRect().top + 2; })()`));
 r = await play();
 t = await text();
 const spelled = r.log.filter((entry) => entry.startsWith("spell:")).map((entry) => entry.slice(6));
@@ -342,6 +344,24 @@ await go("/lesson/questions-1");
 t = await text();
 check("K1 question signs show a Face line", t.includes("Face") && t.includes("Eyebrows down"));
 await shot("K-face");
+
+// ---------- V. Sign videos ----------
+await go("/lesson/greetings-1");
+await sleep(800);
+const video = await ev(`(() => { const v=document.querySelector('video'); const a=document.querySelector('figcaption a'); return v && { width: v.videoWidth, playing: !v.paused, muted: v.muted, loop: v.loop, controls: v.controls, credit: a?.innerText, href: a?.href, target: a?.target }; })()`);
+check("V1 sign card plays a silent looping video", video?.width > 0 && video.playing && video.muted && video.loop && !video.controls, JSON.stringify(video));
+check("V2 video credits ASL Signbank, linking to the entry in a new tab", video?.credit === "ASL Signbank" && /aslsignbank\.com\/dictionary\/gloss\/\d+/.test(video.href) && video.target === "_blank", video?.href);
+await ev("document.querySelector('video').click()");
+await sleep(300);
+check("V3 tapping the video pauses it", await ev("document.querySelector('video').paused"));
+check("V4 card with a video still fits a phone screen", await ev(`(() => { const tip=[...document.querySelectorAll('p')].find(p=>p.innerText.includes('Memory tip')).parentElement; const bar=document.querySelector('[data-primary]').closest('.fixed'); return tip.getBoundingClientRect().bottom <= bar.getBoundingClientRect().top + 2; })()`));
+await shot("V-video-card");
+await clickText("Continue");
+await sleep(600);
+check("V5 quiz question shows the video credit as text, not a link to the answer", await ev(`!!document.querySelector('video') && !!document.querySelector('figcaption') && !document.querySelector('figcaption a')`));
+await go("/lesson/greetings-1");
+r = await play();
+check("V6 lesson with videos completes, and answer choices never mix videos with drawings", (await text()).includes("Lesson complete!") && !(await ev("window.__mixedMedia === true")), r.order.join(","));
 
 // ---------- L. Settings ----------
 await go("/settings");

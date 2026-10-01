@@ -29,6 +29,9 @@ for (const sign of signs) {
   if (sign.motion && !(MOTIONS as readonly string[]).includes(sign.motion)) {
     throw new Error(`Sign "${sign.id}" has unknown motion "${sign.motion}" (see MOTIONS in SignCard)`);
   }
+  if (sign.video && !(sign.video.startsWith("/videos/") && sign.videoCredit)) {
+    throw new Error(`Sign "${sign.id}": a video must be in /videos/ and have a videoCredit`);
+  }
   if (sign.handshapeImage && !/^[A-Z1-9]$/.test(sign.handshapeImage)) {
     throw new Error(`Sign "${sign.id}" has handshapeImage "${sign.handshapeImage}"; use A-Z or 1-9`);
   }

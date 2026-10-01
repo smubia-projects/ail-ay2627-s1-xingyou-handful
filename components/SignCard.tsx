@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SignVideo from "@/components/SignVideo";
 
 export type SignLocation = "forehead" | "chin" | "chest" | "mouth" | "space";
 
@@ -27,8 +28,9 @@ export type Sign = {
   location: SignLocation;
   movement: string;
   tip: string;
-  // Optional until filmed. See docs/VIDEO_GUIDELINES.md.
+  // Optional. A file in public/videos, plus who to credit for it (see docs/CREDITS.md).
   video?: string;
+  videoCredit?: { label: string; url: string };
   signer?: string;
   // True once a Deaf ASL signer has checked the description (required before release).
   reviewed?: boolean;
@@ -222,17 +224,12 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
       </span>
       <h2 className="mt-2 font-display text-4xl font-bold text-ink">{sign.word}</h2>
 
-      {/* Every video shows in the same 16:9 frame, never cropped. */}
       {sign.video ? (
-        <video
-          src={sign.video}
-          aria-label={`Video of the sign for ${sign.word}`}
-          className="mt-4 aspect-video w-full rounded-2xl bg-surface object-contain"
-          controls
-          loop
-          muted
-          playsInline
-          preload="metadata"
+        <SignVideo
+          sign={sign}
+          label={`Video of the sign for ${sign.word}`}
+          credit="link"
+          className="mt-4"
         />
       ) : (
         <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-line-strong bg-cream py-2 text-xs font-semibold text-muted">
@@ -248,12 +245,16 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
       <div className="mt-3 flex items-end justify-center gap-3 rounded-2xl bg-cream p-3">
         {sign.handshapeImage && (
           <figure className="flex flex-col items-center gap-1">
-            <HandshapeImage sign={sign} className="h-32 w-24" />
+            <HandshapeImage sign={sign} className={sign.video ? "h-20 w-16" : "h-32 w-24"} />
             <figcaption className="text-xs font-semibold text-muted">Handshape</figcaption>
           </figure>
         )}
         <figure className="flex flex-col items-center gap-1">
-          <BodyDiagram location={sign.location} motion={sign.motion} className="h-32 w-32" />
+          <BodyDiagram
+            location={sign.location}
+            motion={sign.motion}
+            className={sign.video ? "h-20 w-20" : "h-32 w-32"}
+          />
           <figcaption className="text-xs font-semibold text-muted">
             {LOCATION_LABELS[sign.location]}
             {sign.motion ? " · how it moves" : ""}
@@ -263,7 +264,8 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
 
       <div className="mt-4">
         <dl className="space-y-2">
-          <Detail label="Handshape">{sign.handshape}</Detail>
+          {/* With a video and a handshape drawing on the card, the wording would only repeat them. */}
+          {!(sign.video && sign.handshapeImage) && <Detail label="Handshape">{sign.handshape}</Detail>}
           <Detail label="Movement">{sign.movement}</Detail>
           {sign.face && <Detail label="Face">{sign.face}</Detail>}
         </dl>

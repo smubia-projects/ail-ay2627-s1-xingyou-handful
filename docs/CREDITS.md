@@ -1,5 +1,22 @@
 # Credits
 
+## Sign videos (`public/videos/`)
+
+Sign videos are from **ASL Signbank** (ASL Signbank, 2026), used unaltered.
+
+> Hochgesang, J. A., Crasborn, O., & Lillo-Martin, D. (2026 (2017-2026)). ASL Signbank.
+> https://aslsignbank.com. https://doi.org/10.6084/m9.figshare.9741788
+
+Licensed under **CC BY-NC-SA 4.0** (https://creativecommons.org/licenses/by-nc-sa/4.0/).
+What that means for Handful:
+- **Non-commercial only.** While Handful uses these videos it must not make money: no ads, no
+  paid version, no selling access.
+- **Credit and a direct link.** Each video in the app links to its ASL Signbank entry (the
+  `videoCredit` field in `data/signs.json`), and Settings → About shows the full reference.
+- **Share-alike.** If a video is ever edited, the edited version must stay under the same license.
+
+Conditions of use: https://aslsignbank.com/about/conditions/
+
 ## Handshape drawings (`public/handshapes/`)
 
 **Letters A–Z** (`letter-a.svg` … `letter-z.svg`)

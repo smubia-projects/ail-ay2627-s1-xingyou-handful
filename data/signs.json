@@ -8,7 +8,12 @@
     "tip": "A friendly salute",
     "reviewed": false,
     "handshapeImage": "B",
-    "motion": "outward"
+    "motion": "outward",
+    "video": "/videos/hello.mp4",
+    "videoCredit": {
+      "label": "ASL Signbank",
+      "url": "https://aslsignbank.com/dictionary/gloss/482/"
+    }
   },
   {
     "id": "thank-you",
@@ -19,7 +24,12 @@
     "tip": "Sending thanks from your lips",
     "reviewed": false,
     "handshapeImage": "B",
-    "motion": "forward-down"
+    "motion": "forward-down",
+    "video": "/videos/thank-you.mp4",
+    "videoCredit": {
+      "label": "ASL Signbank",
+      "url": "https://aslsignbank.com/dictionary/gloss/1198/"
+    }
   },
   {
     "id": "please",
@@ -30,7 +40,12 @@
     "tip": "Warming your heart to ask nicely",
     "reviewed": false,
     "handshapeImage": "B",
-    "motion": "circle"
+    "motion": "circle",
+    "video": "/videos/please.mp4",
+    "videoCredit": {
+      "label": "ASL Signbank",
+      "url": "https://aslsignbank.com/dictionary/gloss/527/"
+    }
   },
   {
     "id": "sorry",
@@ -42,7 +57,12 @@
     "reviewed": false,
     "handshapeImage": "A",
     "motion": "circle",
-    "face": "A sorry, apologetic look"
+    "face": "A sorry, apologetic look",
+    "video": "/videos/sorry.mp4",
+    "videoCredit": {
+      "label": "ASL Signbank",
+      "url": "https://aslsignbank.com/dictionary/gloss/566/"
+    }
   },
   {
     "id": "goodbye",
@@ -53,7 +73,12 @@
     "tip": "A wave goodbye",
     "reviewed": false,
     "handshapeImage": "B",
-    "motion": "wiggle"
+    "motion": "wiggle",
+    "video": "/videos/goodbye.mp4",
+    "videoCredit": {
+      "label": "ASL Signbank",
+      "url": "https://aslsignbank.com/dictionary/gloss/425/"
+    }
   },
   {
     "id": "yes",

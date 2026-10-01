@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BodyDiagram, HandshapeImage, LOCATION_LABELS, type Sign } from "@/components/SignCard";
+import SignVideo from "@/components/SignVideo";
 
 export type Exercise =
   | { type: "meaning"; sign: Sign; options: Sign[] }
@@ -29,22 +30,29 @@ function choiceClass(state: ChoiceState, extra = "") {
 }
 
 // A sign as a looping video if one exists, otherwise its diagram and handshape.
-function SignPicture({ sign, size }: { sign: Sign; size: "large" | "small" }) {
-  if (sign.video) {
+// video=false forces the drawing: answer choices must all look alike, or the one video among
+// drawings gives the answer away. credit="text" is for questions (the link would name the answer).
+// data-sign lets the automated tests tell which sign is showing; learners never see it.
+function SignPicture({
+  sign,
+  size,
+  video = true,
+  credit = "none",
+}: {
+  sign: Sign;
+  size: "large" | "small";
+  video?: boolean;
+  credit?: "link" | "text" | "none";
+}) {
+  if (sign.video && video) {
     return (
-      <video
-        src={sign.video}
-        className="aspect-video w-full rounded-xl bg-surface object-contain"
-        autoPlay
-        loop
-        muted
-        playsInline
-        aria-hidden="true"
-      />
+      <div data-sign={sign.id} className="w-full">
+        <SignVideo sign={sign} label="Video of a sign" credit={credit} interactive={size === "large"} />
+      </div>
     );
   }
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex flex-col items-center gap-1" data-sign={sign.id}>
       <div className="flex items-end justify-center gap-2">
         <HandshapeImage sign={sign} className={size === "large" ? "h-36 w-24" : "h-16 w-12"} />
         <BodyDiagram
@@ -192,7 +200,7 @@ function MeaningExercise({
     <>
       <Prompt>What does this sign mean?</Prompt>
       <div className="mt-6 rounded-3xl bg-fennel p-5">
-        <SignPicture sign={sign} size="large" />
+        <SignPicture sign={sign} size="large" credit="text" />
       </div>
       <div className="mt-6 grid grid-cols-2 gap-3">
         {options.map((option) => (
@@ -245,7 +253,7 @@ function PickSignExercise({
             aria-label={`Option ${index + 1}: ${option.handshape}, ${LOCATION_LABELS[option.location].toLowerCase()}`}
             className={choiceClass(stateOf(option.id))}
           >
-            <SignPicture sign={option} size="small" />
+            <SignPicture sign={option} size="small" video={options.every((o) => o.video)} />
           </button>
         ))}
       </div>
@@ -344,7 +352,7 @@ function MatchExercise({
                 wrongPair?.sign === sign.id ? "motion-safe:animate-shake" : "",
               )}
             >
-              <SignPicture sign={sign} size="small" />
+              <SignPicture sign={sign} size="small" video={signs.every((s) => s.video)} />
             </button>
           ))}
         </div>
@@ -434,7 +442,7 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
       </p>
       {revealed ? (
         <div className="mt-6 rounded-3xl bg-fennel p-5">
-          <SignPicture sign={sign} size="large" />
+          <SignPicture sign={sign} size="large" credit="link" />
         </div>
       ) : (
         <div className="mt-6 flex h-56 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-line-strong text-center">

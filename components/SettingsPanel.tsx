@@ -234,7 +234,28 @@ export default function SettingsPanel() {
       <Section title="About">
         <p className="text-sm text-muted">
           Handful teaches American Sign Language (ASL), a small handful of signs a day. The sign descriptions are drafts that still
-          need to be checked by a Deaf ASL signer. Sign videos are coming.
+          need to be checked by a Deaf ASL signer. Some signs have videos, with more to come.
+        </p>
+        <p className="mt-3 text-sm text-muted">
+          Sign videos: (ASL Signbank, 2026), used with thanks under{" "}
+          <a
+            href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-charcoal underline underline-offset-2"
+          >
+            CC BY-NC-SA 4.0
+          </a>
+          . Hochgesang, J. A., Crasborn, O., &amp; Lillo-Martin, D. (2026 (2017-2026)). ASL Signbank.{" "}
+          <a
+            href="https://aslsignbank.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-charcoal underline underline-offset-2"
+          >
+            aslsignbank.com
+          </a>
+          .
         </p>
         <p className="mt-3 text-sm text-muted">
           Handshape drawings: letters by wpclipart.com (public domain); numbers 1–9 by{" "}
