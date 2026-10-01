@@ -1,5 +1,12 @@
 # Credits
 
+## Hand tracking (`public/mediapipe/`)
+
+The camera check uses **Google MediaPipe** hand tracking: the `@mediapipe/tasks-vision` package (1.0.1)
+and its `hand_landmarker.task` model, both under the **Apache License 2.0**, used unmodified.
+See `public/mediapipe/NOTICE.txt`. Tracking runs in the learner's browser; the video never leaves
+their device.
+
 ## Sign videos (`public/videos/`)
 
 Sign videos are from **ASL Signbank** (ASL Signbank, 2026). The files are unaltered. The app

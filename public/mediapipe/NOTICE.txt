@@ -1,0 +1,9 @@
+Hand tracking in Handful uses Google MediaPipe.
+
+- @mediapipe/tasks-vision 1.0.1 (the files in ./wasm) - Apache License 2.0
+- hand_landmarker.task (float16, version 1) - Apache License 2.0
+  https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task
+
+Licence text: https://www.apache.org/licenses/LICENSE-2.0
+Project: https://ai.google.dev/edge/mediapipe
+The files are used unmodified. The video from the camera is processed on the learner's device and is not sent anywhere.
