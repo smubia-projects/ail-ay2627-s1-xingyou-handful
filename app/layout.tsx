@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 
@@ -10,6 +10,11 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "SignPath",
   description: "Learn ASL signs in short, friendly lessons.",
+  appleWebApp: { capable: true, title: "SignPath", statusBarStyle: "default" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#fbf7f0",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
