@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-bricolage);
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-fraunces);
 
   /* Palette */
   --color-fern: #768e78; /* primary brand, correct state */
@@ -86,8 +86,9 @@ body {
   color: var(--color-ink);
 }
 
-/* Big headings use the display face, set tight. */
+/* Headings use Fraunces: semi-bold with its softest curves. */
 .font-display {
-  letter-spacing: -0.02em;
-  font-variation-settings: "wdth" 92;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  font-variation-settings: "SOFT" 100;
 }
