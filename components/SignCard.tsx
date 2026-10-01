@@ -82,11 +82,11 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
   );
 }
 
-export default function SignCard({ sign }: { sign: Sign }) {
+export default function SignCard({ sign, label = "New sign" }: { sign: Sign; label?: string }) {
   return (
     <article className="w-full rounded-3xl bg-white p-6 shadow-[0_12px_32px_-16px_rgba(59,52,44,0.35)] ring-1 ring-sand">
       <span className="inline-block rounded-full bg-peach-light px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-ink">
-        New sign
+        {label}
       </span>
       <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-ink">{sign.word}</h2>
 
