@@ -14,7 +14,7 @@ export async function generateMetadata({
   params,
 }: PageProps<"/lesson/[lessonId]">): Promise<Metadata> {
   const { lessonId } = await params;
-  return { title: `${getLesson(lessonId)?.title ?? "Lesson"} · SignPath` };
+  return { title: `${getLesson(lessonId)?.title ?? "Lesson"} · Handful` };
 }
 
 export default async function LessonPage({ params }: PageProps<"/lesson/[lessonId]">) {

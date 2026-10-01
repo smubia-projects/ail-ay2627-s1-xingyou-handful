@@ -48,7 +48,7 @@ export default function SettingsPanel() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `signpath-backup-${dayKey()}.json`;
+    link.download = `handful-backup-${dayKey()}.json`;
     link.click();
     URL.revokeObjectURL(url);
     setMessage({ tone: "good", text: "Backup downloaded. Keep the file somewhere safe." });
@@ -60,7 +60,7 @@ export default function SettingsPanel() {
     if (!file) return;
     const backup = readBackup(await file.text());
     if (!backup) {
-      setMessage({ tone: "bad", text: "That file isn't a SignPath backup, so nothing was changed." });
+      setMessage({ tone: "bad", text: "That file isn't a Handful backup, so nothing was changed." });
       return;
     }
     setMessage(null);
@@ -202,7 +202,7 @@ export default function SettingsPanel() {
 
       <Section title="About">
         <p className="text-sm text-muted">
-          SignPath teaches American Sign Language (ASL). The sign descriptions are drafts that still
+          Handful teaches American Sign Language (ASL), a small handful of signs a day. The sign descriptions are drafts that still
           need to be checked by a Deaf ASL signer. Sign videos are coming.
         </p>
       </Section>

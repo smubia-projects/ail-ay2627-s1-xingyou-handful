@@ -1,6 +1,6 @@
-# SignPath sign review
+# Handful sign review
 
-Thank you for reviewing SignPath's signs. SignPath is a Duolingo-style app for learning ASL. Each sign in the app is described in writing: the **handshape**, the **location** on the body, the **movement**, and a short **memory tip** for learners.
+Thank you for reviewing Handful's signs. Handful is a Duolingo-style app for learning ASL. Each sign in the app is described in writing: the **handshape**, the **location** on the body, the **movement**, and a short **memory tip** for learners.
 
 These descriptions were drafted by someone who does not sign, so **please correct anything that is wrong, unclear or unnatural**. The app won't be released until these descriptions have been approved.
 
@@ -966,4 +966,4 @@ Notes:
 
 Reviewer name: ____________________ Date: ____________
 
-*For the SignPath team: after review, apply the corrections in `data/signs.json` and set `"reviewed": true` on each approved sign.*
+*For the Handful team: after review, apply the corrections in `data/signs.json` and set `"reviewed": true` on each approved sign.*

@@ -25,9 +25,9 @@ export default function AppHeader() {
   return (
     <header className="sticky top-0 z-10 border-b border-line bg-cream/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-md items-center gap-2 px-5 py-3.5">
-        <Link href="/" className="flex items-center gap-2 rounded-xl" aria-label="SignPath home">
+        <Link href="/" className="flex items-center gap-2 rounded-xl" aria-label="Handful home">
           <LogoMark />
-          <span className="font-display text-2xl font-bold text-ink">signpath</span>
+          <span className="font-display text-2xl font-bold text-ink">handful</span>
         </Link>
         <HeaderStats />
       </div>

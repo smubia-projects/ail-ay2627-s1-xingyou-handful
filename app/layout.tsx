@@ -14,9 +14,9 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "SignPath",
-  description: "Learn ASL signs in short, friendly lessons.",
-  appleWebApp: { capable: true, title: "SignPath", statusBarStyle: "default" },
+  title: "Handful",
+  description: "Learn ASL, a small handful of signs a day.",
+  appleWebApp: { capable: true, title: "Handful", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

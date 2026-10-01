@@ -1,4 +1,4 @@
-# SignPath PRD
+# Handful PRD
 
 ## Problem
 Learning ASL means hopping between YouTube videos with no structure, no repetition, and no way to check progress.

@@ -18,6 +18,7 @@ export type Progress = {
 
 export type Review = { box: number; due: string };
 
+// Kept from the app's earlier name (SignPath) so existing progress keeps loading.
 const STORAGE_KEY = "signpath:progress";
 
 // Days until a sign comes back for review, by box. Right answers move a sign up a box.
@@ -283,15 +284,18 @@ export function resetProgress() {
 
 // A backup file: the progress plus a marker so other JSON files are rejected on restore.
 export function exportProgress(): string {
-  const backup = { app: "signpath", exportedAt: new Date().toISOString(), progress: readProgress() };
+  const backup = { app: "handful", exportedAt: new Date().toISOString(), progress: readProgress() };
   return JSON.stringify(backup, null, 2);
 }
 
-// Reads a backup file. Returns the progress inside, or null if it isn't a SignPath backup.
+// Reads a backup file. Returns the progress inside, or null if it isn't a Handful backup.
+// Backups made under the earlier name (SignPath) still restore.
 export function readBackup(text: string): Progress | null {
   try {
     const parsed = JSON.parse(text);
-    if (parsed?.app !== "signpath" || typeof parsed.progress !== "object") return null;
+    if (!["handful", "signpath"].includes(parsed?.app) || typeof parsed.progress !== "object") {
+      return null;
+    }
     return parseProgress(JSON.stringify(parsed.progress));
   } catch {
     return null;

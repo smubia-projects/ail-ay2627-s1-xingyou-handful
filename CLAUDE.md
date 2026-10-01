@@ -1,7 +1,8 @@
 @AGENTS.md
 
 
-   # SignPath: ASL learning app (Duolingo-style)
+   # Handful: ASL learning app (Duolingo-style)
+   (Formerly SignPath. The repo folder and the localStorage key still use the old name on purpose.)
    Goal: learners learn ASL signs in short lessons, all in one place.
    Camera / live correction is OUT of scope for now.
 

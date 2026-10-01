@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
 
-// Lets phones add SignPath to the home screen and open it full screen, like an app.
+// Lets phones add Handful to the home screen and open it full screen, like an app.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "SignPath",
-    short_name: "SignPath",
-    description: "Learn ASL signs in short, friendly lessons.",
+    name: "Handful",
+    short_name: "Handful",
+    description: "Learn ASL, a small handful of signs a day.",
     start_url: "/",
     display: "standalone",
     background_color: "#faf8f5",

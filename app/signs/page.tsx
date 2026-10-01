@@ -3,7 +3,7 @@ import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import SignsList from "@/components/SignsList";
 
-export const metadata: Metadata = { title: "My signs · SignPath" };
+export const metadata: Metadata = { title: "My signs · Handful" };
 
 export default function SignsPage() {
   return (

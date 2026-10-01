@@ -1,6 +1,6 @@
-# SignPath video guidelines
+# Handful video guidelines
 
-Every sign video in SignPath follows these rules, so learners always see signs at the same size, framing and quality.
+Every sign video in Handful follows these rules, so learners always see signs at the same size, framing and quality.
 
 ## Signers
 

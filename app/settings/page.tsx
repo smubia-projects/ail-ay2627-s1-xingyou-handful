@@ -3,7 +3,7 @@ import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import SettingsPanel from "@/components/SettingsPanel";
 
-export const metadata: Metadata = { title: "Settings · SignPath" };
+export const metadata: Metadata = { title: "Settings · Handful" };
 
 export default function SettingsPage() {
   return (
