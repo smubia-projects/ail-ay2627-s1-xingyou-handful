@@ -14,15 +14,15 @@ export type OnDone = (correct: boolean, missedSignIds: string[]) => void;
 type ChoiceState = "idle" | "selected" | "correct" | "wrong" | "done";
 
 const CHOICE_STYLES: Record<ChoiceState, string> = {
-  idle: "border-sand bg-white shadow-[0_4px_0_0_var(--color-sand)] hover:bg-cream",
-  selected: "border-sage bg-sage-light shadow-[0_4px_0_0_var(--color-sage)]",
-  correct: "border-sage bg-sage-light shadow-[0_4px_0_0_var(--color-sage)]",
-  wrong: "border-peach-dark bg-peach-light shadow-[0_4px_0_0_var(--color-peach-dark)]",
-  done: "border-sand bg-white opacity-40",
+  idle: "border-line bg-white hover:border-line-strong",
+  selected: "border-brand bg-brand-soft",
+  correct: "border-teal bg-teal-soft",
+  wrong: "border-coral bg-coral-soft",
+  done: "border-line bg-white opacity-40",
 };
 
 function choiceClass(state: ChoiceState, extra = "") {
-  return `rounded-2xl border-2 p-3 font-bold text-ink transition active:translate-y-0.5 disabled:active:translate-y-0 ${CHOICE_STYLES[state]} ${extra}`;
+  return `rounded-3xl border-2 p-3 font-semibold text-ink transition active:scale-[0.97] disabled:active:scale-100 ${CHOICE_STYLES[state]} ${extra}`;
 }
 
 // A sign as a looping video if one exists, otherwise its diagram and handshape.
@@ -31,7 +31,7 @@ function SignPicture({ sign, size }: { sign: Sign; size: "large" | "small" }) {
     return (
       <video
         src={sign.video}
-        className="aspect-video w-full rounded-xl bg-cream object-contain"
+        className="aspect-video w-full rounded-xl bg-surface object-contain"
         autoPlay
         loop
         muted
@@ -46,7 +46,13 @@ function SignPicture({ sign, size }: { sign: Sign; size: "large" | "small" }) {
         location={sign.location}
         className={size === "large" ? "h-40 w-40" : "h-20 w-20"}
       />
-      <span className={size === "large" ? "font-bold text-ink" : "text-xs font-semibold text-muted"}>
+      <span
+        className={
+          size === "large"
+            ? "text-center font-display text-xl font-bold text-ink"
+            : "text-center text-xs font-semibold text-muted"
+        }
+      >
         {sign.handshape}
       </span>
       {size === "large" && <span className="text-center text-sm text-muted">{sign.movement}</span>}
@@ -55,16 +61,16 @@ function SignPicture({ sign, size }: { sign: Sign; size: "large" | "small" }) {
 }
 
 function Prompt({ children }: { children: React.ReactNode }) {
-  return <h1 className="text-2xl font-extrabold text-ink">{children}</h1>;
+  return <h1 className="font-display text-3xl leading-tight font-bold text-ink">{children}</h1>;
 }
 
 // Main action button. Give it a data-primary attribute so useEnterKey doesn't press it twice.
 export const PRIMARY_BUTTON =
-  "rounded-2xl bg-sage px-8 py-3 font-extrabold uppercase tracking-wide text-white shadow-[0_4px_0_0_var(--color-sage-dark)] transition active:translate-y-1 active:shadow-none";
+  "rounded-full bg-brand px-8 py-3.5 font-bold text-white transition hover:bg-brand-dark active:scale-[0.97]";
 
 // Bar fixed to the bottom of the screen, holding feedback and the main button.
 export function BottomBar({
-  className = "bg-cream",
+  className = "bg-white",
   children,
 }: {
   className?: string;
@@ -72,7 +78,7 @@ export function BottomBar({
 }) {
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 border-t-2 border-sand px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] ${className}`}
+      className={`fixed inset-x-0 bottom-0 border-t border-line px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] ${className}`}
     >
       <div className="mx-auto flex max-w-md flex-wrap items-center justify-between gap-3">
         {children}
@@ -119,16 +125,16 @@ function CheckBar({
   if (status === "answering" && !onCheck) return null;
 
   const background =
-    status === "correct" ? "bg-sage-light" : status === "wrong" ? "bg-peach-light" : "bg-cream";
+    status === "correct" ? "bg-lime-soft" : status === "wrong" ? "bg-coral-soft" : "bg-white";
   const button =
     status === "wrong"
-      ? "bg-peach text-ink shadow-[0_4px_0_0_var(--color-peach-dark)]"
+      ? "bg-ink text-white hover:bg-ink"
       : "";
 
   return (
     <BottomBar className={background}>
       <div role="status" aria-live="polite">
-        {title && <p className="text-lg font-extrabold text-ink">{title}</p>}
+        {title && <p className="font-display text-2xl font-bold text-ink">{title}</p>}
         {detail && <p className="text-sm font-semibold text-muted">{detail}</p>}
       </div>
       <button
@@ -136,7 +142,7 @@ function CheckBar({
         data-primary
         disabled={status === "answering" && !canCheck}
         onClick={status === "answering" ? onCheck : onContinue}
-        className={`${PRIMARY_BUTTON} disabled:bg-sand disabled:text-muted disabled:shadow-none disabled:active:translate-y-0 ${button}`}
+        className={`${PRIMARY_BUTTON} disabled:bg-line disabled:text-muted disabled:active:scale-100 ${button}`}
       >
         {status === "answering" ? "Check" : "Continue"}
       </button>
@@ -176,7 +182,7 @@ function MeaningExercise({
   return (
     <>
       <Prompt>What does this sign mean?</Prompt>
-      <div className="mt-6 rounded-3xl bg-white p-5 ring-1 ring-sand">
+      <div className="mt-6 rounded-3xl bg-white p-5 ring-1 ring-line">
         <SignPicture sign={sign} size="large" />
       </div>
       <div className="mt-6 grid grid-cols-2 gap-3">

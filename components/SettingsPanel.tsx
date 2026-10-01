@@ -18,14 +18,14 @@ import {
 const GOAL_LABELS: Record<number, string> = { 1: "Casual", 2: "Regular", 3: "Serious", 5: "Intense" };
 
 const BUTTON =
-  "rounded-2xl px-5 py-3 font-extrabold uppercase tracking-wide transition active:translate-y-1 active:shadow-none";
-const SECONDARY = `${BUTTON} bg-white text-ink ring-2 ring-sand shadow-[0_4px_0_0_var(--color-sand)] hover:bg-cream`;
+  "rounded-full px-5 py-3 font-bold transition active:scale-[0.97]";
+const SECONDARY = `${BUTTON} bg-white text-ink ring-1 ring-line-strong hover:bg-line/40`;
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-8">
-      <h2 className="text-sm font-extrabold uppercase tracking-widest text-muted">{title}</h2>
-      <div className="mt-3 rounded-3xl bg-white p-5 ring-1 ring-sand">{children}</div>
+      <h2 className="font-display text-2xl font-bold text-ink">{title}</h2>
+      <div className="mt-3 rounded-[28px] bg-surface p-5">{children}</div>
     </section>
   );
 }
@@ -70,7 +70,7 @@ export default function SettingsPanel() {
 
   return (
     <div className={loaded ? "motion-safe:animate-fade-in" : "invisible"}>
-      <h1 className="text-3xl font-extrabold text-ink">Settings</h1>
+      <h1 className="font-display text-4xl font-bold text-ink">Settings</h1>
 
       <Section title="Daily goal">
         <p className="text-sm text-muted">How many lessons, reviews or practice rounds a day?</p>
@@ -84,13 +84,13 @@ export default function SettingsPanel() {
                 role="radio"
                 aria-checked={selected}
                 onClick={() => setDailyGoal(goal)}
-                className={`rounded-2xl border-2 p-3 text-left transition ${
+                className={`rounded-3xl border-2 p-3 text-left transition ${
                   selected
-                    ? "border-sage bg-sage-light shadow-[0_4px_0_0_var(--color-sage)]"
-                    : "border-sand bg-white shadow-[0_4px_0_0_var(--color-sand)] hover:bg-cream"
+                    ? "border-brand bg-brand-soft"
+                    : "border-transparent bg-white hover:border-line-strong"
                 }`}
               >
-                <span className="block font-extrabold text-ink">{GOAL_LABELS[goal]}</span>
+                <span className="block font-display text-lg font-bold text-ink">{GOAL_LABELS[goal]}</span>
                 <span className="block text-sm text-muted">
                   {goal} {goal === 1 ? "session" : "sessions"} a day
                 </span>
@@ -125,8 +125,8 @@ export default function SettingsPanel() {
         </div>
 
         {pendingRestore && (
-          <div className="mt-4 rounded-2xl bg-peach-light p-4" role="alertdialog" aria-label="Confirm restore">
-            <p className="font-extrabold text-ink">Replace your current progress?</p>
+          <div className="mt-4 rounded-3xl bg-white p-4 ring-2 ring-coral" role="alertdialog" aria-label="Confirm restore">
+            <p className="font-display text-lg font-bold text-ink">Replace your current progress?</p>
             <p className="mt-1 text-sm text-ink">
               Now: {summary(progress)}
               <br />
@@ -140,7 +140,7 @@ export default function SettingsPanel() {
                   setPendingRestore(null);
                   setMessage({ tone: "good", text: "Backup restored." });
                 }}
-                className={`${BUTTON} bg-sage text-white shadow-[0_4px_0_0_var(--color-sage-dark)]`}
+                className={`${BUTTON} bg-brand text-white`}
               >
                 Replace
               </button>
@@ -158,8 +158,8 @@ export default function SettingsPanel() {
           unless you have a backup.
         </p>
         {confirmingReset ? (
-          <div className="mt-4 rounded-2xl bg-peach-light p-4" role="alertdialog" aria-label="Confirm reset">
-            <p className="font-extrabold text-ink">Erase everything?</p>
+          <div className="mt-4 rounded-3xl bg-white p-4 ring-2 ring-coral" role="alertdialog" aria-label="Confirm reset">
+            <p className="font-display text-lg font-bold text-ink">Erase everything?</p>
             <div className="mt-3 flex flex-wrap gap-3">
               <button
                 type="button"
@@ -168,7 +168,7 @@ export default function SettingsPanel() {
                   setConfirmingReset(false);
                   setMessage({ tone: "good", text: "Progress reset. Fresh start!" });
                 }}
-                className={`${BUTTON} bg-peach text-ink shadow-[0_4px_0_0_var(--color-peach-dark)]`}
+                className={`${BUTTON} bg-coral text-ink`}
               >
                 Yes, erase it
               </button>
@@ -194,7 +194,7 @@ export default function SettingsPanel() {
 
       <p role="status" aria-live="polite" className="mt-6 min-h-6 text-center text-sm font-bold">
         {message && (
-          <span className={message.tone === "good" ? "text-sage-dark" : "text-ink"}>
+          <span className={message.tone === "good" ? "text-brand-dark" : "text-ink"}>
             {message.text}
           </span>
         )}

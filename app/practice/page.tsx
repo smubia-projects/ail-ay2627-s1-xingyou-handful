@@ -25,7 +25,7 @@ export default function PracticePage() {
       loaded={loaded}
       signs={signs}
       icon={
-        <span className="mt-8 flex h-16 w-16 items-center justify-center rounded-3xl bg-peach-light text-peach-dark">
+        <span className="mt-8 flex h-16 w-16 items-center justify-center rounded-3xl bg-coral text-ink">
           <svg viewBox="0 0 24 24" className="h-9 w-9" fill="none" aria-hidden="true">
             <path
               d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"

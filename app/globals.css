@@ -1,28 +1,36 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-nunito);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-bricolage);
 
-  --color-cream: #fbf7f0;
-  --color-sand: #efe6d8;
-  --color-sand-dark: #d9cbb6;
-  --color-sage: #6b9466;
-  --color-sage-dark: #52774d;
-  --color-sage-light: #e4eee1;
-  --color-peach: #f2a97e;
-  --color-peach-dark: #e0875a;
-  --color-peach-light: #fcebdf;
-  --color-clay: #c2714f;
-  --color-clay-dark: #a35a3b;
-  --color-clay-light: #f6e4da;
-  --color-lavender: #8672b8;
-  --color-lavender-dark: #6a5899;
-  --color-lavender-light: #ece7f6;
-  --color-ice: #4f8fb0;
-  --color-ice-dark: #3b7191;
-  --color-ice-light: #e1eef5;
-  --color-ink: #3b342c;
-  --color-muted: #756a5d;
+  /* Neutrals */
+  --color-surface: #f4f4f6;
+  --color-line: #e6e6ec;
+  --color-line-strong: #c8c8d2;
+  --color-ink: #0e0e12;
+  --color-muted: #62626d;
+
+  /* Brand: indigo, with lime for wins */
+  --color-brand: #3d2bff;
+  --color-brand-dark: #2a1bd1;
+  --color-brand-soft: #ecebff;
+  --color-lime: #c6f432;
+  --color-lime-soft: #f1fbcf;
+
+  /* Supporting colors (mistakes, units, streak freeze) */
+  --color-coral: #ff6b4a;
+  --color-coral-dark: #d9441f;
+  --color-coral-soft: #ffebe5;
+  --color-berry: #d81b60;
+  --color-berry-soft: #fde4ee;
+  --color-teal: #00796b;
+  --color-teal-soft: #d9f3ef;
+  --color-orange: #c2410c;
+  --color-orange-soft: #ffe8d9;
+  --color-ice: #0ea5e9;
+  --color-ice-dark: #0369a1;
+  --color-ice-soft: #e0f4fd;
 }
 
 @theme {
@@ -70,6 +78,12 @@
 }
 
 body {
-  background: var(--color-cream);
+  background: #ffffff;
   color: var(--color-ink);
+}
+
+/* Big headings use the display face, set tight. */
+.font-display {
+  letter-spacing: -0.02em;
+  font-variation-settings: "wdth" 92;
 }

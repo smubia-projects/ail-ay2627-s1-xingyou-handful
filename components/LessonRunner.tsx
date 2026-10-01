@@ -44,7 +44,7 @@ function xpFor(firstTryCorrect: number) {
 function ProgressBar({ value }: { value: number }) {
   return (
     <div
-      className="h-4 flex-1 overflow-hidden rounded-full bg-sand"
+      className="h-4 flex-1 overflow-hidden rounded-full bg-line"
       role="progressbar"
       aria-label="Lesson progress"
       aria-valuemin={0}
@@ -52,7 +52,7 @@ function ProgressBar({ value }: { value: number }) {
       aria-valuenow={Math.round(value * 100)}
     >
       <div
-        className="h-full rounded-full bg-sage transition-all duration-500"
+        className="h-full rounded-full bg-brand transition-all duration-500"
         style={{ width: `${value * 100}%` }}
       />
     </div>
@@ -71,9 +71,9 @@ function Stat({
   className: string;
 }) {
   return (
-    <div className={`rounded-2xl px-2 py-4 text-center ${className}`}>
-      <p className="text-xs font-extrabold uppercase tracking-wider text-muted">{label}</p>
-      <p className="mt-1 text-2xl font-extrabold text-ink">{value}</p>
+    <div className={`rounded-3xl px-2 py-4 text-center ${className}`}>
+      <p className="text-sm font-semibold text-ink/70">{label}</p>
+      <p className="mt-1 font-display text-3xl font-bold text-ink">{value}</p>
       {note && <p className="text-xs font-bold text-muted">{note}</p>}
     </div>
   );
@@ -181,7 +181,7 @@ export default function LessonRunner({
         <Link
           href="/"
           aria-label="Quit lesson"
-          className="rounded-full p-1 text-muted transition hover:bg-sand hover:text-ink"
+          className="rounded-full p-1 text-muted transition hover:bg-line hover:text-ink"
         >
           <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" aria-hidden="true">
             <path
@@ -198,7 +198,7 @@ export default function LessonRunner({
       <div className="mt-8">
         {phase === "intro" && (
           <>
-            <p className="mb-4 text-sm font-extrabold uppercase tracking-widest text-muted">
+            <p className="mb-4 text-sm font-semibold text-muted">
               {title} · {introIndex + 1} of {signs.length}
             </p>
             <SignCard key={signs[introIndex].id} sign={signs[introIndex]} />
@@ -218,7 +218,7 @@ export default function LessonRunner({
         {phase === "exercises" && current && (
           <>
             {current.retry && (
-              <p className="mb-3 inline-block rounded-full bg-peach-light px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-ink">
+              <p className="mb-3 inline-block rounded-full bg-coral-soft px-3 py-1 text-sm font-semibold text-ink">
                 Earlier mistake · try again
               </p>
             )}
@@ -228,18 +228,18 @@ export default function LessonRunner({
 
         {phase === "complete" && (
           <div className="flex flex-col items-center pt-6 text-center">
-            <span className="flex h-24 w-24 items-center justify-center rounded-full bg-sage shadow-[0_6px_0_0_var(--color-sage-dark)] ring-8 ring-sage-light">
+            <span className="flex h-28 w-28 items-center justify-center rounded-full bg-lime">
               <svg viewBox="0 0 24 24" className="h-12 w-12" fill="none" aria-hidden="true">
                 <path
                   d="M5 12.5l4.5 4.5L19 7.5"
-                  stroke="white"
+                  stroke="#0e0e12"
                   strokeWidth={3}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
               </svg>
             </span>
-            <h1 className="mt-8 text-3xl font-extrabold text-ink">
+            <h1 className="mt-8 font-display text-4xl font-bold text-ink">
               {COMPLETE_HEADINGS[mode]}
             </h1>
             <p className="mt-1 text-muted">
@@ -250,13 +250,13 @@ export default function LessonRunner({
                   : title}
             </p>
             <div className="mt-8 grid w-full grid-cols-3 gap-3">
-              <Stat label="XP earned" value={`+${xp}`} className="bg-peach-light" />
-              <Stat label="First try" value={`${accuracy}%`} className="bg-sage-light" />
+              <Stat label="XP earned" value={`+${xp}`} className="bg-lime" />
+              <Stat label="First try" value={`${accuracy}%`} className="bg-brand-soft" />
               <Stat
                 label="Streak"
                 value={`${streak.count} ${streak.count === 1 ? "day" : "days"}`}
                 note={streak.note}
-                className="bg-white ring-1 ring-sand"
+                className="bg-coral-soft"
               />
             </div>
             <BottomBar>

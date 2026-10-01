@@ -52,7 +52,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-10 border-t border-sand bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
       <ul className="mx-auto flex max-w-md">
         {TABS.map((tab) => {
@@ -62,12 +62,12 @@ export default function BottomNav() {
               <Link
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex flex-col items-center gap-0.5 py-2.5 text-xs font-extrabold uppercase tracking-wide transition ${
-                  active ? "text-sage-dark" : "text-muted hover:text-ink"
+                className={`flex flex-col items-center gap-0.5 py-2.5 text-xs font-semibold transition ${
+                  active ? "text-brand" : "text-muted hover:text-ink"
                 }`}
               >
                 <span
-                  className={`flex h-9 w-14 items-center justify-center rounded-2xl ${active ? "bg-sage-light" : ""}`}
+                  className={`flex h-8 w-14 items-center justify-center rounded-full ${active ? "bg-brand-soft" : ""}`}
                 >
                   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
                     {tab.icon}

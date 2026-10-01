@@ -25,7 +25,7 @@ export default function ReviewPage() {
       loaded={loaded}
       signs={signs}
       icon={
-        <span className="mt-8 flex h-16 w-16 items-center justify-center rounded-3xl bg-lavender-light text-lavender-dark">
+        <span className="mt-8 flex h-16 w-16 items-center justify-center rounded-3xl bg-brand text-white">
           <svg viewBox="0 0 24 24" className="h-9 w-9" fill="none" aria-hidden="true">
             <rect x="4" y="5" width="16" height="15" rx="3" stroke="currentColor" strokeWidth={2.5} />
             <path d="M4 10h16M9 3v4M15 3v4" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" />

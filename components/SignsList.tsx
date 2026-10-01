@@ -17,11 +17,11 @@ function Strength({ review }: { review: Review | undefined }) {
         {[1, 2, 3, 4, 5].map((level) => (
           <span
             key={level}
-            className={`h-3 w-1.5 rounded-full ${level <= box ? "bg-sage" : "bg-sand"}`}
+            className={`h-3 w-1.5 rounded-full ${level <= box ? "bg-brand" : "bg-line-strong/60"}`}
           />
         ))}
       </span>
-      <span className="text-xs font-bold text-muted">{STRENGTH_LABELS[box]}</span>
+      <span className="text-xs font-semibold text-muted">{STRENGTH_LABELS[box]}</span>
     </span>
   );
 }
@@ -44,16 +44,16 @@ function SignRow({
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className={`flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left ring-1 transition hover:bg-cream ${open ? "ring-sage" : "ring-sand"}`}
+        className={`flex w-full items-center gap-3 rounded-3xl bg-surface p-3 text-left transition hover:bg-line/70 ${open ? "ring-2 ring-brand" : ""}`}
       >
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-cream">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white">
           <BodyDiagram location={sign.location} className="h-10 w-10" />
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
-            <span className="font-extrabold text-ink">{sign.word}</span>
+            <span className="font-display text-lg font-bold text-ink">{sign.word}</span>
             {due && (
-              <span className="rounded-full bg-lavender-light px-2 py-0.5 text-[0.65rem] font-extrabold uppercase tracking-wider text-ink">
+              <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand">
                 Review due
               </span>
             )}
@@ -89,20 +89,20 @@ export default function SignsList() {
 
   return (
     <div className={loaded ? "motion-safe:animate-fade-in" : "invisible"}>
-      <h1 className="text-3xl font-extrabold text-ink">My signs</h1>
+      <h1 className="font-display text-4xl font-bold text-ink">My signs</h1>
       <p className="mt-1 text-muted">
         {learned.size} of {total} signs learned
       </p>
 
       {learned.size === 0 ? (
-        <div className="mt-8 rounded-3xl bg-white p-6 text-center ring-1 ring-sand">
-          <p className="font-extrabold text-ink">Your sign collection starts here</p>
+        <div className="mt-8 rounded-[28px] bg-surface p-6 text-center">
+          <p className="font-display text-xl font-bold text-ink">Your sign collection starts here</p>
           <p className="mt-1 text-sm text-muted">
             Finish your first lesson and its signs will appear on this page.
           </p>
           <Link
             href="/"
-            className="mt-5 inline-block rounded-2xl bg-sage px-6 py-3 font-extrabold uppercase tracking-wide text-white shadow-[0_4px_0_0_var(--color-sage-dark)] transition active:translate-y-1 active:shadow-none"
+            className="mt-5 inline-block rounded-full bg-brand px-6 py-3 font-bold text-white transition hover:bg-brand-dark active:scale-[0.97]"
           >
             Start learning
           </Link>
@@ -116,7 +116,7 @@ export default function SignsList() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search your signs"
-              className="w-full rounded-2xl border-2 border-sand bg-white px-4 py-3 font-semibold text-ink placeholder:text-muted focus:border-sage"
+              className="w-full rounded-full border-0 bg-surface px-5 py-3.5 font-medium text-ink placeholder:text-muted focus:bg-white focus:ring-2 focus:ring-brand"
             />
           </label>
 
@@ -128,9 +128,9 @@ export default function SignsList() {
             if (search && shown.length === 0) return null;
             return (
               <section key={unit.id} className="mt-8">
-                <h2 className="flex items-baseline justify-between text-sm font-extrabold uppercase tracking-widest text-muted">
+                <h2 className="flex items-baseline justify-between font-display text-xl font-bold text-ink">
                   {unit.title}
-                  <span className="text-xs normal-case tracking-normal">
+                  <span className="font-sans text-sm font-semibold text-muted">
                     {learnedHere.length}/{unitSigns.length}
                   </span>
                 </h2>
@@ -148,7 +148,7 @@ export default function SignsList() {
                   </ul>
                 )}
                 {!search && lockedHere > 0 && (
-                  <p className="mt-2 rounded-2xl border-2 border-dashed border-sand px-4 py-3 text-sm font-semibold text-muted">
+                  <p className="mt-2 rounded-3xl border-2 border-dashed border-line px-4 py-3 text-sm font-medium text-muted">
                     {lockedHere} more {lockedHere === 1 ? "sign" : "signs"} to unlock in this unit
                   </p>
                 )}

@@ -36,7 +36,7 @@ export default function SessionStart({
       <Link
         href="/"
         aria-label="Back to home"
-        className="inline-block rounded-full p-1 text-muted transition hover:bg-sand hover:text-ink"
+        className="inline-block rounded-full p-1 text-muted transition hover:bg-line hover:text-ink"
       >
         <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" aria-hidden="true">
           <path
@@ -49,7 +49,7 @@ export default function SessionStart({
       </Link>
 
       {icon}
-      <h1 className="mt-5 text-3xl font-extrabold text-ink">{title}</h1>
+      <h1 className="mt-5 font-display text-4xl font-bold text-ink">{title}</h1>
 
       {!loaded ? null : signs.length === 0 ? (
         <>
@@ -65,7 +65,7 @@ export default function SessionStart({
           <p className="mt-2 text-muted">{description}</p>
           <ul className="mt-6 flex flex-wrap gap-2">
             {signs.map((sign) => (
-              <li key={sign.id} className="rounded-full bg-white px-4 py-2 font-bold text-ink ring-1 ring-sand">
+              <li key={sign.id} className="rounded-full bg-surface px-4 py-2 font-semibold text-ink">
                 {sign.word}
               </li>
             ))}

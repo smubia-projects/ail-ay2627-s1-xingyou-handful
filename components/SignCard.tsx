@@ -46,7 +46,7 @@ export function BodyDiagram({
       role="img"
       aria-label={`Body outline marking the sign location: ${LOCATION_LABELS[location].toLowerCase()}`}
     >
-      <g className="fill-none stroke-sand-dark" strokeWidth={4} strokeLinecap="round">
+      <g className="fill-none stroke-line-strong" strokeWidth={4} strokeLinecap="round">
         {/* Head */}
         <ellipse cx={100} cy={55} rx={30} ry={36} />
         {/* Neck */}
@@ -63,12 +63,12 @@ export function BodyDiagram({
           ry={20}
           strokeWidth={3}
           strokeDasharray="6 6"
-          className="fill-peach/20 stroke-peach-dark"
+          className="fill-coral/20 stroke-coral-dark"
         />
       ) : (
-        <circle cx={dot.x} cy={dot.y} r={16} className="fill-peach/35" />
+        <circle cx={dot.x} cy={dot.y} r={16} className="fill-coral/35" />
       )}
-      <circle cx={dot.x} cy={dot.y} r={8} className="fill-peach-dark" />
+      <circle cx={dot.x} cy={dot.y} r={8} className="fill-coral-dark" />
     </svg>
   );
 }
@@ -76,7 +76,7 @@ export function BodyDiagram({
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-extrabold uppercase tracking-widest text-muted">{label}</dt>
+      <dt className="text-sm font-semibold text-muted">{label}</dt>
       <dd className="mt-0.5 font-semibold text-ink">{children}</dd>
     </div>
   );
@@ -84,18 +84,18 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
 
 export default function SignCard({ sign, label = "New sign" }: { sign: Sign; label?: string }) {
   return (
-    <article className="w-full rounded-3xl bg-white p-6 shadow-[0_12px_32px_-16px_rgba(59,52,44,0.35)] ring-1 ring-sand">
-      <span className="inline-block rounded-full bg-peach-light px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-ink">
+    <article className="w-full rounded-[28px] bg-white p-6 ring-1 ring-line">
+      <span className="inline-block rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">
         {label}
       </span>
-      <h2 className="mt-3 text-4xl font-extrabold tracking-tight text-ink">{sign.word}</h2>
+      <h2 className="mt-3 font-display text-5xl font-bold text-ink">{sign.word}</h2>
 
       {/* Every video shows in the same 16:9 frame, never cropped. */}
       {sign.video ? (
         <video
           src={sign.video}
           aria-label={`Video of the sign for ${sign.word}`}
-          className="mt-5 aspect-video w-full rounded-2xl bg-cream object-contain"
+          className="mt-5 aspect-video w-full rounded-2xl bg-surface object-contain"
           controls
           loop
           muted
@@ -103,9 +103,9 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
           preload="metadata"
         />
       ) : (
-        <div className="mt-5 flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-sand-dark bg-cream py-4 text-sm font-semibold text-muted">
+        <div className="mt-5 flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-line-strong bg-surface py-4 text-sm font-semibold text-muted">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
-            <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 fill-sage" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 fill-brand" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
           </span>
@@ -114,7 +114,7 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
       )}
 
       <div className="mt-5 grid gap-5 sm:grid-cols-[auto_1fr] sm:items-center">
-        <div className="flex justify-center rounded-2xl bg-cream p-3">
+        <div className="flex justify-center rounded-2xl bg-surface p-3">
           <BodyDiagram location={sign.location} />
         </div>
         <dl className="space-y-3">
@@ -126,11 +126,11 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
         </dl>
       </div>
 
-      <div className="mt-5 rounded-2xl bg-peach-light p-4">
-        <p className="text-xs font-extrabold uppercase tracking-widest text-muted">
+      <div className="mt-5 rounded-3xl bg-lime-soft p-4">
+        <p className="text-sm font-semibold text-ink/70">
           Memory tip
         </p>
-        <p className="mt-1 font-semibold text-ink">{sign.tip}</p>
+        <p className="mt-1 font-display text-xl font-bold text-ink">{sign.tip}</p>
       </div>
     </article>
   );

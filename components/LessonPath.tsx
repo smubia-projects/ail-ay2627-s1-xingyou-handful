@@ -6,37 +6,14 @@ import { dueSignIds, sessionsToday, useProgress, useProgressLoaded } from "@/lib
 
 type LessonState = "completed" | "current" | "locked";
 
-// Each unit gets its own soft accent, cycling if there are more units than colors.
-type UnitTheme = { banner: string; circle: string; ring: string; dot: string; label: string };
+// Each unit gets its own bold color, cycling if there are more units than colors.
+// All are dark enough for white text.
+type UnitTheme = { block: string; ring: string; dot: string };
 const UNIT_THEMES: UnitTheme[] = [
-  {
-    banner: "bg-sage-light",
-    circle: "bg-sage shadow-[0_6px_0_0_var(--color-sage-dark)]",
-    ring: "ring-sage-light",
-    dot: "bg-sage",
-    label: "text-sage-dark",
-  },
-  {
-    banner: "bg-clay-light",
-    circle: "bg-clay shadow-[0_6px_0_0_var(--color-clay-dark)]",
-    ring: "ring-clay-light",
-    dot: "bg-clay",
-    label: "text-clay-dark",
-  },
-  {
-    banner: "bg-lavender-light",
-    circle: "bg-lavender shadow-[0_6px_0_0_var(--color-lavender-dark)]",
-    ring: "ring-lavender-light",
-    dot: "bg-lavender",
-    label: "text-lavender-dark",
-  },
-  {
-    banner: "bg-ice-light",
-    circle: "bg-ice shadow-[0_6px_0_0_var(--color-ice-dark)]",
-    ring: "ring-ice-light",
-    dot: "bg-ice",
-    label: "text-ice-dark",
-  },
+  { block: "bg-brand", ring: "ring-brand-soft", dot: "bg-brand" },
+  { block: "bg-berry", ring: "ring-berry-soft", dot: "bg-berry" },
+  { block: "bg-teal", ring: "ring-teal-soft", dot: "bg-teal" },
+  { block: "bg-orange", ring: "ring-orange-soft", dot: "bg-orange" },
 ];
 
 // Gentle zigzag so the lessons read as a winding path.
@@ -46,10 +23,10 @@ const CONNECTOR_OFFSETS = ["translate-x-7", "-translate-x-7", "-translate-x-7", 
 
 function circleStyle(state: LessonState, theme: UnitTheme) {
   if (state === "locked") {
-    return "h-20 w-20 bg-sand text-muted shadow-[0_6px_0_0_var(--color-sand-dark)] ring-transparent";
+    return "h-20 w-20 bg-surface text-line-strong ring-transparent";
   }
-  const size = state === "current" ? "h-24 w-24 ring-peach-light" : `h-20 w-20 ${theme.ring}`;
-  return `${size} ${theme.circle} text-white`;
+  const size = state === "current" ? "h-24 w-24 ring-lime" : `h-20 w-20 ${theme.ring}`;
+  return `${size} ${theme.block} text-white`;
 }
 
 function CheckIcon() {
@@ -93,20 +70,20 @@ function LessonNode({
   const content = (
     <>
       {state === "current" && (
-        <span
-          className={`mb-4 rounded-xl bg-white px-3 py-1.5 text-sm font-extrabold uppercase tracking-wide shadow-sm ring-2 ring-sand motion-safe:animate-bob ${theme.label}`}
-        >
+        <span className="mb-4 rounded-full bg-ink px-3.5 py-1.5 text-sm font-bold text-white motion-safe:animate-bob">
           Start
         </span>
       )}
-        <span
-          className={`flex items-center justify-center rounded-full text-2xl font-extrabold ring-8 transition ${circleStyle(state, theme)} ${
-            state === "locked" ? "" : "group-hover:brightness-105 group-active:translate-y-1 group-active:shadow-none"
-          }`}
-        >
+      <span
+        className={`flex items-center justify-center rounded-full font-display text-3xl font-bold ring-8 transition ${circleStyle(state, theme)} ${
+          state === "locked" ? "" : "group-hover:brightness-110 group-active:scale-95"
+        }`}
+      >
         {state === "completed" ? <CheckIcon /> : state === "locked" ? <LockIcon /> : number}
       </span>
-      <h2 className={`mt-4 font-extrabold ${state === "locked" ? "text-muted" : "text-ink"}`}>
+      <h2
+        className={`mt-4 font-display text-lg font-bold ${state === "locked" ? "text-muted" : "text-ink"}`}
+      >
         {lesson.title}
       </h2>
       <p className="text-sm text-muted">{words}</p>
@@ -145,38 +122,47 @@ const PRACTICE_ICON = (
   </svg>
 );
 
-// Ring that fills toward today's goal, with a link to change the goal.
+// Bold panel with a ring that fills toward today's goal, and a link to change the goal.
 function DailyGoal({ done, goal }: { done: number; goal: number }) {
   const reached = done >= goal;
-  const circumference = 2 * Math.PI * 18;
+  const left = goal - done;
+  const circumference = 2 * Math.PI * 26;
   const filled = Math.min(done / goal, 1) * circumference;
   return (
-    <div className="flex items-center gap-4 rounded-3xl bg-white p-4 ring-1 ring-sand">
-      <svg viewBox="0 0 44 44" className="h-12 w-12 shrink-0 -rotate-90" aria-hidden="true">
-        <circle cx="22" cy="22" r="18" fill="none" strokeWidth="6" className="stroke-sand" />
-        <circle
-          cx="22"
-          cy="22"
-          r="18"
-          fill="none"
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray={`${filled} ${circumference}`}
-          className={`transition-all duration-500 ${reached ? "stroke-peach-dark" : "stroke-sage"}`}
-        />
-      </svg>
-      <div className="flex-1">
-        <p className="font-extrabold text-ink">{reached ? "Daily goal reached!" : "Daily goal"}</p>
-        <p className="text-sm text-muted">
-          {Math.min(done, goal)} of {goal} {goal === 1 ? "session" : "sessions"} today
+    <div className="flex items-center gap-5 rounded-[28px] bg-brand p-5 text-white">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-white/80">Today</p>
+        <p className="mt-0.5 font-display text-3xl leading-tight font-bold">
+          {reached ? "Goal reached" : `${left} ${left === 1 ? "session" : "sessions"} to go`}
         </p>
+        <Link
+          href="/settings"
+          className="mt-2 inline-block rounded-full text-sm font-semibold text-white/80 underline-offset-4 hover:text-white hover:underline"
+        >
+          Daily goal: {goal} · Change
+        </Link>
       </div>
-      <Link
-        href="/settings"
-        className="rounded-xl px-2 py-1 text-sm font-extrabold text-sage-dark hover:bg-sage-light"
-      >
-        Change
-      </Link>
+      <div className="relative h-20 w-20 shrink-0">
+        <svg viewBox="0 0 64 64" className="h-20 w-20 -rotate-90" aria-hidden="true">
+          <circle cx="32" cy="32" r="26" fill="none" strokeWidth="8" className="stroke-white/20" />
+          <circle
+            cx="32"
+            cy="32"
+            r="26"
+            fill="none"
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={`${filled} ${circumference}`}
+            className="stroke-lime transition-all duration-500"
+          />
+        </svg>
+        <span className="absolute inset-0 flex items-center justify-center font-display text-lg font-bold">
+          {Math.min(done, goal)}/{goal}
+        </span>
+        <span className="sr-only">
+          {Math.min(done, goal)} of {goal} {goal === 1 ? "session" : "sessions"} today
+        </span>
+      </div>
     </div>
   );
 }
@@ -200,20 +186,20 @@ function SessionCard({
   const content = (
     <>
       <span
-        className={`flex h-10 w-10 items-center justify-center rounded-xl ${count > 0 ? iconStyle : "bg-sand text-muted"}`}
+        className={`flex h-10 w-10 items-center justify-center rounded-2xl ${count > 0 ? iconStyle : "bg-white text-line-strong"}`}
       >
         {icon}
       </span>
-      <span className="mt-3 block font-extrabold text-ink">{title}</span>
+      <span className="mt-4 block font-display text-xl font-bold text-ink">{title}</span>
       <span className="block text-sm text-muted">{subtitle}</span>
     </>
   );
-  const card = "rounded-3xl bg-white p-4 ring-1 ring-sand";
+  const card = "rounded-[28px] bg-surface p-4";
   if (count === 0) return <div className={card}>{content}</div>;
   return (
     <Link
       href={href}
-      className={`${card} shadow-[0_4px_0_0_var(--color-sand)] transition hover:bg-cream active:translate-y-1 active:shadow-none`}
+      className={`${card} transition hover:bg-line/70 active:scale-[0.97]`}
     >
       {content}
     </Link>
@@ -241,7 +227,7 @@ export default function LessonPath() {
   }
 
   return (
-    <div className={`flex flex-col gap-12 ${loaded ? "motion-safe:animate-fade-in" : "invisible"}`}>
+    <div className={`flex flex-col gap-10 ${loaded ? "motion-safe:animate-fade-in" : "invisible"}`}>
       <div className="flex flex-col gap-3">
         <DailyGoal done={sessionsToday(progress)} goal={progress.dailyGoal} />
         <div className="grid grid-cols-2 gap-3">
@@ -257,7 +243,7 @@ export default function LessonPath() {
             }
             count={dueCount}
             icon={REVIEW_ICON}
-            iconStyle="bg-lavender-light text-lavender-dark"
+            iconStyle="bg-brand text-white"
           />
           <SessionCard
             href="/practice"
@@ -269,7 +255,7 @@ export default function LessonPath() {
             }
             count={mistakeCount}
             icon={PRACTICE_ICON}
-            iconStyle="bg-peach-light text-peach-dark"
+            iconStyle="bg-coral text-ink"
           />
         </div>
       </div>
@@ -278,28 +264,25 @@ export default function LessonPath() {
         const done = unit.lessons.filter((lesson) => completedLessons.includes(lesson.id)).length;
         return (
           <section key={unit.id}>
-            <div className={`rounded-3xl px-6 py-5 ${theme.banner}`}>
-              <p className="text-xs font-extrabold uppercase tracking-widest text-ink">
-                Unit {unitIndex + 1}
-              </p>
-              <h1 className="mt-1 text-2xl font-extrabold text-ink">{unit.title}</h1>
-              <p className="mt-1 text-sm text-muted">
-                {unit.lessons.length} lessons ·{" "}
+            <div className={`rounded-[28px] px-6 py-5 text-white ${theme.block}`}>
+              <p className="text-sm font-semibold">
+                Unit {unitIndex + 1} · {unit.lessons.length} lessons ·{" "}
                 {unit.lessons.reduce((total, lesson) => total + lesson.signIds.length, 0)} signs
               </p>
-              <div className="mt-3 flex items-center gap-3">
-                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-white/80">
+              <h1 className="mt-1 font-display text-4xl leading-none font-bold">{unit.title}</h1>
+              <div className="mt-4 flex items-center gap-3">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
                   <div
-                    className={`h-full rounded-full transition-all duration-500 ${theme.dot}`}
+                    className="h-full rounded-full bg-white transition-all duration-500"
                     style={{ width: `${(done / unit.lessons.length) * 100}%` }}
                   />
                 </div>
-                <span className="text-xs font-extrabold text-ink">
+                <span className="text-sm font-bold">
                   {done === unit.lessons.length ? "Complete" : `${done}/${unit.lessons.length}`}
                 </span>
               </div>
             </div>
-  
+
             <ol className="mt-10 flex flex-col items-center gap-5">
               {unit.lessons.map((lesson, lessonIndex) => {
                 const state = stateOf(lesson.id);
@@ -323,7 +306,7 @@ export default function LessonPath() {
                         {[0, 1, 2].map((dot) => (
                           <span
                             key={dot}
-                            className={`h-2.5 w-2.5 rounded-full ${state === "completed" ? theme.dot : "bg-sand-dark"}`}
+                            className={`h-2.5 w-2.5 rounded-full ${state === "completed" ? theme.dot : "bg-line-strong"}`}
                           />
                         ))}
                       </span>
