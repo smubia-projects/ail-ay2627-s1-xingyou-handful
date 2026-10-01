@@ -81,6 +81,11 @@
   outline-offset: 3px;
 }
 
+/* Left-handed mode: flip handshape drawings and body diagrams (set by HandPreference). */
+[data-hand="left"] .hand-mirror {
+  transform: scaleX(-1);
+}
+
 body {
   background: var(--color-cream);
   color: var(--color-ink);

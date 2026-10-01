@@ -385,7 +385,7 @@ function SpellExercise({
         data-spelled-word
       >
         {letters.map((letter, index) => (
-          <HandshapeImage key={index} sign={letter} className="h-24 w-14" />
+          <HandshapeImage key={index} sign={letter} className="h-24 w-14" mirror={false} />
         ))}
       </div>
       <div className="mt-6 grid grid-cols-2 gap-3">

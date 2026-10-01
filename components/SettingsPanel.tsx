@@ -10,6 +10,7 @@ import {
   resetProgress,
   restoreProgress,
   setDailyGoal,
+  setLeftHanded,
   useProgress,
   useProgressLoaded,
   type Progress,
@@ -94,6 +95,36 @@ export default function SettingsPanel() {
                 <span className="block text-sm text-muted">
                   {goal} {goal === 1 ? "session" : "sessions"} a day
                 </span>
+              </button>
+            );
+          })}
+        </div>
+      </Section>
+
+      <Section title="Signing hand">
+        <p className="text-sm text-muted">
+          Sign with the hand you write with. Left-handed? The drawings and arrows flip to match.
+        </p>
+        <div className="mt-4 grid grid-cols-2 gap-3" role="radiogroup" aria-label="Signing hand">
+          {[
+            { label: "Right hand", value: false },
+            { label: "Left hand", value: true },
+          ].map((hand) => {
+            const selected = progress.leftHanded === hand.value;
+            return (
+              <button
+                key={hand.label}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => setLeftHanded(hand.value)}
+                className={`rounded-3xl border-2 p-3 text-left transition ${
+                  selected
+                    ? "border-charcoal bg-bluebell"
+                    : "border-charcoal/25 bg-cream hover:border-charcoal"
+                }`}
+              >
+                <span className="block font-display text-lg font-bold text-ink">{hand.label}</span>
               </button>
             );
           })}

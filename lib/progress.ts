@@ -14,6 +14,8 @@ export type Progress = {
   // Sessions (lessons, reviews, practice) to finish each day, and how many are done today.
   dailyGoal: number;
   today: { day: string | null; sessions: number };
+  // Left-handed signers use their left hand as the main hand, so drawings are mirrored for them.
+  leftHanded: boolean;
 };
 
 export type Review = { box: number; due: string };
@@ -36,6 +38,7 @@ const EMPTY: Progress = {
   reviews: {},
   dailyGoal: 1,
   today: { day: null, sessions: 0 },
+  leftHanded: false,
 };
 
 export const DAILY_GOALS = [1, 2, 3, 5];
@@ -77,7 +80,8 @@ function parseProgress(raw: string | null): Progress {
     typeof parsed?.today?.day === "string" && Number.isInteger(parsed?.today?.sessions)
       ? { day: parsed.today.day, sessions: Math.max(parsed.today.sessions, 0) }
       : EMPTY.today;
-  return { completedLessons, xp, streak, mistakes, reviews, dailyGoal, today };
+  const leftHanded = parsed?.leftHanded === true;
+  return { completedLessons, xp, streak, mistakes, reviews, dailyGoal, today, leftHanded };
 }
 
 function readProgress(): Progress {
@@ -276,6 +280,10 @@ export function clearMistakes(signIds: string[]) {
 export function setDailyGoal(goal: number) {
   if (!DAILY_GOALS.includes(goal)) return;
   writeProgress({ ...readProgress(), dailyGoal: goal });
+}
+
+export function setLeftHanded(leftHanded: boolean) {
+  writeProgress({ ...readProgress(), leftHanded });
 }
 
 export function resetProgress() {

@@ -117,7 +117,7 @@ export function BodyDiagram({
   return (
     <svg
       viewBox="0 0 200 200"
-      className={className}
+      className={`hand-mirror ${className}`}
       role="img"
       aria-label={`Body outline marking the sign location: ${LOCATION_LABELS[location].toLowerCase()}${motion ? `, with a ${motion.replace(/-/g, " ")} movement arrow` : ""}`}
     >
@@ -176,7 +176,16 @@ export function BodyDiagram({
 }
 
 // The handshape drawing for a sign, if one matches exactly.
-export function HandshapeImage({ sign, className = "h-36 w-28" }: { sign: Sign; className?: string }) {
+// mirror=false keeps it as drawn even in left-handed mode (for reading other people's signing).
+export function HandshapeImage({
+  sign,
+  className = "h-36 w-28",
+  mirror = true,
+}: {
+  sign: Sign;
+  className?: string;
+  mirror?: boolean;
+}) {
   if (!sign.handshapeImage) return null;
   return (
     <Image
@@ -188,7 +197,7 @@ export function HandshapeImage({ sign, className = "h-36 w-28" }: { sign: Sign; 
       // Small files, often the main thing on screen, so load them straight away.
       loading="eager"
       // Multiply blends the drawings' white backgrounds into the panel behind them.
-      className={`object-contain mix-blend-multiply ${className}`}
+      className={`object-contain mix-blend-multiply ${mirror ? "hand-mirror" : ""} ${className}`}
     />
   );
 }
