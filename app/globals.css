@@ -63,6 +63,12 @@
   }
 }
 
+/* Clear focus ring for keyboard users (mouse clicks don't show it). */
+:focus-visible {
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
 body {
   background: var(--color-cream);
   color: var(--color-ink);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BodyDiagram, LOCATION_LABELS, type Sign } from "@/components/SignCard";
 
 export type Exercise =
@@ -58,6 +58,7 @@ function Prompt({ children }: { children: React.ReactNode }) {
   return <h1 className="text-2xl font-extrabold text-ink">{children}</h1>;
 }
 
+// Main action button. Give it a data-primary attribute so useEnterKey doesn't press it twice.
 export const PRIMARY_BUTTON =
   "rounded-2xl bg-sage px-8 py-3 font-extrabold uppercase tracking-wide text-white shadow-[0_4px_0_0_var(--color-sage-dark)] transition active:translate-y-1 active:shadow-none";
 
@@ -80,6 +81,24 @@ export function BottomBar({
   );
 }
 
+// Enter presses the screen's main button (Check / Continue), like Duolingo. A focused link, or the
+// main button itself, already handles Enter, so those are left alone.
+export function useEnterKey(onEnter: (() => void) | undefined) {
+  useEffect(() => {
+    if (!onEnter) return;
+    function handleKey(event: KeyboardEvent) {
+      if (event.key !== "Enter" || event.repeat) return;
+      const focused = document.activeElement;
+      if (focused instanceof HTMLAnchorElement) return;
+      if (focused instanceof HTMLElement && focused.dataset.primary !== undefined) return;
+      event.preventDefault();
+      onEnter?.();
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onEnter]);
+}
+
 // Duolingo-style bar: Check while answering, then feedback and Continue.
 function CheckBar({
   status,
@@ -96,6 +115,7 @@ function CheckBar({
   onCheck?: () => void;
   onContinue: () => void;
 }) {
+  useEnterKey(status === "answering" ? (canCheck ? onCheck : undefined) : onContinue);
   if (status === "answering" && !onCheck) return null;
 
   const background =
@@ -113,6 +133,7 @@ function CheckBar({
       </div>
       <button
         type="button"
+        data-primary
         disabled={status === "answering" && !canCheck}
         onClick={status === "answering" ? onCheck : onContinue}
         className={`${PRIMARY_BUTTON} disabled:bg-sand disabled:text-muted disabled:shadow-none disabled:active:translate-y-0 ${button}`}
@@ -165,6 +186,7 @@ function MeaningExercise({
             type="button"
             disabled={status !== "answering"}
             onClick={() => setSelected(option.id)}
+            aria-pressed={stateOf(option.id) === "selected"}
             className={choiceClass(stateOf(option.id), "py-4 text-lg")}
           >
             {option.word}
@@ -204,6 +226,7 @@ function PickSignExercise({
             type="button"
             disabled={status !== "answering"}
             onClick={() => setSelected(option.id)}
+            aria-pressed={stateOf(option.id) === "selected"}
             aria-label={`Option ${index + 1}: ${option.handshape}, ${LOCATION_LABELS[option.location].toLowerCase()}`}
             className={choiceClass(stateOf(option.id))}
           >
@@ -282,6 +305,7 @@ function MatchExercise({
               type="button"
               disabled={matched.includes(word.id) || wrongPair !== null}
               onClick={() => pickWord(word.id)}
+              aria-pressed={selectedWord === word.id}
               className={choiceClass(
                 stateOf(word.id, selectedWord, wrongPair?.word),
                 `flex-1 text-lg ${wrongPair?.word === word.id ? "motion-safe:animate-shake" : ""}`,
@@ -298,6 +322,7 @@ function MatchExercise({
               type="button"
               disabled={matched.includes(sign.id) || wrongPair !== null}
               onClick={() => pickSign(sign.id)}
+              aria-pressed={selectedSign === sign.id}
               aria-label={`Sign ${index + 1}: ${sign.handshape}, ${LOCATION_LABELS[sign.location].toLowerCase()}`}
               className={choiceClass(
                 stateOf(sign.id, selectedSign, wrongPair?.sign),

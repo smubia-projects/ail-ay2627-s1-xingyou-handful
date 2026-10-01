@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import LessonRunner from "@/components/LessonRunner";
 import { getLesson, getLessonSigns, getUnits } from "@/lib/content";
@@ -7,6 +8,13 @@ export const dynamicParams = false;
 
 export function generateStaticParams() {
   return getUnits().flatMap((unit) => unit.lessons.map((lesson) => ({ lessonId: lesson.id })));
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/lesson/[lessonId]">): Promise<Metadata> {
+  const { lessonId } = await params;
+  return { title: `${getLesson(lessonId)?.title ?? "Lesson"} · SignPath` };
 }
 
 export default async function LessonPage({ params }: PageProps<"/lesson/[lessonId]">) {

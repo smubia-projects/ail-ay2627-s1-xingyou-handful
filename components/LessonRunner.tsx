@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { BottomBar, ExerciseView, PRIMARY_BUTTON, type Exercise } from "@/components/Exercises";
+import {
+  BottomBar,
+  ExerciseView,
+  PRIMARY_BUTTON,
+  useEnterKey,
+  type Exercise,
+} from "@/components/Exercises";
 import SignCard, { type Sign } from "@/components/SignCard";
 import { buildExercises, reshuffleExercise } from "@/lib/content";
 import { clearMistakes, recordLessonComplete, recordMistakes } from "@/lib/progress";
@@ -81,6 +88,7 @@ export default function LessonRunner({
   const [completed, setCompleted] = useState(0);
   const [missedThisSession, setMissedThisSession] = useState<string[]>([]);
   const [clearedCount, setClearedCount] = useState(0);
+  const router = useRouter();
   const [firstTryCorrect, setFirstTryCorrect] = useState(0);
   const [streak, setStreak] = useState<{ count: number; note?: string }>({ count: 0 });
 
@@ -138,6 +146,10 @@ export default function LessonRunner({
     }
   }
 
+  useEnterKey(
+    phase === "intro" ? nextIntro : phase === "complete" ? () => router.push("/") : undefined,
+  );
+
   const total = queue.filter((item) => !item.retry).length;
   const progress = phase === "complete" ? 1 : total > 0 ? completed / total : 0;
   const xp = xpFor(firstTryCorrect);
@@ -172,7 +184,12 @@ export default function LessonRunner({
             </p>
             <SignCard key={signs[introIndex].id} sign={signs[introIndex]} />
             <BottomBar>
-              <button type="button" onClick={nextIntro} className={`ml-auto ${PRIMARY_BUTTON}`}>
+              <button
+                type="button"
+                data-primary
+                onClick={nextIntro}
+                className={`ml-auto ${PRIMARY_BUTTON}`}
+              >
                 Continue
               </button>
             </BottomBar>
@@ -222,7 +239,7 @@ export default function LessonRunner({
               />
             </div>
             <BottomBar>
-              <Link href="/" className={`ml-auto ${PRIMARY_BUTTON}`}>
+              <Link href="/" data-primary className={`ml-auto ${PRIMARY_BUTTON}`}>
                 Continue
               </Link>
             </BottomBar>

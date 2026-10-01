@@ -84,6 +84,7 @@ export default function PracticePage() {
           <BottomBar>
             <button
               type="button"
+              data-primary
               onClick={() => setSessionSigns(signs)}
               className={`ml-auto ${PRIMARY_BUTTON}`}
             >
