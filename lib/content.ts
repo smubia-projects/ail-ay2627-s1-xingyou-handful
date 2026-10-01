@@ -2,6 +2,7 @@ import type { Exercise } from "@/components/Exercises";
 import { MOTIONS, type Sign } from "@/components/SignCard";
 import signsData from "@/data/signs.json";
 import unitsData from "@/data/lessons.json";
+import spellingWordsData from "@/data/spelling-words.json";
 
 export type Lesson = {
   id: string;
@@ -18,6 +19,8 @@ export type Unit = {
 const signs = signsData as Sign[];
 const units = unitsData as Unit[];
 
+const spellingWords = spellingWordsData as string[];
+
 const signsById = new Map(signs.map((sign) => [sign.id, sign]));
 
 // Fail loudly (including at build time) on content mistakes: bad motions or handshape pictures,
@@ -28,6 +31,11 @@ for (const sign of signs) {
   }
   if (sign.handshapeImage && !/^[A-Z1-9]$/.test(sign.handshapeImage)) {
     throw new Error(`Sign "${sign.id}" has handshapeImage "${sign.handshapeImage}"; use A-Z or 1-9`);
+  }
+}
+for (const word of spellingWords) {
+  if (!/^[A-Z]{2,8}$/.test(word)) {
+    throw new Error(`Spelling word "${word}" must be 2-8 capital letters (data/spelling-words.json)`);
   }
 }
 for (const unit of units) {
@@ -96,6 +104,57 @@ export function buildExercises(practiceSigns: Sign[]): Exercise[] {
   return shuffle(match ? [...exercises, match] : exercises);
 }
 
+const letterSign = (letter: string) => signsById.get(`letter-${letter.toLowerCase()}`);
+const SPELL_QUESTIONS = 2;
+
+// For a lesson of letters: every letter taught up to and including that lesson, in path order.
+// Null for lessons that aren't all letters.
+function lettersKnownThrough(lessonSigns: Sign[]): Set<string> | null {
+  if (lessonSigns.length === 0 || !lessonSigns.every(isLetter)) return null;
+  const known = new Set<string>();
+  for (const lesson of units.flatMap((unit) => unit.lessons)) {
+    const lessonLetters = getLessonSigns(lesson).filter(isLetter);
+    lessonLetters.forEach((sign) => known.add(sign.word));
+    if (lesson.signIds.includes(lessonSigns[0].id)) break;
+  }
+  return known;
+}
+
+// Words for a letters lesson: spelled only with known letters, using at least one new letter.
+// "pool" is every word readable so far, for wrong choices.
+function spellingWordsFor(lessonSigns: Sign[]): { fresh: string[]; pool: string[] } {
+  const known = lettersKnownThrough(lessonSigns);
+  if (!known) return { fresh: [], pool: [] };
+  const newLetters = new Set(lessonSigns.map((sign) => sign.word));
+  const pool = spellingWords.filter((word) => [...word].every((letter) => known.has(letter)));
+  const fresh = pool.filter((word) => [...word].some((letter) => newLetters.has(letter)));
+  return { fresh, pool };
+}
+
+// How many "read the fingerspelling" questions a lesson gets (needs 3 other words as choices).
+function spellCount(lessonSigns: Sign[]): number {
+  const { fresh, pool } = spellingWordsFor(lessonSigns);
+  return pool.length >= 4 ? Math.min(SPELL_QUESTIONS, fresh.length) : 0;
+}
+
+function spellExercises(lessonSigns: Sign[]): Exercise[] {
+  const { fresh, pool } = spellingWordsFor(lessonSigns);
+  return shuffle(fresh)
+    .slice(0, spellCount(lessonSigns))
+    .map((word): Exercise => {
+      // Wrong choices: other readable words, closest in length first so length isn't a giveaway.
+      const others = shuffle(pool.filter((other) => other !== word)).sort(
+        (a, b) => Math.abs(a.length - word.length) - Math.abs(b.length - word.length),
+      );
+      return {
+        type: "spell",
+        word,
+        letters: [...word].map((letter) => letterSign(letter)!),
+        options: shuffle([word, ...others.slice(0, 3)]),
+      };
+    });
+}
+
 export type LessonStep =
   | { kind: "intro"; sign: Sign; index: number }
   | { kind: "exercise"; exercise: Exercise; review?: boolean };
@@ -105,12 +164,12 @@ export const TARGET_QUESTIONS = 8;
 export const MAX_REVIEWS = 3;
 
 export function questionCount(lessonSigns: Sign[]): number {
-  return lessonSigns.length * 3 + (matchExercise(lessonSigns) ? 1 : 0);
+  return lessonSigns.length * 3 + (matchExercise(lessonSigns) ? 1 : 0) + spellCount(lessonSigns);
 }
 
 // A lesson teaches each sign and practices it straight away (intro card, then "what does this
 // mean?"), then mixes the rest: "which is the sign?" and "sign it yourself" for each, match
-// pairs, and quick reviews.
+// pairs, quick reviews, and (in letter lessons) reading fingerspelled words.
 export function buildLessonSteps(lessonSigns: Sign[], reviewSigns: Sign[]): LessonStep[] {
   const taught = lessonSigns.flatMap((sign, index): LessonStep[] => [
     { kind: "intro", sign, index },
@@ -121,6 +180,7 @@ export function buildLessonSteps(lessonSigns: Sign[], reviewSigns: Sign[]): Less
     ...lessonSigns.map((sign): LessonStep => ({ kind: "exercise", exercise: pickSignExercise(sign) })),
     ...lessonSigns.map((sign): LessonStep => ({ kind: "exercise", exercise: signItExercise(sign) })),
     ...(match ? [{ kind: "exercise", exercise: match } as LessonStep] : []),
+    ...spellExercises(lessonSigns).map((exercise): LessonStep => ({ kind: "exercise", exercise })),
     ...reviewSigns.map((sign): LessonStep => ({
       kind: "exercise",
       exercise: Math.random() < 0.5 ? meaningExercise(sign) : pickSignExercise(sign),
@@ -136,6 +196,7 @@ export function reshuffleExercise(exercise: Exercise): Exercise {
     return { ...exercise, signs: shuffle(exercise.signs), words: shuffle(exercise.words) };
   }
   if (exercise.type === "sign-it") return exercise;
+  if (exercise.type === "spell") return { ...exercise, options: shuffle(exercise.options) };
   return { ...exercise, options: shuffle(exercise.options) };
 }
 

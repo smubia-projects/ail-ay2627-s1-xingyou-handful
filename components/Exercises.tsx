@@ -7,7 +7,9 @@ export type Exercise =
   | { type: "meaning"; sign: Sign; options: Sign[] }
   | { type: "pick-sign"; sign: Sign; options: Sign[] }
   | { type: "match"; signs: Sign[]; words: Sign[] }
-  | { type: "sign-it"; sign: Sign };
+  | { type: "sign-it"; sign: Sign }
+  // letters are the letter signs that spell the word; options are words to choose from.
+  | { type: "spell"; word: string; letters: Sign[]; options: string[] };
 
 type Status = "answering" | "correct" | "wrong";
 // Reports whether the exercise was right first time, and which signs the learner got wrong.
@@ -356,6 +358,63 @@ function MatchExercise({
   );
 }
 
+// "CAB" -> "Cab", for showing spelling words as choices.
+function titleCase(word: string) {
+  return word.charAt(0) + word.slice(1).toLowerCase();
+}
+
+// Reading fingerspelling: a row of letter handshapes, pick the word they spell.
+function SpellExercise({
+  word,
+  letters,
+  options,
+  onDone,
+}: {
+  word: string;
+  letters: Sign[];
+  options: string[];
+  onDone: OnDone;
+}) {
+  const { selected, setSelected, status, stateOf, check } = useMultipleChoice(word);
+
+  return (
+    <>
+      <Prompt>What word is being fingerspelled?</Prompt>
+      <div
+        className="mt-6 flex flex-wrap items-end justify-center gap-x-1 gap-y-3 rounded-3xl bg-fennel p-4"
+        data-spelled-word
+      >
+        {letters.map((letter, index) => (
+          <HandshapeImage key={index} sign={letter} className="h-24 w-14" />
+        ))}
+      </div>
+      <div className="mt-6 grid grid-cols-2 gap-3">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            disabled={status !== "answering"}
+            onClick={() => setSelected(option)}
+            aria-pressed={stateOf(option) === "selected"}
+            className={choiceClass(stateOf(option), "py-4 text-lg")}
+          >
+            {titleCase(option)}
+          </button>
+        ))}
+      </div>
+      <CheckBar
+        status={status}
+        title={status === "correct" ? "Nice!" : status === "wrong" ? "Not quite" : undefined}
+        detail={status === "wrong" ? `Correct answer: ${titleCase(word)}` : undefined}
+        canCheck={selected !== null}
+        onCheck={check}
+        // A misread word isn't pinned on any one letter, so no sign is marked as missed.
+        onContinue={() => onDone(status === "correct", [])}
+      />
+    </>
+  );
+}
+
 // The learner makes the sign themselves, reveals the answer, and rates how they did.
 // There's no camera: this is honest self-checking, which is what makes producing signs stick.
 function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
@@ -421,6 +480,16 @@ export function ExerciseView({
   }
   if (exercise.type === "sign-it") {
     return <SignItExercise sign={exercise.sign} onDone={onDone} />;
+  }
+  if (exercise.type === "spell") {
+    return (
+      <SpellExercise
+        word={exercise.word}
+        letters={exercise.letters}
+        options={exercise.options}
+        onDone={onDone}
+      />
+    );
   }
   return <MatchExercise signs={exercise.signs} words={exercise.words} onDone={onDone} />;
 }
