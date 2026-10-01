@@ -11,13 +11,26 @@ import {
   type Exercise,
 } from "@/components/Exercises";
 import SignCard, { type Sign } from "@/components/SignCard";
-import { buildExercises, reshuffleExercise } from "@/lib/content";
+import {
+  buildExercises,
+  buildLessonSteps,
+  getLearnedSignIds,
+  getSign,
+  MAX_REVIEWS,
+  questionCount,
+  reshuffleExercise,
+  shuffle,
+  TARGET_QUESTIONS,
+  type LessonStep,
+} from "@/lib/content";
 import {
   clearMistakes,
   recordLessonComplete,
   recordMistakes,
   recordReviewResults,
+  dueSignIds,
   scheduleNewSigns,
+  useProgress,
 } from "@/lib/progress";
 
 export type SessionMode = "lesson" | "practice" | "review";
@@ -31,10 +44,22 @@ const COMPLETE_HEADINGS: Record<SessionMode, string> = {
 const XP_PER_FIRST_TRY = 5;
 const XP_FOR_FINISHING = 10;
 
-type QueueItem = { exercise: Exercise; retry: boolean };
+// A step in the session: a new-sign card, or an exercise (a retry of a missed one, or a quick
+// review of an earlier sign).
+type QueueItem =
+  | { kind: "intro"; sign: Sign; index: number }
+  | { kind: "exercise"; exercise: Exercise; retry: boolean; review: boolean };
 
 function toQueue(exercises: Exercise[]): QueueItem[] {
-  return exercises.map((exercise) => ({ exercise, retry: false }));
+  return exercises.map((exercise) => ({ kind: "exercise", exercise, retry: false, review: false }));
+}
+
+function fromSteps(steps: LessonStep[]): QueueItem[] {
+  return steps.map((step) =>
+    step.kind === "intro"
+      ? step
+      : { kind: "exercise", exercise: step.exercise, retry: false, review: step.review ?? false },
+  );
 }
 
 function xpFor(firstTryCorrect: number) {
@@ -79,9 +104,9 @@ function Stat({
   );
 }
 
-// Runs a lesson (intro cards, then exercises), or a practice/review session of known signs.
-// Sessions skip the intro: they only mount in the browser after a click, so building their
-// random exercises up front is safe.
+// Runs a lesson (each new sign is taught, then practiced, then everything is mixed with quick
+// reviews), or a practice/review session of known signs. Random parts are built on the first
+// click, never during render, so the server and browser always render the same first screen.
 export default function LessonRunner({
   mode,
   lessonId,
@@ -93,15 +118,14 @@ export default function LessonRunner({
   title: string;
   signs: Sign[];
 }) {
-  const isPractice = mode !== "lesson";
-  const [phase, setPhase] = useState<"intro" | "exercises" | "complete">(
-    isPractice ? "exercises" : "intro",
-  );
-  const [introIndex, setIntroIndex] = useState(0);
+  const isLesson = mode === "lesson";
+  const progressData = useProgress();
   const [queue, setQueue] = useState<QueueItem[]>(() =>
-    isPractice ? toQueue(buildExercises(signs)) : [],
+    isLesson ? [{ kind: "intro", sign: signs[0], index: 0 }] : toQueue(buildExercises(signs)),
   );
+  const [built, setBuilt] = useState(!isLesson);
   const [position, setPosition] = useState(0);
+  const [done, setDone] = useState(false);
   const [completed, setCompleted] = useState(0);
   const [missedThisSession, setMissedThisSession] = useState<string[]>([]);
   const [clearedCount, setClearedCount] = useState(0);
@@ -109,20 +133,69 @@ export default function LessonRunner({
   const [firstTryCorrect, setFirstTryCorrect] = useState(0);
   const [streak, setStreak] = useState<{ count: number; note?: string }>({ count: 0 });
 
-  function nextIntro() {
-    if (introIndex < signs.length - 1) {
-      setIntroIndex(introIndex + 1);
-      return;
+  // Earlier signs to top up a short lesson: due reviews first, then any other learned sign.
+  function pickReviewSigns(): Sign[] {
+    const count = Math.min(MAX_REVIEWS, Math.max(0, TARGET_QUESTIONS - questionCount(signs)));
+    if (count === 0) return [];
+    const lessonIds = signs.map((sign) => sign.id);
+    const learned = getLearnedSignIds(progressData.completedLessons).filter(
+      (id) => !lessonIds.includes(id),
+    );
+    const due = dueSignIds(progressData.reviews, learned);
+    const others = shuffle(learned.filter((id) => !due.includes(id)));
+    return [...due, ...others]
+      .slice(0, count)
+      .map((id) => getSign(id))
+      .filter((sign): sign is Sign => sign !== undefined);
+  }
+
+  function finishSession(firstTryTotal: number, missed: string[]) {
+    const xpEarned = xpFor(firstTryTotal);
+    const result = recordLessonComplete(isLesson ? (lessonId ?? null) : null, xpEarned);
+    const signIds = signs.map((sign) => sign.id);
+    const allRight = signIds.filter((id) => !missed.includes(id));
+    if (mode === "lesson") scheduleNewSigns(signIds);
+    // A practiced sign leaves the mistakes list once all its questions were right first time.
+    if (mode === "practice") clearMistakes(allRight);
+    // A reviewed sign answered right first time waits longer before its next review.
+    if (mode === "review") recordReviewResults(signIds, missed);
+    setClearedCount(allRight.length);
+    setStreak({
+      count: result.streak,
+      note: result.earnedFreeze
+        ? "Earned a freeze!"
+        : result.usedFreezes > 0
+          ? "Freeze saved it!"
+          : result.increasedToday
+            ? "+1 today!"
+            : undefined,
+    });
+    setDone(true);
+  }
+
+  function advance(nextQueue: QueueItem[], firstTryTotal: number, missed: string[]) {
+    if (position + 1 < nextQueue.length) setPosition(position + 1);
+    else finishSession(firstTryTotal, missed);
+  }
+
+  function continueFromIntro() {
+    setCompleted((count) => count + 1);
+    let nextQueue = queue;
+    if (!built) {
+      // The first card is already showing; the full plan starts with that same card.
+      nextQueue = fromSteps(buildLessonSteps(signs, pickReviewSigns()));
+      setQueue(nextQueue);
+      setBuilt(true);
     }
-    // Built on click, not during render, so the random order can't differ between server and browser.
-    setQueue(toQueue(buildExercises(signs)));
-    setPhase("exercises");
+    advance(nextQueue, firstTryCorrect, missedThisSession);
   }
 
   function finishExercise(correct: boolean, missedSignIds: string[]) {
     const item = queue[position];
+    if (item.kind !== "exercise") return;
     const firstTry = correct && !item.retry;
-    if (firstTry) setFirstTryCorrect((count) => count + 1);
+    const firstTryTotal = firstTryCorrect + (firstTry ? 1 : 0);
+    if (firstTry) setFirstTryCorrect(firstTryTotal);
 
     // Saved straight away, so mistakes count even if the learner quits mid-lesson.
     recordMistakes(missedSignIds);
@@ -132,48 +205,30 @@ export default function LessonRunner({
     // Missed multiple-choice questions come back at the end until answered correctly.
     // Match pairs is already finished once every pair is matched.
     const comesBack = !correct && item.exercise.type !== "match";
-    const nextQueue = comesBack
-      ? [...queue, { exercise: reshuffleExercise(item.exercise), retry: true }]
+    const nextQueue: QueueItem[] = comesBack
+      ? [
+          ...queue,
+          { kind: "exercise", exercise: reshuffleExercise(item.exercise), retry: true, review: item.review },
+        ]
       : queue;
     if (!comesBack) setCompleted((count) => count + 1);
     setQueue(nextQueue);
-
-    if (position + 1 < nextQueue.length) {
-      setPosition(position + 1);
-    } else {
-      const xpEarned = xpFor(firstTryCorrect + (firstTry ? 1 : 0));
-      const result = recordLessonComplete(mode === "lesson" ? (lessonId ?? null) : null, xpEarned);
-      const signIds = signs.map((sign) => sign.id);
-      const allRight = signIds.filter((id) => !missed.includes(id));
-      if (mode === "lesson") scheduleNewSigns(signIds);
-      // A practiced sign leaves the mistakes list once all its questions were right first time.
-      if (mode === "practice") clearMistakes(allRight);
-      // A reviewed sign answered right first time waits longer before its next review.
-      if (mode === "review") recordReviewResults(signIds, missed);
-      setClearedCount(allRight.length);
-      setStreak({
-        count: result.streak,
-        note: result.earnedFreeze
-          ? "Earned a freeze!"
-          : result.usedFreezes > 0
-            ? "Freeze saved it!"
-            : result.increasedToday
-              ? "+1 today!"
-              : undefined,
-      });
-      setPhase("complete");
-    }
+    advance(nextQueue, firstTryTotal, missed);
   }
 
+  const current = queue[position];
   useEnterKey(
-    phase === "intro" ? nextIntro : phase === "complete" ? () => router.push("/") : undefined,
+    done ? () => router.push("/") : current?.kind === "intro" ? continueFromIntro : undefined,
   );
 
-  const total = queue.filter((item) => !item.retry).length;
-  const progress = phase === "complete" ? 1 : total > 0 ? completed / total : 0;
+  // Before the plan is built, count the steps it will have so the bar doesn't jump.
+  const plannedSteps = built
+    ? queue.filter((item) => item.kind === "intro" || !item.retry).length
+    : signs.length + questionCount(signs);
+  const questions = queue.filter((item) => item.kind === "exercise" && !item.retry).length;
+  const progress = done ? 1 : plannedSteps > 0 ? completed / plannedSteps : 0;
   const xp = xpFor(firstTryCorrect);
-  const accuracy = total > 0 ? Math.round((firstTryCorrect / total) * 100) : 0;
-  const current = queue[position];
+  const accuracy = questions > 0 ? Math.round((firstTryCorrect / questions) * 100) : 0;
 
   return (
     <div className="mx-auto w-full max-w-md px-5 pt-6 pb-40">
@@ -195,18 +250,18 @@ export default function LessonRunner({
         <ProgressBar value={progress} />
       </div>
 
-      <div className="mt-8">
-        {phase === "intro" && (
+      <div className="mt-6">
+        {!done && current?.kind === "intro" && (
           <>
-            <p className="mb-4 text-sm font-semibold text-muted">
-              {title} · {introIndex + 1} of {signs.length}
+            <p className="mb-3 text-sm font-semibold text-muted">
+              {title} · new sign {current.index + 1} of {signs.length}
             </p>
-            <SignCard key={signs[introIndex].id} sign={signs[introIndex]} />
+            <SignCard key={current.sign.id} sign={current.sign} />
             <BottomBar>
               <button
                 type="button"
                 data-primary
-                onClick={nextIntro}
+                onClick={continueFromIntro}
                 className={`ml-auto ${PRIMARY_BUTTON}`}
               >
                 Continue
@@ -215,18 +270,22 @@ export default function LessonRunner({
           </>
         )}
 
-        {phase === "exercises" && current && (
+        {!done && current?.kind === "exercise" && (
           <>
-            {current.retry && (
+            {current.retry ? (
               <p className="mb-3 inline-block rounded-full bg-coral-soft px-3 py-1 text-sm font-semibold text-ink">
                 Earlier mistake · try again
               </p>
-            )}
+            ) : current.review ? (
+              <p className="mb-3 inline-block rounded-full bg-bluebell px-3 py-1 text-sm font-semibold text-ink">
+                Quick review
+              </p>
+            ) : null}
             <ExerciseView key={position} exercise={current.exercise} onDone={finishExercise} />
           </>
         )}
 
-        {phase === "complete" && (
+        {done && (
           <div className="flex flex-col items-center pt-6 text-center">
             <span className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-charcoal bg-honey">
               <svg viewBox="0 0 24 24" className="h-12 w-12" fill="none" aria-hidden="true">

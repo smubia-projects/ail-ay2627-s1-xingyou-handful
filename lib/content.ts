@@ -72,20 +72,55 @@ export function pickOptions(answer: Sign, count = 4): Sign[] {
   return shuffle([answer, ...wrong]);
 }
 
-// Two multiple-choice exercises per sign, plus match pairs for 3+ signs, in random order.
-export function buildExercises(practiceSigns: Sign[]): Exercise[] {
-  const exercises: Exercise[] = practiceSigns.flatMap((sign): Exercise[] => [
-    { type: "meaning", sign, options: pickOptions(sign) },
-    { type: "pick-sign", sign, options: pickOptions(sign) },
-  ]);
-  // Match pairs only when every sign looks different, or two pairs could be swapped.
-  const allDistinct = practiceSigns.every((a, i) =>
-    practiceSigns.slice(i + 1).every((b) => !looksAlike(a, b)),
+const meaningExercise = (sign: Sign): Exercise => ({ type: "meaning", sign, options: pickOptions(sign) });
+const pickSignExercise = (sign: Sign): Exercise => ({ type: "pick-sign", sign, options: pickOptions(sign) });
+
+// Match pairs only for 3+ signs that all look different, or two pairs could be swapped.
+function matchExercise(matchSigns: Sign[]): Exercise | null {
+  const allDistinct = matchSigns.every((a, i) =>
+    matchSigns.slice(i + 1).every((b) => !looksAlike(a, b)),
   );
-  if (practiceSigns.length >= 3 && allDistinct) {
-    exercises.push({ type: "match", signs: shuffle(practiceSigns), words: shuffle(practiceSigns) });
-  }
-  return shuffle(exercises);
+  if (matchSigns.length < 3 || !allDistinct) return null;
+  return { type: "match", signs: shuffle(matchSigns), words: shuffle(matchSigns) };
+}
+
+// Two multiple-choice exercises per sign, plus match pairs, in random order (practice and review).
+export function buildExercises(practiceSigns: Sign[]): Exercise[] {
+  const exercises = practiceSigns.flatMap((sign) => [meaningExercise(sign), pickSignExercise(sign)]);
+  const match = matchExercise(practiceSigns);
+  return shuffle(match ? [...exercises, match] : exercises);
+}
+
+export type LessonStep =
+  | { kind: "intro"; sign: Sign; index: number }
+  | { kind: "exercise"; exercise: Exercise; review?: boolean };
+
+// Short lessons are topped up with quick reviews of earlier signs, up to this many questions.
+export const TARGET_QUESTIONS = 8;
+export const MAX_REVIEWS = 3;
+
+export function questionCount(lessonSigns: Sign[]): number {
+  return lessonSigns.length * 2 + (matchExercise(lessonSigns) ? 1 : 0);
+}
+
+// A lesson teaches each sign and practices it straight away (intro card, then "what does this
+// mean?"), then mixes the rest: "which is the sign?" for each, match pairs, and quick reviews.
+export function buildLessonSteps(lessonSigns: Sign[], reviewSigns: Sign[]): LessonStep[] {
+  const taught = lessonSigns.flatMap((sign, index): LessonStep[] => [
+    { kind: "intro", sign, index },
+    { kind: "exercise", exercise: meaningExercise(sign) },
+  ]);
+  const match = matchExercise(lessonSigns);
+  const mixed: LessonStep[] = [
+    ...lessonSigns.map((sign): LessonStep => ({ kind: "exercise", exercise: pickSignExercise(sign) })),
+    ...(match ? [{ kind: "exercise", exercise: match } as LessonStep] : []),
+    ...reviewSigns.map((sign): LessonStep => ({
+      kind: "exercise",
+      exercise: Math.random() < 0.5 ? meaningExercise(sign) : pickSignExercise(sign),
+      review: true,
+    })),
+  ];
+  return [...taught, ...shuffle(mixed)];
 }
 
 // The same exercise with its choices in a new order, for when a mistake comes back.
