@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Google's hand-tracking engine: third-party files, used unmodified.
+    "public/mediapipe/**",
   ]),
 ]);
 
