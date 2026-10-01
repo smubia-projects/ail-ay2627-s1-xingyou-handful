@@ -178,5 +178,239 @@
     "movement": "Brush the middle fingers up the chest in alternating circles",
     "tip": "Your heart racing",
     "reviewed": false
+  },
+  {
+    "id": "one",
+    "word": "One",
+    "handshape": "Index finger up",
+    "location": "space",
+    "movement": "Hold up the index finger, palm facing you",
+    "tip": "Just like counting on your fingers",
+    "reviewed": false
+  },
+  {
+    "id": "two",
+    "word": "Two",
+    "handshape": "V-hand (index and middle up)",
+    "location": "space",
+    "movement": "Hold up the index and middle fingers, palm facing you",
+    "tip": "Two fingers for two",
+    "reviewed": false
+  },
+  {
+    "id": "three",
+    "word": "Three",
+    "handshape": "Thumb, index and middle up",
+    "location": "space",
+    "movement": "Hold up the thumb, index and middle fingers, palm facing you",
+    "tip": "ASL three starts with the thumb",
+    "reviewed": false
+  },
+  {
+    "id": "four",
+    "word": "Four",
+    "handshape": "Four fingers up, thumb tucked",
+    "location": "space",
+    "movement": "Hold up four fingers with the thumb folded in, palm facing you",
+    "tip": "Everything but the thumb",
+    "reviewed": false
+  },
+  {
+    "id": "five",
+    "word": "Five",
+    "handshape": "5-hand (open, fingers spread)",
+    "location": "space",
+    "movement": "Hold up the open hand with all fingers spread, palm facing you",
+    "tip": "A full open hand",
+    "reviewed": false
+  },
+  {
+    "id": "six",
+    "word": "Six",
+    "handshape": "Thumb touching little finger",
+    "location": "space",
+    "movement": "Touch the thumb to the little finger, other fingers up, palm out",
+    "tip": "Thumb meets the smallest finger",
+    "reviewed": false
+  },
+  {
+    "id": "seven",
+    "word": "Seven",
+    "handshape": "Thumb touching ring finger",
+    "location": "space",
+    "movement": "Touch the thumb to the ring finger, other fingers up, palm out",
+    "tip": "Thumb moves one finger in",
+    "reviewed": false
+  },
+  {
+    "id": "eight",
+    "word": "Eight",
+    "handshape": "Thumb touching middle finger",
+    "location": "space",
+    "movement": "Touch the thumb to the middle finger, other fingers up, palm out",
+    "tip": "Thumb moves in again",
+    "reviewed": false
+  },
+  {
+    "id": "nine",
+    "word": "Nine",
+    "handshape": "Thumb touching index finger",
+    "location": "space",
+    "movement": "Touch the thumb to the index finger, other fingers up, palm out",
+    "tip": "Last stop before ten",
+    "reviewed": false
+  },
+  {
+    "id": "ten",
+    "word": "Ten",
+    "handshape": "A-hand (thumb up)",
+    "location": "space",
+    "movement": "Hold a thumbs-up and give it a small twist or shake",
+    "tip": "A thumbs-up for reaching ten",
+    "reviewed": false
+  },
+  {
+    "id": "who",
+    "word": "Who",
+    "handshape": "L-hand (thumb and index out)",
+    "location": "chin",
+    "movement": "Rest the thumb on the chin and bend the index finger a couple of times, eyebrows down",
+    "tip": "Your finger is asking 'who?'",
+    "reviewed": false
+  },
+  {
+    "id": "what",
+    "word": "What",
+    "handshape": "Open hands, palms up",
+    "location": "space",
+    "movement": "Hold both open hands palms up and shake them slightly side to side, eyebrows down",
+    "tip": "A shrug with your hands",
+    "reviewed": false
+  },
+  {
+    "id": "where",
+    "word": "Where",
+    "handshape": "Index finger up",
+    "location": "space",
+    "movement": "Hold the index finger up, palm out, and shake it side to side, eyebrows down",
+    "tip": "Searching back and forth",
+    "reviewed": false
+  },
+  {
+    "id": "why",
+    "word": "Why",
+    "handshape": "Flat fingers, then Y-hand",
+    "location": "forehead",
+    "movement": "Touch the fingertips to the forehead, then pull the hand forward and down into a Y-hand",
+    "tip": "Pulling a question out of your mind",
+    "reviewed": false
+  },
+  {
+    "id": "how",
+    "word": "How",
+    "handshape": "Bent hands, backs of fingers together",
+    "location": "space",
+    "movement": "Start with the knuckles of both bent hands together, then roll them forward so the palms face up",
+    "tip": "Unfolding the answer",
+    "reviewed": false
+  },
+  {
+    "id": "eat",
+    "word": "Eat",
+    "handshape": "Flat O-hand (fingertips together)",
+    "location": "mouth",
+    "movement": "Tap the fingertips to the mouth a couple of times",
+    "tip": "Bringing food to your mouth",
+    "reviewed": false
+  },
+  {
+    "id": "drink",
+    "word": "Drink",
+    "handshape": "C-hand",
+    "location": "mouth",
+    "movement": "Bring a C-hand to the mouth and tip it up as if drinking from a cup",
+    "tip": "Holding an invisible cup",
+    "reviewed": false
+  },
+  {
+    "id": "water",
+    "word": "Water",
+    "handshape": "W-hand (three middle fingers up)",
+    "location": "chin",
+    "movement": "Tap the index finger of a W-hand on the chin twice",
+    "tip": "W for water at your lips",
+    "reviewed": false
+  },
+  {
+    "id": "milk",
+    "word": "Milk",
+    "handshape": "C-hand closing into an S-hand",
+    "location": "space",
+    "movement": "Squeeze an open C-hand closed into a fist a couple of times",
+    "tip": "Milking a cow",
+    "reviewed": false
+  },
+  {
+    "id": "hungry",
+    "word": "Hungry",
+    "handshape": "C-hand, palm toward you",
+    "location": "chest",
+    "movement": "Move the C-hand down the middle of the chest",
+    "tip": "Food travelling down to an empty stomach",
+    "reviewed": false
+  },
+  {
+    "id": "red",
+    "word": "Red",
+    "handshape": "Index finger",
+    "location": "chin",
+    "movement": "Brush the index finger down across the lips and chin a couple of times",
+    "tip": "The color of your lips",
+    "reviewed": false
+  },
+  {
+    "id": "blue",
+    "word": "Blue",
+    "handshape": "B-hand (flat, thumb tucked)",
+    "location": "space",
+    "movement": "Hold up a B-hand and twist it back and forth at the wrist",
+    "tip": "B for blue",
+    "reviewed": false
+  },
+  {
+    "id": "green",
+    "word": "Green",
+    "handshape": "G-hand (index and thumb pointing sideways)",
+    "location": "space",
+    "movement": "Hold a G-hand and twist it back and forth at the wrist",
+    "tip": "G for green",
+    "reviewed": false
+  },
+  {
+    "id": "yellow",
+    "word": "Yellow",
+    "handshape": "Y-hand (thumb and little finger out)",
+    "location": "space",
+    "movement": "Hold a Y-hand and twist it back and forth at the wrist",
+    "tip": "Y for yellow",
+    "reviewed": false
+  },
+  {
+    "id": "black",
+    "word": "Black",
+    "handshape": "Index finger",
+    "location": "forehead",
+    "movement": "Draw the side of the index finger across the forehead",
+    "tip": "A dark eyebrow line",
+    "reviewed": false
+  },
+  {
+    "id": "white",
+    "word": "White",
+    "handshape": "5-hand closing to a flat O",
+    "location": "chest",
+    "movement": "Place the open hand on the chest, then pull it away while closing the fingertips together",
+    "tip": "Pulling a white shirt away from your chest",
+    "reviewed": false
   }
 ]

@@ -426,6 +426,534 @@ Notes:
 
 &nbsp;
 
+## Unit 5: Numbers
+
+### 21. One
+
+*Lesson: One to three*
+
+| | |
+|---|---|
+| Handshape | Index finger up |
+| Location | In front of the body |
+| Movement | Hold up the index finger, palm facing you |
+| Memory tip | Just like counting on your fingers |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 22. Two
+
+*Lesson: One to three*
+
+| | |
+|---|---|
+| Handshape | V-hand (index and middle up) |
+| Location | In front of the body |
+| Movement | Hold up the index and middle fingers, palm facing you |
+| Memory tip | Two fingers for two |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 23. Three
+
+*Lesson: One to three*
+
+| | |
+|---|---|
+| Handshape | Thumb, index and middle up |
+| Location | In front of the body |
+| Movement | Hold up the thumb, index and middle fingers, palm facing you |
+| Memory tip | ASL three starts with the thumb |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 24. Four
+
+*Lesson: Four to six*
+
+| | |
+|---|---|
+| Handshape | Four fingers up, thumb tucked |
+| Location | In front of the body |
+| Movement | Hold up four fingers with the thumb folded in, palm facing you |
+| Memory tip | Everything but the thumb |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 25. Five
+
+*Lesson: Four to six*
+
+| | |
+|---|---|
+| Handshape | 5-hand (open, fingers spread) |
+| Location | In front of the body |
+| Movement | Hold up the open hand with all fingers spread, palm facing you |
+| Memory tip | A full open hand |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 26. Six
+
+*Lesson: Four to six*
+
+| | |
+|---|---|
+| Handshape | Thumb touching little finger |
+| Location | In front of the body |
+| Movement | Touch the thumb to the little finger, other fingers up, palm out |
+| Memory tip | Thumb meets the smallest finger |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 27. Seven
+
+*Lesson: Seven to ten*
+
+| | |
+|---|---|
+| Handshape | Thumb touching ring finger |
+| Location | In front of the body |
+| Movement | Touch the thumb to the ring finger, other fingers up, palm out |
+| Memory tip | Thumb moves one finger in |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 28. Eight
+
+*Lesson: Seven to ten*
+
+| | |
+|---|---|
+| Handshape | Thumb touching middle finger |
+| Location | In front of the body |
+| Movement | Touch the thumb to the middle finger, other fingers up, palm out |
+| Memory tip | Thumb moves in again |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 29. Nine
+
+*Lesson: Seven to ten*
+
+| | |
+|---|---|
+| Handshape | Thumb touching index finger |
+| Location | In front of the body |
+| Movement | Touch the thumb to the index finger, other fingers up, palm out |
+| Memory tip | Last stop before ten |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 30. Ten
+
+*Lesson: Seven to ten*
+
+| | |
+|---|---|
+| Handshape | A-hand (thumb up) |
+| Location | In front of the body |
+| Movement | Hold a thumbs-up and give it a small twist or shake |
+| Memory tip | A thumbs-up for reaching ten |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+## Unit 6: Questions
+
+### 31. Who
+
+*Lesson: Who, what, where*
+
+| | |
+|---|---|
+| Handshape | L-hand (thumb and index out) |
+| Location | Chin |
+| Movement | Rest the thumb on the chin and bend the index finger a couple of times, eyebrows down |
+| Memory tip | Your finger is asking 'who?' |
+
+> **Dictionary pre-check:** Matches Lifeprint: thumb on chin, index finger bends twice. Furrowed brows for questions.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 32. What
+
+*Lesson: Who, what, where*
+
+| | |
+|---|---|
+| Handshape | Open hands, palms up |
+| Location | In front of the body |
+| Movement | Hold both open hands palms up and shake them slightly side to side, eyebrows down |
+| Memory tip | A shrug with your hands |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 33. Where
+
+*Lesson: Who, what, where*
+
+| | |
+|---|---|
+| Handshape | Index finger up |
+| Location | In front of the body |
+| Movement | Hold the index finger up, palm out, and shake it side to side, eyebrows down |
+| Memory tip | Searching back and forth |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 34. Why
+
+*Lesson: Why and how*
+
+| | |
+|---|---|
+| Handshape | Flat fingers, then Y-hand |
+| Location | Forehead |
+| Movement | Touch the fingertips to the forehead, then pull the hand forward and down into a Y-hand |
+| Memory tip | Pulling a question out of your mind |
+
+> **Dictionary pre-check:** Matches Lifeprint: fingertips at forehead, pull forward into a Y-hand.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 35. How
+
+*Lesson: Why and how*
+
+| | |
+|---|---|
+| Handshape | Bent hands, backs of fingers together |
+| Location | In front of the body |
+| Movement | Start with the knuckles of both bent hands together, then roll them forward so the palms face up |
+| Memory tip | Unfolding the answer |
+
+> **Dictionary pre-check:** Matches Lifeprint: bent hands knuckle-to-knuckle roll forward to palms up.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+## Unit 7: Food & drink
+
+### 36. Eat
+
+*Lesson: Eat and drink*
+
+| | |
+|---|---|
+| Handshape | Flat O-hand (fingertips together) |
+| Location | Mouth |
+| Movement | Tap the fingertips to the mouth a couple of times |
+| Memory tip | Bringing food to your mouth |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 37. Drink
+
+*Lesson: Eat and drink*
+
+| | |
+|---|---|
+| Handshape | C-hand |
+| Location | Mouth |
+| Movement | Bring a C-hand to the mouth and tip it up as if drinking from a cup |
+| Memory tip | Holding an invisible cup |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 38. Water
+
+*Lesson: Eat and drink*
+
+| | |
+|---|---|
+| Handshape | W-hand (three middle fingers up) |
+| Location | Chin |
+| Movement | Tap the index finger of a W-hand on the chin twice |
+| Memory tip | W for water at your lips |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 39. Hungry
+
+*Lesson: Hungry?*
+
+| | |
+|---|---|
+| Handshape | C-hand, palm toward you |
+| Location | Chest |
+| Movement | Move the C-hand down the middle of the chest |
+| Memory tip | Food travelling down to an empty stomach |
+
+> **Dictionary pre-check:** Matches Lifeprint: C-hand moves down the chest. Same as WISH for some signers.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 40. Milk
+
+*Lesson: Hungry?*
+
+| | |
+|---|---|
+| Handshape | C-hand closing into an S-hand |
+| Location | In front of the body |
+| Movement | Squeeze an open C-hand closed into a fist a couple of times |
+| Memory tip | Milking a cow |
+
+> **Dictionary pre-check:** Matches Lifeprint: C-hand squeezes closed into S, twice.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+## Unit 8: Colors
+
+### 41. Red
+
+*Lesson: Bright colors*
+
+| | |
+|---|---|
+| Handshape | Index finger |
+| Location | Chin |
+| Movement | Brush the index finger down across the lips and chin a couple of times |
+| Memory tip | The color of your lips |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 42. Yellow
+
+*Lesson: Bright colors*
+
+| | |
+|---|---|
+| Handshape | Y-hand (thumb and little finger out) |
+| Location | In front of the body |
+| Movement | Hold a Y-hand and twist it back and forth at the wrist |
+| Memory tip | Y for yellow |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 43. Blue
+
+*Lesson: Bright colors*
+
+| | |
+|---|---|
+| Handshape | B-hand (flat, thumb tucked) |
+| Location | In front of the body |
+| Movement | Hold up a B-hand and twist it back and forth at the wrist |
+| Memory tip | B for blue |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 44. Green
+
+*Lesson: More colors*
+
+| | |
+|---|---|
+| Handshape | G-hand (index and thumb pointing sideways) |
+| Location | In front of the body |
+| Movement | Hold a G-hand and twist it back and forth at the wrist |
+| Memory tip | G for green |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 45. Black
+
+*Lesson: More colors*
+
+| | |
+|---|---|
+| Handshape | Index finger |
+| Location | Forehead |
+| Movement | Draw the side of the index finger across the forehead |
+| Memory tip | A dark eyebrow line |
+
+> **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 46. White
+
+*Lesson: More colors*
+
+| | |
+|---|---|
+| Handshape | 5-hand closing to a flat O |
+| Location | Chest |
+| Movement | Place the open hand on the chest, then pull it away while closing the fingertips together |
+| Memory tip | Pulling a white shirt away from your chest |
+
+> **Dictionary pre-check:** Matches Lifeprint: open hand on chest pulls away, closing the fingertips.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
 ## Anything else
 
 Are there signs you think beginners should learn early that are missing? Anything about how the lessons are grouped that feels off?

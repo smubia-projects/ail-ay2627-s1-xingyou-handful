@@ -30,5 +30,38 @@
       { "id": "feelings-1", "title": "Good feelings", "signIds": ["happy", "love", "excited"] },
       { "id": "feelings-2", "title": "Low days", "signIds": ["sad", "tired"] }
     ]
+  },
+  {
+    "id": "numbers",
+    "title": "Numbers",
+    "lessons": [
+      { "id": "numbers-1", "title": "One to three", "signIds": ["one", "two", "three"] },
+      { "id": "numbers-2", "title": "Four to six", "signIds": ["four", "five", "six"] },
+      { "id": "numbers-3", "title": "Seven to ten", "signIds": ["seven", "eight", "nine", "ten"] }
+    ]
+  },
+  {
+    "id": "questions",
+    "title": "Questions",
+    "lessons": [
+      { "id": "questions-1", "title": "Who, what, where", "signIds": ["who", "what", "where"] },
+      { "id": "questions-2", "title": "Why and how", "signIds": ["why", "how"] }
+    ]
+  },
+  {
+    "id": "food",
+    "title": "Food & drink",
+    "lessons": [
+      { "id": "food-1", "title": "Eat and drink", "signIds": ["eat", "drink", "water"] },
+      { "id": "food-2", "title": "Hungry?", "signIds": ["hungry", "milk"] }
+    ]
+  },
+  {
+    "id": "colors",
+    "title": "Colors",
+    "lessons": [
+      { "id": "colors-1", "title": "Bright colors", "signIds": ["red", "yellow", "blue"] },
+      { "id": "colors-2", "title": "More colors", "signIds": ["green", "black", "white"] }
+    ]
   }
 ]
