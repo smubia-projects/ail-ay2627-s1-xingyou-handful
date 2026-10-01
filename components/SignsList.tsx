@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import SignCard, { BodyDiagram, type Sign } from "@/components/SignCard";
+import SignCard, { BodyDiagram, HandshapeImage, type Sign } from "@/components/SignCard";
 import { getLearnedSignIds, getLessonSigns, getSign, getUnits } from "@/lib/content";
 import { dayKey, useProgress, useProgressLoaded, type Review } from "@/lib/progress";
 
@@ -47,7 +47,11 @@ function SignRow({
         className={`flex w-full items-center gap-3 rounded-3xl bg-surface p-3 text-left transition hover:bg-line/70 ${open ? "ring-2 ring-charcoal" : ""}`}
       >
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cream">
-          <BodyDiagram location={sign.location} className="h-10 w-10" />
+          {sign.handshapeImage ? (
+            <HandshapeImage sign={sign} className="h-10 w-10" />
+          ) : (
+            <BodyDiagram location={sign.location} className="h-10 w-10" />
+          )}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">

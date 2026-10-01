@@ -6,7 +6,9 @@
     "location": "forehead",
     "movement": "Touch fingertips to the side of the forehead, then move outward",
     "tip": "A friendly salute",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "B",
+    "motion": "outward"
   },
   {
     "id": "thank-you",
@@ -15,7 +17,9 @@
     "location": "chin",
     "movement": "Touch the fingertips to the chin or lips, then move the hand forward and down toward the person",
     "tip": "Sending thanks from your lips",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "B",
+    "motion": "forward-down"
   },
   {
     "id": "please",
@@ -24,7 +28,9 @@
     "location": "chest",
     "movement": "Rub the palm in a circle on the chest",
     "tip": "Warming your heart to ask nicely",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "B",
+    "motion": "circle"
   },
   {
     "id": "sorry",
@@ -33,7 +39,9 @@
     "location": "chest",
     "movement": "Rub the fist in a circle on the chest",
     "tip": "A fist circling a heavy heart",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "A",
+    "motion": "circle"
   },
   {
     "id": "goodbye",
@@ -42,7 +50,9 @@
     "location": "space",
     "movement": "Wave by bending the fingers down and up at the knuckles a few times",
     "tip": "A wave goodbye",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "B",
+    "motion": "wiggle"
   },
   {
     "id": "yes",
@@ -51,7 +61,9 @@
     "location": "space",
     "movement": "Bend the wrist so the fist nods up and down",
     "tip": "Your fist is a head nodding yes",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "S",
+    "motion": "nod"
   },
   {
     "id": "no",
@@ -60,7 +72,8 @@
     "location": "space",
     "movement": "Snap the index and middle fingers down onto the thumb",
     "tip": "A little mouth snapping shut",
-    "reviewed": false
+    "reviewed": false,
+    "motion": "tap"
   },
   {
     "id": "name",
@@ -69,7 +82,9 @@
     "location": "space",
     "movement": "Tap the middle finger of one H-hand twice across the index finger of the other, forming an X",
     "tip": "Two fingers cross like signing your name",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "H",
+    "motion": "tap"
   },
   {
     "id": "help",
@@ -78,7 +93,9 @@
     "location": "space",
     "movement": "Rest the thumbs-up fist on the other flat palm and lift both hands up together",
     "tip": "One hand gives the other a lift",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "A",
+    "motion": "up"
   },
   {
     "id": "more",
@@ -87,7 +104,8 @@
     "location": "space",
     "movement": "Tap the fingertips of both hands together a few times",
     "tip": "Adding more and more to the pile",
-    "reviewed": false
+    "reviewed": false,
+    "motion": "tap"
   },
   {
     "id": "mother",
@@ -96,7 +114,9 @@
     "location": "chin",
     "movement": "Tap the thumb on the chin twice",
     "tip": "Female family signs sit at the chin",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "5",
+    "motion": "tap"
   },
   {
     "id": "father",
@@ -105,7 +125,9 @@
     "location": "forehead",
     "movement": "Tap the thumb on the forehead twice",
     "tip": "Male family signs sit at the forehead",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "5",
+    "motion": "tap"
   },
   {
     "id": "family",
@@ -114,7 +136,9 @@
     "location": "space",
     "movement": "Start with both F-hands together, then circle them outward until the little fingers meet",
     "tip": "Your hands draw a circle around everyone",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "F",
+    "motion": "circle"
   },
   {
     "id": "friend",
@@ -123,7 +147,9 @@
     "location": "space",
     "movement": "Hook the index fingers together, then flip and hook them the other way",
     "tip": "Two people hooked together",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "X",
+    "motion": "twist"
   },
   {
     "id": "baby",
@@ -132,7 +158,8 @@
     "location": "space",
     "movement": "Cradle one forearm on the other and rock them side to side",
     "tip": "Rocking a baby to sleep",
-    "reviewed": false
+    "reviewed": false,
+    "motion": "side-to-side"
   },
   {
     "id": "happy",
@@ -141,7 +168,9 @@
     "location": "chest",
     "movement": "Brush the hand up the chest in small forward circles, with a smile. Often done with both hands",
     "tip": "Joy bubbling up from your heart",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "B",
+    "motion": "circle"
   },
   {
     "id": "sad",
@@ -150,7 +179,9 @@
     "location": "mouth",
     "movement": "Hold both open hands in front of the face, then draw them slowly down",
     "tip": "Your whole face drooping",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "5",
+    "motion": "down"
   },
   {
     "id": "tired",
@@ -159,7 +190,8 @@
     "location": "chest",
     "movement": "Rest the bent fingertips on the chest, then rotate the hands downward as the shoulders slump",
     "tip": "Your energy draining away",
-    "reviewed": false
+    "reviewed": false,
+    "motion": "down"
   },
   {
     "id": "love",
@@ -168,7 +200,8 @@
     "location": "chest",
     "movement": "Cross both fists over the heart and hug them to the chest",
     "tip": "Hugging something you love",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "S"
   },
   {
     "id": "excited",
@@ -177,7 +210,8 @@
     "location": "chest",
     "movement": "Brush the middle fingers up the chest in alternating circles",
     "tip": "Your heart racing",
-    "reviewed": false
+    "reviewed": false,
+    "motion": "circle"
   },
   {
     "id": "one",
@@ -186,7 +220,8 @@
     "location": "space",
     "movement": "Hold up the index finger, palm facing you",
     "tip": "Just like counting on your fingers",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "1"
   },
   {
     "id": "two",
@@ -195,7 +230,8 @@
     "location": "space",
     "movement": "Hold up the index and middle fingers, palm facing you",
     "tip": "Two fingers for two",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "2"
   },
   {
     "id": "three",
@@ -204,7 +240,8 @@
     "location": "space",
     "movement": "Hold up the thumb, index and middle fingers, palm facing you",
     "tip": "ASL three starts with the thumb",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "3"
   },
   {
     "id": "four",
@@ -213,7 +250,8 @@
     "location": "space",
     "movement": "Hold up four fingers with the thumb folded in, palm facing you",
     "tip": "Everything but the thumb",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "4"
   },
   {
     "id": "five",
@@ -222,7 +260,8 @@
     "location": "space",
     "movement": "Hold up the open hand with all fingers spread, palm facing you",
     "tip": "A full open hand",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "5"
   },
   {
     "id": "six",
@@ -231,7 +270,8 @@
     "location": "space",
     "movement": "Touch the thumb to the little finger, other fingers up, palm out",
     "tip": "Thumb meets the smallest finger",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "6"
   },
   {
     "id": "seven",
@@ -240,7 +280,8 @@
     "location": "space",
     "movement": "Touch the thumb to the ring finger, other fingers up, palm out",
     "tip": "Thumb moves one finger in",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "7"
   },
   {
     "id": "eight",
@@ -249,7 +290,8 @@
     "location": "space",
     "movement": "Touch the thumb to the middle finger, other fingers up, palm out",
     "tip": "Thumb moves in again",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "8"
   },
   {
     "id": "nine",
@@ -258,7 +300,8 @@
     "location": "space",
     "movement": "Touch the thumb to the index finger, other fingers up, palm out",
     "tip": "Last stop before ten",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "9"
   },
   {
     "id": "ten",
@@ -267,7 +310,9 @@
     "location": "space",
     "movement": "Hold a thumbs-up and give it a small twist or shake",
     "tip": "A thumbs-up for reaching ten",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "A",
+    "motion": "twist"
   },
   {
     "id": "who",
@@ -276,7 +321,9 @@
     "location": "chin",
     "movement": "Rest the thumb on the chin and bend the index finger a couple of times, eyebrows down",
     "tip": "Your finger is asking 'who?'",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "L",
+    "motion": "wiggle"
   },
   {
     "id": "what",
@@ -285,7 +332,8 @@
     "location": "space",
     "movement": "Hold both open hands palms up and shake them slightly side to side, eyebrows down",
     "tip": "A shrug with your hands",
-    "reviewed": false
+    "reviewed": false,
+    "motion": "side-to-side"
   },
   {
     "id": "where",
@@ -294,7 +342,9 @@
     "location": "space",
     "movement": "Hold the index finger up, palm out, and shake it side to side, eyebrows down",
     "tip": "Searching back and forth",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "1",
+    "motion": "side-to-side"
   },
   {
     "id": "why",
@@ -303,7 +353,9 @@
     "location": "forehead",
     "movement": "Touch the fingertips to the forehead, then pull the hand forward and down into a Y-hand",
     "tip": "Pulling a question out of your mind",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "Y",
+    "motion": "forward-down"
   },
   {
     "id": "how",
@@ -312,7 +364,8 @@
     "location": "space",
     "movement": "Start with the knuckles of both bent hands together, then roll them forward so the palms face up",
     "tip": "Unfolding the answer",
-    "reviewed": false
+    "reviewed": false,
+    "motion": "twist"
   },
   {
     "id": "eat",
@@ -321,7 +374,8 @@
     "location": "mouth",
     "movement": "Tap the fingertips to the mouth a couple of times",
     "tip": "Bringing food to your mouth",
-    "reviewed": false
+    "reviewed": false,
+    "motion": "tap"
   },
   {
     "id": "drink",
@@ -330,7 +384,9 @@
     "location": "mouth",
     "movement": "Bring a C-hand to the mouth and tip it up as if drinking from a cup",
     "tip": "Holding an invisible cup",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "C",
+    "motion": "up"
   },
   {
     "id": "water",
@@ -339,7 +395,9 @@
     "location": "chin",
     "movement": "Tap the index finger of a W-hand on the chin twice",
     "tip": "W for water at your lips",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "W",
+    "motion": "tap"
   },
   {
     "id": "milk",
@@ -348,7 +406,9 @@
     "location": "space",
     "movement": "Squeeze an open C-hand closed into a fist a couple of times",
     "tip": "Milking a cow",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "C",
+    "motion": "wiggle"
   },
   {
     "id": "hungry",
@@ -357,7 +417,9 @@
     "location": "chest",
     "movement": "Move the C-hand down the middle of the chest",
     "tip": "Food travelling down to an empty stomach",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "C",
+    "motion": "down"
   },
   {
     "id": "red",
@@ -366,7 +428,9 @@
     "location": "chin",
     "movement": "Brush the index finger down across the lips and chin a couple of times",
     "tip": "The color of your lips",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "1",
+    "motion": "down"
   },
   {
     "id": "blue",
@@ -375,7 +439,9 @@
     "location": "space",
     "movement": "Hold up a B-hand and twist it back and forth at the wrist",
     "tip": "B for blue",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "B",
+    "motion": "twist"
   },
   {
     "id": "green",
@@ -384,7 +450,9 @@
     "location": "space",
     "movement": "Hold a G-hand and twist it back and forth at the wrist",
     "tip": "G for green",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "G",
+    "motion": "twist"
   },
   {
     "id": "yellow",
@@ -393,7 +461,9 @@
     "location": "space",
     "movement": "Hold a Y-hand and twist it back and forth at the wrist",
     "tip": "Y for yellow",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "Y",
+    "motion": "twist"
   },
   {
     "id": "black",
@@ -402,7 +472,9 @@
     "location": "forehead",
     "movement": "Draw the side of the index finger across the forehead",
     "tip": "A dark eyebrow line",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "1",
+    "motion": "across"
   },
   {
     "id": "white",
@@ -411,6 +483,268 @@
     "location": "chest",
     "movement": "Place the open hand on the chest, then pull it away while closing the fingertips together",
     "tip": "Pulling a white shirt away from your chest",
-    "reviewed": false
+    "reviewed": false,
+    "handshapeImage": "5",
+    "motion": "outward"
+  },
+  {
+    "id": "letter-a",
+    "word": "A",
+    "handshape": "Fist with the thumb resting against the side",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "A fist with the thumb on the side",
+    "reviewed": false,
+    "handshapeImage": "A"
+  },
+  {
+    "id": "letter-b",
+    "word": "B",
+    "handshape": "Flat hand, fingers up and together, thumb folded across the palm",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "A flat hand, like a stop sign",
+    "reviewed": false,
+    "handshapeImage": "B"
+  },
+  {
+    "id": "letter-c",
+    "word": "C",
+    "handshape": "Fingers and thumb curved into a C",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Your hand draws the letter C",
+    "reviewed": false,
+    "handshapeImage": "C"
+  },
+  {
+    "id": "letter-d",
+    "word": "D",
+    "handshape": "Index finger up, other fingertips touching the thumb",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "The index finger is the stick of a d",
+    "reviewed": false,
+    "handshapeImage": "D"
+  },
+  {
+    "id": "letter-e",
+    "word": "E",
+    "handshape": "Fingertips bent down to rest on the tucked thumb",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "A tight, curled-up hand",
+    "reviewed": false,
+    "handshapeImage": "E"
+  },
+  {
+    "id": "letter-f",
+    "word": "F",
+    "handshape": "Thumb and index finger touching, other three fingers up",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Like an OK sign",
+    "reviewed": false,
+    "handshapeImage": "F"
+  },
+  {
+    "id": "letter-g",
+    "word": "G",
+    "handshape": "Index finger and thumb pointing sideways, parallel",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Like a little gap between two fingers",
+    "reviewed": false,
+    "handshapeImage": "G"
+  },
+  {
+    "id": "letter-h",
+    "word": "H",
+    "handshape": "Index and middle fingers together, pointing sideways",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Like G, with two fingers",
+    "reviewed": false,
+    "handshapeImage": "H"
+  },
+  {
+    "id": "letter-i",
+    "word": "I",
+    "handshape": "Little finger up, other fingers in a fist",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "The little finger stands alone, like I",
+    "reviewed": false,
+    "handshapeImage": "I"
+  },
+  {
+    "id": "letter-j",
+    "word": "J",
+    "handshape": "Little finger up (like I)",
+    "location": "space",
+    "movement": "Trace a J in the air with the little finger",
+    "tip": "Draw a J with your little finger",
+    "reviewed": false,
+    "handshapeImage": "J"
+  },
+  {
+    "id": "letter-k",
+    "word": "K",
+    "handshape": "Index and middle fingers up in a V, thumb touching the middle finger",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "A V with the thumb in between",
+    "reviewed": false,
+    "handshapeImage": "K"
+  },
+  {
+    "id": "letter-l",
+    "word": "L",
+    "handshape": "Thumb and index finger form an L",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Your hand makes an L",
+    "reviewed": false,
+    "handshapeImage": "L"
+  },
+  {
+    "id": "letter-m",
+    "word": "M",
+    "handshape": "Thumb tucked under the first three fingers",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Three fingers over the thumb for M",
+    "reviewed": false,
+    "handshapeImage": "M"
+  },
+  {
+    "id": "letter-n",
+    "word": "N",
+    "handshape": "Thumb tucked under the first two fingers",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Two fingers over the thumb for N",
+    "reviewed": false,
+    "handshapeImage": "N"
+  },
+  {
+    "id": "letter-o",
+    "word": "O",
+    "handshape": "All fingertips curved to touch the thumb",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Your hand makes an O",
+    "reviewed": false,
+    "handshapeImage": "O"
+  },
+  {
+    "id": "letter-p",
+    "word": "P",
+    "handshape": "Like K, but pointing down",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "K turned upside down",
+    "reviewed": false,
+    "handshapeImage": "P"
+  },
+  {
+    "id": "letter-q",
+    "word": "Q",
+    "handshape": "Like G, but pointing down",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "G turned upside down",
+    "reviewed": false,
+    "handshapeImage": "Q"
+  },
+  {
+    "id": "letter-r",
+    "word": "R",
+    "handshape": "Index and middle fingers crossed",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Fingers crossed, like for good luck",
+    "reviewed": false,
+    "handshapeImage": "R"
+  },
+  {
+    "id": "letter-s",
+    "word": "S",
+    "handshape": "Fist with the thumb across the front of the fingers",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "A solid fist",
+    "reviewed": false,
+    "handshapeImage": "S"
+  },
+  {
+    "id": "letter-t",
+    "word": "T",
+    "handshape": "Thumb tucked between the index and middle fingers",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "The thumb peeks out between two fingers",
+    "reviewed": false,
+    "handshapeImage": "T"
+  },
+  {
+    "id": "letter-u",
+    "word": "U",
+    "handshape": "Index and middle fingers up and together",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Two fingers together, like a U",
+    "reviewed": false,
+    "handshapeImage": "U"
+  },
+  {
+    "id": "letter-v",
+    "word": "V",
+    "handshape": "Index and middle fingers up and apart",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Like a peace sign",
+    "reviewed": false,
+    "handshapeImage": "V"
+  },
+  {
+    "id": "letter-w",
+    "word": "W",
+    "handshape": "Index, middle and ring fingers up and spread",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Three fingers make a W",
+    "reviewed": false,
+    "handshapeImage": "W"
+  },
+  {
+    "id": "letter-x",
+    "word": "X",
+    "handshape": "Index finger bent into a hook",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "A crooked finger",
+    "reviewed": false,
+    "handshapeImage": "X"
+  },
+  {
+    "id": "letter-y",
+    "word": "Y",
+    "handshape": "Thumb and little finger out",
+    "location": "space",
+    "movement": "Hold the handshape still in front of your shoulder, palm facing out",
+    "tip": "Like 'hang loose'",
+    "reviewed": false,
+    "handshapeImage": "Y"
+  },
+  {
+    "id": "letter-z",
+    "word": "Z",
+    "handshape": "Index finger pointing",
+    "location": "space",
+    "movement": "Trace a Z in the air with the index finger",
+    "tip": "Draw a Z in the air with your finger",
+    "reviewed": false,
+    "handshapeImage": "Z"
   }
 ]

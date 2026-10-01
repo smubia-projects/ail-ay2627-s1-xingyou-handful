@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BodyDiagram, LOCATION_LABELS, type Sign } from "@/components/SignCard";
+import { BodyDiagram, HandshapeImage, LOCATION_LABELS, type Sign } from "@/components/SignCard";
 
 export type Exercise =
   | { type: "meaning"; sign: Sign; options: Sign[] }
@@ -42,10 +42,14 @@ function SignPicture({ sign, size }: { sign: Sign; size: "large" | "small" }) {
   }
   return (
     <div className="flex flex-col items-center gap-1">
-      <BodyDiagram
-        location={sign.location}
-        className={size === "large" ? "h-40 w-40" : "h-20 w-20"}
-      />
+      <div className="flex items-end justify-center gap-2">
+        <HandshapeImage sign={sign} className={size === "large" ? "h-36 w-24" : "h-16 w-12"} />
+        <BodyDiagram
+          location={sign.location}
+          motion={sign.motion}
+          className={size === "large" ? "h-36 w-36" : "h-16 w-16"}
+        />
+      </div>
       <span
         className={
           size === "large"

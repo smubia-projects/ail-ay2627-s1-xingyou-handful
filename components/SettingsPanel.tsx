@@ -205,6 +205,23 @@ export default function SettingsPanel() {
           Handful teaches American Sign Language (ASL), a small handful of signs a day. The sign descriptions are drafts that still
           need to be checked by a Deaf ASL signer. Sign videos are coming.
         </p>
+        <p className="mt-3 text-sm text-muted">
+          Handshape drawings: letters by wpclipart.com (public domain); numbers 1–9 by{" "}
+          <a
+            href="https://commons.wikimedia.org/wiki/File:Sign_language_1.jpg"
+            className="font-semibold text-charcoal underline underline-offset-2"
+          >
+            Snailsmakemehappy
+          </a>
+          , licensed{" "}
+          <a
+            href="https://creativecommons.org/licenses/by-sa/4.0/"
+            className="font-semibold text-charcoal underline underline-offset-2"
+          >
+            CC BY-SA 4.0
+          </a>
+          , via Wikimedia Commons.
+        </p>
       </Section>
     </div>
   );

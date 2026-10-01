@@ -1,5 +1,5 @@
 import type { Exercise } from "@/components/Exercises";
-import type { Sign } from "@/components/SignCard";
+import { MOTIONS, type Sign } from "@/components/SignCard";
 import signsData from "@/data/signs.json";
 import unitsData from "@/data/lessons.json";
 
@@ -20,7 +20,16 @@ const units = unitsData as Unit[];
 
 const signsById = new Map(signs.map((sign) => [sign.id, sign]));
 
-// Fail loudly (including at build time) if a lesson points at a sign that doesn't exist.
+// Fail loudly (including at build time) on content mistakes: bad motions or handshape pictures,
+// or a lesson pointing at a sign that doesn't exist.
+for (const sign of signs) {
+  if (sign.motion && !(MOTIONS as readonly string[]).includes(sign.motion)) {
+    throw new Error(`Sign "${sign.id}" has unknown motion "${sign.motion}" (see MOTIONS in SignCard)`);
+  }
+  if (sign.handshapeImage && !/^[A-Z1-9]$/.test(sign.handshapeImage)) {
+    throw new Error(`Sign "${sign.id}" has handshapeImage "${sign.handshapeImage}"; use A-Z or 1-9`);
+  }
+}
 for (const unit of units) {
   for (const lesson of unit.lessons) {
     for (const signId of lesson.signIds) {
@@ -47,10 +56,20 @@ function looksAlike(a: Sign, b: Sign): boolean {
   return !a.video && !b.video && a.location === b.location && a.handshape === b.handshape;
 }
 
+// Fingerspelled letters and whole-word signs are different kinds of answer.
+function isLetter(sign: Sign): boolean {
+  return sign.id.startsWith("letter-");
+}
+
 // The answer plus up to count - 1 wrong choices that don't look like it, in random order.
+// Wrong choices come from the same kind (letters for letters, words for words) so the odd
+// one out doesn't give the answer away.
 export function pickOptions(answer: Sign, count = 4): Sign[] {
-  const wrong = shuffle(signs.filter((sign) => sign.id !== answer.id && !looksAlike(sign, answer)));
-  return shuffle([answer, ...wrong.slice(0, count - 1)]);
+  const candidates = signs.filter((sign) => sign.id !== answer.id && !looksAlike(sign, answer));
+  const sameKind = shuffle(candidates.filter((sign) => isLetter(sign) === isLetter(answer)));
+  const otherKind = shuffle(candidates.filter((sign) => isLetter(sign) !== isLetter(answer)));
+  const wrong = [...sameKind, ...otherKind].slice(0, count - 1);
+  return shuffle([answer, ...wrong]);
 }
 
 // Two multiple-choice exercises per sign, plus match pairs for 3+ signs, in random order.
