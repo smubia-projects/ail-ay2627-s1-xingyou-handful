@@ -371,7 +371,7 @@ Notes:
 | Handshape | Flat hand, palm toward you |
 | Handshape picture in app | drawing of letter B |
 | Location | Chest |
-| Movement | Brush the hand up the chest in small forward circles, with a smile. Often done with both hands |
+| Movement | Brush the hand up the chest in small forward circles. Often done with both hands |
 | Movement arrow in app | circle |
 | Face | Smile |
 | Memory tip | Joy bubbling up from your heart |
@@ -709,7 +709,7 @@ Notes:
 | Handshape | L-hand (thumb and index out) |
 | Handshape picture in app | drawing of letter L |
 | Location | Chin |
-| Movement | Rest the thumb on the chin and bend the index finger a couple of times, eyebrows down |
+| Movement | Rest the thumb on the chin and bend the index finger a couple of times |
 | Movement arrow in app | wiggle |
 | Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Your finger is asking 'who?' |
@@ -732,7 +732,7 @@ Notes:
 | Handshape | Open hands, palms up |
 | Handshape picture in app | no drawing (text only) |
 | Location | In front of the body |
-| Movement | Hold both open hands palms up and shake them slightly side to side, eyebrows down |
+| Movement | Hold both open hands palms up and shake them slightly side to side |
 | Movement arrow in app | side to side |
 | Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | A shrug with your hands |
@@ -755,7 +755,7 @@ Notes:
 | Handshape | Index finger up |
 | Handshape picture in app | drawing of number 1 |
 | Location | In front of the body |
-| Movement | Hold the index finger up, palm out, and shake it side to side, eyebrows down |
+| Movement | Hold the index finger up, palm out, and shake it side to side |
 | Movement arrow in app | side to side |
 | Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Searching back and forth |
