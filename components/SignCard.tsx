@@ -204,18 +204,18 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
 
 export default function SignCard({ sign, label = "New sign" }: { sign: Sign; label?: string }) {
   return (
-    <article className="w-full rounded-[28px] bg-fennel p-6">
+    <article className="w-full rounded-[28px] bg-fennel p-5">
       <span className="inline-block rounded-full bg-bluebell px-3 py-1 text-sm font-semibold text-charcoal">
         {label}
       </span>
-      <h2 className="mt-3 font-display text-5xl font-bold text-ink">{sign.word}</h2>
+      <h2 className="mt-2 font-display text-4xl font-bold text-ink">{sign.word}</h2>
 
       {/* Every video shows in the same 16:9 frame, never cropped. */}
       {sign.video ? (
         <video
           src={sign.video}
           aria-label={`Video of the sign for ${sign.word}`}
-          className="mt-5 aspect-video w-full rounded-2xl bg-surface object-contain"
+          className="mt-4 aspect-video w-full rounded-2xl bg-surface object-contain"
           controls
           loop
           muted
@@ -223,8 +223,8 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
           preload="metadata"
         />
       ) : (
-        <div className="mt-5 flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-line-strong bg-cream py-4 text-sm font-semibold text-muted">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cream">
+        <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-line-strong bg-cream py-2 text-xs font-semibold text-muted">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cream">
             <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 fill-brand" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
@@ -233,36 +233,34 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
         </div>
       )}
 
-      <div className="mt-5 flex items-end justify-center gap-3 rounded-2xl bg-cream p-3">
+      <div className="mt-3 flex items-end justify-center gap-3 rounded-2xl bg-cream p-3">
         {sign.handshapeImage && (
           <figure className="flex flex-col items-center gap-1">
-            <HandshapeImage sign={sign} className="h-36 w-24" />
+            <HandshapeImage sign={sign} className="h-32 w-24" />
             <figcaption className="text-xs font-semibold text-muted">Handshape</figcaption>
           </figure>
         )}
         <figure className="flex flex-col items-center gap-1">
-          <BodyDiagram location={sign.location} motion={sign.motion} className="h-36 w-36" />
+          <BodyDiagram location={sign.location} motion={sign.motion} className="h-32 w-32" />
           <figcaption className="text-xs font-semibold text-muted">
-            {sign.motion ? "Where and how it moves" : "Where"}
+            {LOCATION_LABELS[sign.location]}
+            {sign.motion ? " · how it moves" : ""}
           </figcaption>
         </figure>
       </div>
 
-      <div className="mt-5">
-        <dl className="space-y-3">
+      <div className="mt-4">
+        <dl className="space-y-2">
           <Detail label="Handshape">{sign.handshape}</Detail>
-          <Detail label="Location">
-            {LOCATION_LABELS[sign.location]}
-          </Detail>
           <Detail label="Movement">{sign.movement}</Detail>
         </dl>
       </div>
 
-      <div className="mt-5 rounded-3xl bg-honey p-4">
+      <div className="mt-4 rounded-3xl bg-honey px-4 py-3">
         <p className="text-sm font-semibold text-ink/70">
           Memory tip
         </p>
-        <p className="mt-1 font-display text-xl font-bold text-ink">{sign.tip}</p>
+        <p className="font-display text-lg font-bold text-ink">{sign.tip}</p>
       </div>
     </article>
   );
