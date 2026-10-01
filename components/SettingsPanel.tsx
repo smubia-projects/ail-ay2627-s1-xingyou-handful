@@ -103,7 +103,9 @@ export default function SettingsPanel() {
 
       <Section title="Signing hand">
         <p className="text-sm text-muted">
-          Sign with the hand you write with. Left-handed? The drawings and arrows flip to match.
+          The signer in each video faces you, so their right hand appears on your left. Don’t mirror
+          them: sign with the hand you write with. Choosing Left hand flips the videos, drawings and
+          arrows so they show left-handed signing.
         </p>
         <div className="mt-4 grid grid-cols-2 gap-3" role="radiogroup" aria-label="Signing hand">
           {[

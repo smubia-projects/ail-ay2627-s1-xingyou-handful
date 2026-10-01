@@ -67,25 +67,29 @@ const LOCATION_POINTS: Record<SignLocation, { x: number; y: number }> = {
 };
 
 // Arrow (or tap marks) for each motion, drawn relative to the location dot at (x, y).
+// The diagram is a signer FACING the learner, like the videos: a right-handed signer's hand is on
+// the viewer's left, so one-sided movements are drawn on the left (negative x). Left-handed mode
+// mirrors the whole diagram with CSS. Circles keep their on-screen direction.
 function motionPath(motion: Motion, x: number, y: number): { d: string; heads: "end" | "both" | "none" } {
+  const side = (distance: number) => x - distance;
   switch (motion) {
     case "outward":
-      return { d: `M${x + 16} ${y} C${x + 36} ${y - 6} ${x + 50} ${y - 6} ${x + 62} ${y}`, heads: "end" };
+      return { d: `M${side(16)} ${y} C${side(36)} ${y - 6} ${side(50)} ${y - 6} ${side(62)} ${y}`, heads: "end" };
     case "forward-down":
-      return { d: `M${x + 14} ${y + 4} Q${x + 42} ${y + 8} ${x + 44} ${y + 38}`, heads: "end" };
+      return { d: `M${side(14)} ${y + 4} Q${side(42)} ${y + 8} ${side(44)} ${y + 38}`, heads: "end" };
     case "circle":
       return { d: `M${x + 24} ${y} A24 24 0 1 1 ${x + 17} ${y - 17}`, heads: "end" };
     case "down":
-      return { d: `M${x + 26} ${y - 6} L${x + 26} ${y + 36}`, heads: "end" };
+      return { d: `M${side(26)} ${y - 6} L${side(26)} ${y + 36}`, heads: "end" };
     case "up":
-      return { d: `M${x + 26} ${y + 10} L${x + 26} ${y - 34}`, heads: "end" };
+      return { d: `M${side(26)} ${y + 10} L${side(26)} ${y - 34}`, heads: "end" };
     case "nod":
-      return { d: `M${x + 30} ${y - 16} L${x + 30} ${y + 16}`, heads: "both" };
+      return { d: `M${side(30)} ${y - 16} L${side(30)} ${y + 16}`, heads: "both" };
     case "side-to-side":
       return { d: `M${x - 30} ${y - 30} L${x + 30} ${y - 30}`, heads: "both" };
     case "tap":
       return {
-        d: `M${x + 18} ${y - 10} Q${x + 24} ${y} ${x + 18} ${y + 10} M${x + 27} ${y - 15} Q${x + 35} ${y} ${x + 27} ${y + 15}`,
+        d: `M${side(18)} ${y - 10} Q${side(24)} ${y} ${side(18)} ${y + 10} M${side(27)} ${y - 15} Q${side(35)} ${y} ${side(27)} ${y + 15}`,
         heads: "none",
       };
     case "twist":
@@ -96,9 +100,10 @@ function motionPath(motion: Motion, x: number, y: number): { d: string; heads: "
         heads: "none",
       };
     case "across":
-      return { d: `M${x - 34} ${y - 2} L${x + 34} ${y - 2}`, heads: "end" };
+      // Toward the signing-hand side: right to left on screen for a right-handed signer.
+      return { d: `M${x + 34} ${y - 2} L${x - 34} ${y - 2}`, heads: "end" };
     case "hook":
-      return { d: `M${x + 26} ${y - 36} L${x + 26} ${y - 8} Q${x + 26} ${y + 6} ${x + 10} ${y + 2}`, heads: "end" };
+      return { d: `M${side(26)} ${y - 36} L${side(26)} ${y - 8} Q${side(26)} ${y + 6} ${side(10)} ${y + 2}`, heads: "end" };
     case "zigzag":
       return {
         d: `M${x - 20} ${y - 40} L${x + 20} ${y - 40} L${x - 20} ${y - 14} L${x + 20} ${y - 14}`,

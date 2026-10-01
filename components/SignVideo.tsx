@@ -67,7 +67,14 @@ export default function SignVideo({
         )}
       </div>
       {credit !== "none" && sign.videoCredit && (
-        <figcaption className="mt-1 text-right text-xs text-muted">
+        <figcaption className="mt-1 flex flex-wrap justify-between gap-x-3 text-xs text-muted">
+          {/* The signer faces the learner, so their right hand shows on the left. Say which hand
+              to copy with, so nobody mirrors the screen. */}
+          <span>
+            Facing you. <span className="hand-right-only">Copy with your right hand.</span>
+            <span className="hand-left-only">Flipped: copy with your left hand.</span>
+          </span>
+          <span>
           Video:{" "}
           {credit === "link" ? (
             <a
@@ -81,6 +88,7 @@ export default function SignVideo({
           ) : (
             sign.videoCredit.label
           )}
+          </span>
         </figcaption>
       )}
     </figure>

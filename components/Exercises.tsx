@@ -453,7 +453,10 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
       ) : (
         <div className="mt-6 flex h-56 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-line-strong text-center">
           <p className="font-display text-3xl font-bold text-ink">Your turn</p>
-          <p className="mt-1 text-sm text-muted">Sign it now, no peeking</p>
+          <p className="mt-1 text-sm text-muted">
+            Use your <span className="hand-right-only">right</span>
+            <span className="hand-left-only">left</span> hand. No peeking
+          </p>
         </div>
       )}
       <BottomBar className={revealed ? "bg-bluebell" : "bg-cream"}>

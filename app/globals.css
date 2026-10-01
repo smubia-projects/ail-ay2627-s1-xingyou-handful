@@ -86,6 +86,17 @@
   transform: scaleX(-1);
 }
 
+/* Wording that depends on the learner's signing hand. */
+.hand-left-only {
+  display: none;
+}
+[data-hand="left"] .hand-left-only {
+  display: inline;
+}
+[data-hand="left"] .hand-right-only {
+  display: none;
+}
+
 body {
   background: var(--color-cream);
   color: var(--color-ink);
