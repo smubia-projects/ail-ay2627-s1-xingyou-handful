@@ -68,11 +68,13 @@
     "id": "alphabet",
     "title": "Fingerspelling",
     "lessons": [
-      { "id": "alphabet-1", "title": "A to E", "signIds": ["letter-a", "letter-b", "letter-c", "letter-d", "letter-e"] },
-      { "id": "alphabet-2", "title": "F to J", "signIds": ["letter-f", "letter-g", "letter-h", "letter-i", "letter-j"] },
-      { "id": "alphabet-3", "title": "K to O", "signIds": ["letter-k", "letter-l", "letter-m", "letter-n", "letter-o"] },
-      { "id": "alphabet-4", "title": "P to T", "signIds": ["letter-p", "letter-q", "letter-r", "letter-s", "letter-t"] },
-      { "id": "alphabet-5", "title": "U to Z", "signIds": ["letter-u", "letter-v", "letter-w", "letter-x", "letter-y", "letter-z"] }
+      { "id": "alphabet-1", "title": "A to D", "signIds": ["letter-a", "letter-b", "letter-c", "letter-d"] },
+      { "id": "alphabet-2", "title": "E to H", "signIds": ["letter-e", "letter-f", "letter-g", "letter-h"] },
+      { "id": "alphabet-3", "title": "I to L", "signIds": ["letter-i", "letter-j", "letter-k", "letter-l"] },
+      { "id": "alphabet-4", "title": "M to P", "signIds": ["letter-m", "letter-n", "letter-o", "letter-p"] },
+      { "id": "alphabet-5", "title": "Q to T", "signIds": ["letter-q", "letter-r", "letter-s", "letter-t"] },
+      { "id": "alphabet-6", "title": "U to W", "signIds": ["letter-u", "letter-v", "letter-w"] },
+      { "id": "alphabet-7", "title": "X to Z", "signIds": ["letter-x", "letter-y", "letter-z"] }
     ]
   }
 ]
