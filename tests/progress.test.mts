@@ -88,5 +88,38 @@ seed({ streak: { count: 3, lastDay: T, freezes: 99 }, reviews: { x: { box: 9, du
 p.recordMistakes(["z"]);
 check("damaged save is cleaned", [saved().streak.freezes, saved().reviews, saved().mistakes, saved().xp, saved().dailyGoal], [2, { x: { box: 5, due: T } }, ["z", "a"], 0, 1]);
 
+// Welcome, history, best streak, milestones, checkpoints, skipping ahead
+store.delete(KEY);
+p.recordMistakes([]);
+check("brand-new learner has not seen the welcome", p.readBackup(p.exportProgress())?.onboarded, false);
+seed({ completedLessons: ["greetings-1"], xp: 40 });
+check("a learner with old progress skips the welcome", p.readBackup(p.exportProgress())?.onboarded, true);
+store.delete(KEY);
+p.setOnboarded();
+check("welcome marked as seen", saved().onboarded, true);
+check("history: adds sessions and XP to a day", p.addToHistory({ [T]: { sessions: 1, xp: 30 } }, T, 20), { [T]: { sessions: 2, xp: 50 } });
+check("history: drops days older than 60 days", Object.keys(p.addToHistory({ "2026-01-01": { sessions: 1, xp: 5 }, "2026-09-30": { sessions: 1, xp: 5 } }, T, 10)), ["2026-09-30", T]);
+check(
+  "recent days: 7 days ending today, zeros filled in",
+  p.recentDays({ [T]: { sessions: 2, xp: 50 }, "2026-09-29": { sessions: 1, xp: 15 } }, 7, T).map((d) => `${d.day.slice(5)}:${d.sessions}`),
+  ["09-25:0", "09-26:0", "09-27:0", "09-28:0", "09-29:1", "09-30:0", "10-01:2"],
+);
+const yesterdayKey = p.addDays(p.dayKey(), -1);
+seed({ xp: 10, streak: { count: 6, lastDay: yesterdayKey, freezes: 0 }, dailyGoal: 2, bestStreak: 6 });
+const seventh = p.recordLessonComplete("greetings-1", 30);
+check("day 7: milestone reported, goal not yet reached", [seventh.milestone, seventh.goalReached], [7, false]);
+check("best streak and today's history saved", [saved().bestStreak, saved().history[p.dayKey()]], [7, { sessions: 1, xp: 30 }]);
+const second = p.recordLessonComplete(null, 15);
+check("second session today: goal reached once, no repeat milestone", [second.milestone, second.goalReached, saved().history[p.dayKey()]], [null, true, { sessions: 2, xp: 45 }]);
+check("third session: goal not 'reached' again", p.recordLessonComplete(null, 15).goalReached, false);
+p.recordCheckpoint("greetings");
+p.recordCheckpoint("greetings");
+check("checkpoint saved once", saved().checkpoints, ["greetings"]);
+p.completeLessons(["greetings-1", "greetings-2", "basics-1"], ["hello", "please"], T);
+check("skip ahead: lessons done without duplicates, signs scheduled", [saved().completedLessons, saved().reviews.please], [["greetings-1", "greetings-2", "basics-1"], { box: 1, due: "2026-10-02" }]);
+seed({ history: { "not-a-date": { sessions: 1, xp: 1 }, [T]: { sessions: "x", xp: 1 }, "2026-09-30": { sessions: 2, xp: 20 } }, checkpoints: ["a", 3], bestStreak: "9" });
+p.recordMistakes(["z"]);
+check("damaged history and checkpoints are cleaned", [saved().history, saved().checkpoints, saved().bestStreak], [{ "2026-09-30": { sessions: 2, xp: 20 } }, ["a"], 0]);
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

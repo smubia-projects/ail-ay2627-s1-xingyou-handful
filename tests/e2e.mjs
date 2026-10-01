@@ -174,7 +174,7 @@ async function play(wrongPlan = new Set(), stopAfter = Infinity) {
   const result = { cards: 0, log: [], order: [], retries: 0, reviews: 0 };
   let exercise = 0;
   for (let guard = 0; guard < 120; guard++) {
-    if (/complete!/.test(await ev("__heading()"))) break;
+    if (/complete!|passed!|ahead!|Not this time/.test(await ev("__heading()"))) break;
     const screen = await lower();
     if (/· new sign \d+ of \d+/.test(screen)) {
       result.cards++;
@@ -218,13 +218,38 @@ let t;
 let p;
 let r;
 
-// ---------- A. Brand-new learner ----------
+// ---------- W. First-time welcome ----------
 await go("/");
+const welcomeText = () => ev(`document.querySelector('[role=dialog]')?.innerText ?? ''`);
+check("W1 a new learner is welcomed", (await welcomeText()).includes("Welcome to Handful"));
+await clickText("Next");
+await sleep(600);
+check("W2 step 2 explains mirror view with a video", (await welcomeText()).includes("Copy what you see") && (await ev("!!document.querySelector('[role=dialog] video')")));
+await ev(`[...document.querySelectorAll('[role=dialog] [role=radio]')].find(b=>b.innerText.includes('Left hand')).click()`);
+await sleep(400);
+check("W3 choosing Left hand saves and un-flips the video", (await progress()).leftHanded === true && (await ev("getComputedStyle(document.querySelector('[role=dialog] video')).transform")) === "none");
+await ev(`[...document.querySelectorAll('[role=dialog] [role=radio]')].find(b=>b.innerText.includes('Right hand')).click()`);
+await sleep(300);
+await clickText("Next");
+await sleep(400);
+await ev(`[...document.querySelectorAll('[role=dialog] [role=radio]')].find(b=>b.innerText.includes('Regular')).click()`);
+await sleep(300);
+check("W4 step 3 saves the daily goal", (await welcomeText()).includes("Pick a daily goal") && (await progress()).dailyGoal === 2);
+await ev(`[...document.querySelectorAll('[role=dialog] [role=radio]')].find(b=>b.innerText.includes('Casual')).click()`);
+await sleep(300);
+await clickText("Start learning");
+await sleep(500);
+check("W5 welcome closes and is remembered", !(await ev("!!document.querySelector('[role=dialog]')")) && (await progress()).onboarded === true && (await progress()).leftHanded === false);
+await go("/");
+check("W6 welcome does not come back", !(await ev("!!document.querySelector('[role=dialog]')")));
+
+// ---------- A. Brand-new learner ----------
 t = await text();
 check("A1 home shows all 9 units", ["Greetings", "Basics", "Family", "Feelings", "Numbers", "Questions", "Food & drink", "Colors", "Fingerspelling"].every((unit) => t.includes(unit)));
 check("A2 23 of 24 lessons locked", (t.match(/Locked/g) ?? []).length === 23, `found ${(t.match(/Locked/g) ?? []).length}`);
 check("A3 daily goal 0 of 1, review not unlocked, no mistakes", t.includes("0 of 1 session today") && t.includes("Unlocks as you learn") && t.includes("None right now"));
-check("A4 Learn tab is current", (await currentTab()) === "learn");
+check("A4 Learn tab is current, with 4 tabs", (await currentTab()) === "learn" && (await ev(`document.querySelectorAll('nav[aria-label="Main"] a').length`)) === 4);
+check("A4b every later unit offers 'Skip to here'", (await ev(`[...document.querySelectorAll('a')].filter(a => a.innerText.trim() === 'Skip to here').length`)) === 8);
 await go("/signs");
 t = await text();
 check("A5 My signs empty state", t.includes("0 of 72 signs learned") && t.includes("Your sign collection starts here") && (await ev("document.title")) === "My signs · Handful");
@@ -236,6 +261,7 @@ check("B1 teach then practice: card, meaning, card, meaning", r.order.slice(0, 4
 check("B2 two signs: 2 cards, 6 questions (2 each of meaning, pick, sign-it)", r.cards === 2 && r.log.length === 6 && count(r.order, "signit") === 2 && count(r.order, "pick") === 2, r.log.join(", "));
 t = await text();
 check("B3 complete screen: +40 XP, 100%, streak 1 day +1 today", t.includes("Lesson complete!") && t.includes("+40") && t.includes("100%") && t.includes("1 day") && t.includes("+1 today!"), t.replace(/\n/g, " | ").slice(0, 160));
+check("B3b reaching the daily goal is celebrated with confetti", (await ev(`document.querySelector('[data-celebration]')?.innerText ?? ''`)).includes("Daily goal reached") && (await ev("document.querySelectorAll('.animate-confetti').length")) === 16);
 await shot("B-complete");
 p = await progress();
 check("B4 saved: lesson, 40 XP, streak 1, 1 session today", p.completedLessons.join() === "greetings-1" && p.xp === 40 && p.streak.count === 1 && p.today.sessions === 1, JSON.stringify(p).slice(0, 200));
@@ -300,6 +326,8 @@ await play();
 t = await text();
 p = await progress();
 check("G2 streak reaches 7 and earns a freeze back", t.includes("7 days") && t.includes("Earned a freeze!") && p.streak.count === 7 && p.streak.freezes === 1, JSON.stringify(p.streak));
+check("G3 the 7-day milestone is called out, and best streak saved", t.includes("7-day streak!") && p.bestStreak === 7);
+await shot("G-milestone");
 
 // ---------- H. Spaced review ----------
 await patchProgress(`for (const id of ['hello','goodbye']) p.reviews[id] = { box: 2, due: '${daysFromNow(-1)}' }`);
@@ -377,6 +405,60 @@ await go("/lesson/questions-1");
 t = await text();
 check("K1 question signs show a Face line", t.includes("Face") && t.includes("Eyebrows down"));
 await shot("K-face");
+
+// ---------- T. Checkpoints and skipping ahead ----------
+await go("/");
+t = await text();
+check("T1 a finished unit offers its checkpoint", t.includes("Take the checkpoint"));
+await go("/checkpoint/basics");
+await clickText("Start");
+await sleep(600);
+r = await play(new Set([0, 1, 2, 3, 4]));
+t = await text();
+p = await progress();
+check("T2 failing a checkpoint (too many wrong) does not mark the unit", t.includes("Not this time") && t.includes("80%") && !p.checkpoints.includes("basics"), `${r.firstPass} questions, retries ${r.retries}`);
+await go("/checkpoint/greetings");
+await clickText("Start");
+await sleep(600);
+r = await play();
+t = await text();
+p = await progress();
+check("T3 passing a checkpoint: 5 questions, no self-marked ones, unit mastered", t.includes("Checkpoint passed!") && r.log.length === 5 && count(r.order, "signit") === 0 && p.checkpoints.includes("greetings"), r.log.join(", "));
+await go("/");
+check("T4 home shows Mastered", (await text()).includes("Mastered"));
+await go("/skip/numbers");
+check("T5 skip page explains the test", (await text()).includes("Skip to Numbers") && (await ev("document.title")) === "Skip to Numbers · Handful");
+await clickText("Start");
+await sleep(600);
+r = await play();
+t = await text();
+p = await progress();
+check("T6 passing the skip test unlocks everything before Numbers", t.includes("You skipped ahead!") && r.log.length === 12 && ["family-2", "feelings-1", "feelings-2"].every((id) => p.completedLessons.includes(id)) && p.reviews.tired?.box === 1, r.log.length + " questions");
+await go("/");
+t = await text();
+check("T7 the path now starts at Numbers", /4\/4|Complete/.test(t) && (await ev(`!!document.querySelector('a[href="/lesson/numbers-1"]')`)));
+await go("/skip/greetings");
+check("T8 the first unit cannot be skipped to", (await text()).includes("Page not found"));
+
+// ---------- P. Progress page ----------
+await go("/progress");
+p = await progress();
+t = await text();
+check("P1 progress page, tab and title", (await currentTab()) === "progress" && (await ev("document.title")) === "Progress · Handful" && t.includes("XP earned") && t.includes(String(p.xp)));
+const readout = await ev("document.querySelector('[data-week-readout]').innerText");
+check("P2 chart readout shows today's sessions", readout.startsWith(`${p.today.sessions} session`), readout);
+check("P3 chart has 7 day columns and a 7-row table", (await ev("document.querySelectorAll('figure button').length")) === 7 && (await ev("document.querySelectorAll('figure tbody tr').length")) === 7);
+await ev("document.querySelectorAll('figure button')[0].click()");
+await sleep(300);
+check("P4 tapping another day updates the readout", (await ev("document.querySelector('[data-week-readout]').innerText")).startsWith("0 sessions"));
+await patchProgress(`p.dailyGoal = 2; p.history = { ['${daysFromNow(0)}']: { sessions: 2, xp: 50 }, ['${daysFromNow(-1)}']: { sessions: 4, xp: 90 } }`);
+await go("/progress");
+await sleep(900); // let the bars finish growing
+const geometry = await ev(`(() => { const plot=document.querySelector('figure .relative'); const line=plot.querySelector('div[aria-hidden]').getBoundingClientRect(); const bars=[...plot.querySelectorAll('button > span:last-child')].map(b=>b.getBoundingClientRect()); const today=bars[6], yesterday=bars[5]; return { lineTop: Math.round(line.top), todayTop: Math.round(today.top), ratio: +(yesterday.height / today.height).toFixed(2), width: Math.round(today.width) }; })()`);
+check("P4b bar that meets the goal reaches the goal line; heights are proportional; bars are thin", Math.abs(geometry.lineTop - geometry.todayTop) <= 2 && Math.abs(geometry.ratio - 2) < 0.03 && geometry.width <= 24, JSON.stringify(geometry));
+await shot("P-progress-chart");
+check("P5 no sideways scrolling on Progress", !(await ev("document.documentElement.scrollWidth > innerWidth")));
+await shot("P-progress");
 
 // ---------- V. Sign videos ----------
 await go("/lesson/greetings-1");
