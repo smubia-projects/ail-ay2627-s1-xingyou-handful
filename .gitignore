@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw sign videos waiting to be converted (large files; finished ones go in public/videos)
+/video-inbox/*
+!/video-inbox/README.txt
