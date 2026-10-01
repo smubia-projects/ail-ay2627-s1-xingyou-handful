@@ -30,6 +30,18 @@ const TABS = [
     ),
   },
   {
+    href: "/progress",
+    label: "Progress",
+    icon: (
+      <path
+        d="M5 20V11M12 20V4M19 20v-6"
+        stroke="currentColor"
+        strokeWidth={2.6}
+        strokeLinecap="round"
+      />
+    ),
+  },
+  {
     href: "/settings",
     label: "Settings",
     icon: (
