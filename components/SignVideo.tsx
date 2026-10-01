@@ -5,6 +5,7 @@ import type { Sign } from "@/components/SignCard";
 
 // A sign's video, played like a GIF: silent, looping, in a fixed 16:9 frame that never crops.
 // Tap to pause or play. It starts paused for people who have asked their device to reduce motion.
+// It is shown in mirror view (see .hand-mirror in globals.css): the file itself is never changed.
 // interactive=false is for videos inside buttons (answer choices), where the button takes the tap.
 export default function SignVideo({
   sign,
@@ -68,11 +69,11 @@ export default function SignVideo({
       </div>
       {credit !== "none" && sign.videoCredit && (
         <figcaption className="mt-1 flex flex-wrap justify-between gap-x-3 text-xs text-muted">
-          {/* The signer faces the learner, so their right hand shows on the left. Say which hand
-              to copy with, so nobody mirrors the screen. */}
+          {/* Mirror view: the hand on the right of the screen is the learner's right hand. */}
           <span>
-            Facing you. <span className="hand-right-only">Copy with your right hand.</span>
-            <span className="hand-left-only">Flipped: copy with your left hand.</span>
+            Mirror view. Copy what you see with your{" "}
+            <span className="hand-right-only">right</span>
+            <span className="hand-left-only">left</span> hand.
           </span>
           <span>
           Video:{" "}

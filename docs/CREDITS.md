@@ -2,7 +2,9 @@
 
 ## Sign videos (`public/videos/`)
 
-Sign videos are from **ASL Signbank** (ASL Signbank, 2026), used unaltered.
+Sign videos are from **ASL Signbank** (ASL Signbank, 2026). The files are unaltered. The app
+**displays them mirrored** for right-handed learners ("mirror view") and as filmed for left-handed
+learners; Settings → About says so, as the license asks when a work is changed.
 
 > Hochgesang, J. A., Crasborn, O., & Lillo-Martin, D. (2026 (2017-2026)). ASL Signbank.
 > https://aslsignbank.com. https://doi.org/10.6084/m9.figshare.9741788

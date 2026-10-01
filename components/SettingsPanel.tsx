@@ -103,9 +103,8 @@ export default function SettingsPanel() {
 
       <Section title="Signing hand">
         <p className="text-sm text-muted">
-          The signer in each video faces you, so their right hand appears on your left. Don’t mirror
-          them: sign with the hand you write with. Choosing Left hand flips the videos, drawings and
-          arrows so they show left-handed signing.
+          Videos, drawings and arrows are shown like a mirror: copy exactly what you see. Pick the
+          hand you write with, and the signing hand appears on that side of the screen.
         </p>
         <div className="mt-4 grid grid-cols-2 gap-3" role="radiogroup" aria-label="Signing hand">
           {[
@@ -239,7 +238,7 @@ export default function SettingsPanel() {
           need to be checked by a Deaf ASL signer. Some signs have videos, with more to come.
         </p>
         <p className="mt-3 text-sm text-muted">
-          Sign videos: (ASL Signbank, 2026), used with thanks under{" "}
+          Sign videos: (ASL Signbank, 2026), shown mirrored in right-hand view, used with thanks under{" "}
           <a
             href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
             target="_blank"

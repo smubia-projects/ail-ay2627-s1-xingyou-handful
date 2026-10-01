@@ -67,9 +67,9 @@ const LOCATION_POINTS: Record<SignLocation, { x: number; y: number }> = {
 };
 
 // Arrow (or tap marks) for each motion, drawn relative to the location dot at (x, y).
-// The diagram is a signer FACING the learner, like the videos: a right-handed signer's hand is on
-// the viewer's left, so one-sided movements are drawn on the left (negative x). Left-handed mode
-// mirrors the whole diagram with CSS. Circles keep their on-screen direction.
+// Drawn as a right-handed signer FACING the viewer (hand on the viewer's left), the same way the
+// source videos are filmed, so the diagram and video are flipped together by .hand-mirror for
+// mirror view. Circles are drawn in their on-screen direction for that facing view.
 function motionPath(motion: Motion, x: number, y: number): { d: string; heads: "end" | "both" | "none" } {
   const side = (distance: number) => x - distance;
   switch (motion) {
@@ -186,7 +186,8 @@ export function BodyDiagram({
 }
 
 // The handshape drawing for a sign, if one matches exactly.
-// mirror=false keeps it as drawn even in left-handed mode (for reading other people's signing).
+// mirror=false keeps it as drawn, the way you see someone else's hand when they sign to you
+// (used for reading fingerspelling).
 export function HandshapeImage({
   sign,
   className = "h-36 w-28",

@@ -41,6 +41,60 @@
   --animate-shake: shake 0.35s ease-in-out;
   --animate-bob: bob 1.6s ease-in-out infinite;
   --animate-fade-in: fade-in 0.25s ease-out;
+  --animate-pop: pop 0.45s ease-out;
+  --animate-burst: burst 1.15s ease-out forwards;
+  --animate-confetti: confetti 0.9s ease-out forwards;
+
+  /* A correct answer tile gives a little bounce. */
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.07);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* The big right/wrong stamp: pops in, holds, fades out. */
+  @keyframes burst {
+    0% {
+      transform: scale(0.3) rotate(-14deg);
+      opacity: 0;
+    }
+    18% {
+      transform: scale(1.18) rotate(5deg);
+      opacity: 1;
+    }
+    30% {
+      transform: scale(1) rotate(0);
+    }
+    72% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.05);
+      opacity: 0;
+    }
+  }
+
+  /* Confetti pieces fly out from the stamp to --dx/--dy, spinning to --spin. */
+  @keyframes confetti {
+    0% {
+      transform: translate(-50%, -50%) rotate(0);
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--spin));
+      opacity: 0;
+    }
+  }
 
   @keyframes fade-in {
     from {
@@ -81,9 +135,15 @@
   outline-offset: 3px;
 }
 
-/* Left-handed mode: flip handshape drawings and body diagrams (set by HandPreference). */
-[data-hand="left"] .hand-mirror {
+/* Mirror view: learners copy the screen like a reflection. The source videos and drawings show a
+   right-handed signer facing the viewer (hand on the viewer's left), so for right-handed
+   learners (the default) they are flipped to put the hand on the right. Left-handed learners
+   see them unflipped: hand on the left, copied with the left hand. Set by HandPreference. */
+.hand-mirror {
   transform: scaleX(-1);
+}
+[data-hand="left"] .hand-mirror {
+  transform: none;
 }
 
 /* Wording that depends on the learner's signing hand. */
