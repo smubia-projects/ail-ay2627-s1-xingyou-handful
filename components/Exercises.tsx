@@ -61,16 +61,22 @@ function SignPicture({
           className={size === "large" ? "h-36 w-36" : "h-16 w-16"}
         />
       </div>
-      <span
-        className={
-          size === "large"
-            ? "text-center font-display text-xl font-bold text-ink"
-            : "text-center text-xs font-semibold text-muted"
-        }
-      >
-        {sign.handshape}
-      </span>
-      {size === "large" && <span className="text-center text-sm text-muted">{sign.movement}</span>}
+      {/* The words are only needed for what the drawings can't show: a handshape with no
+          drawing, or a movement (a still letter has neither to add). */}
+      {!sign.handshapeImage && (
+        <span
+          className={
+            size === "large"
+              ? "text-center font-display text-xl font-bold text-ink"
+              : "text-center text-xs font-semibold text-muted"
+          }
+        >
+          {sign.handshape}
+        </span>
+      )}
+      {size === "large" && (sign.motion || !sign.handshapeImage) && (
+        <span className="text-center text-sm text-muted">{sign.movement}</span>
+      )}
       {size === "large" && sign.face && (
         <span className="text-center text-sm font-semibold text-ink">Face: {sign.face}</span>
       )}
