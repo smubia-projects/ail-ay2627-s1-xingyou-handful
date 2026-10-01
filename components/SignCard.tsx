@@ -35,6 +35,9 @@ export type Sign = {
   // A letter (A-Z) or number (1-9) whose drawing in public/handshapes matches the handshape.
   handshapeImage?: string;
   motion?: Motion;
+  // Facial expression or head movement that is part of the sign. In ASL the face carries grammar
+  // (for example, lowered eyebrows mark who/what/where questions).
+  face?: string;
 };
 
 // Path to a handshape drawing. See docs/CREDITS.md for where the drawings come from.
@@ -262,6 +265,7 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
         <dl className="space-y-2">
           <Detail label="Handshape">{sign.handshape}</Detail>
           <Detail label="Movement">{sign.movement}</Detail>
+          {sign.face && <Detail label="Face">{sign.face}</Detail>}
         </dl>
       </div>
 

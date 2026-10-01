@@ -63,6 +63,9 @@ function SignPicture({ sign, size }: { sign: Sign; size: "large" | "small" }) {
         {sign.handshape}
       </span>
       {size === "large" && <span className="text-center text-sm text-muted">{sign.movement}</span>}
+      {size === "large" && sign.face && (
+        <span className="text-center text-sm font-semibold text-ink">Face: {sign.face}</span>
+      )}
     </div>
   );
 }

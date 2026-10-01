@@ -41,7 +41,8 @@
     "tip": "A fist circling a heavy heart",
     "reviewed": false,
     "handshapeImage": "A",
-    "motion": "circle"
+    "motion": "circle",
+    "face": "A sorry, apologetic look"
   },
   {
     "id": "goodbye",
@@ -73,7 +74,8 @@
     "movement": "Snap the index and middle fingers down onto the thumb",
     "tip": "A little mouth snapping shut",
     "reviewed": false,
-    "motion": "tap"
+    "motion": "tap",
+    "face": "Shake your head as you sign"
   },
   {
     "id": "name",
@@ -170,7 +172,8 @@
     "tip": "Joy bubbling up from your heart",
     "reviewed": false,
     "handshapeImage": "B",
-    "motion": "circle"
+    "motion": "circle",
+    "face": "Smile"
   },
   {
     "id": "sad",
@@ -181,7 +184,8 @@
     "tip": "Your whole face drooping",
     "reviewed": false,
     "handshapeImage": "5",
-    "motion": "down"
+    "motion": "down",
+    "face": "A sad look, head tilted down a little"
   },
   {
     "id": "tired",
@@ -191,7 +195,8 @@
     "movement": "Rest the bent fingertips on the chest, then rotate the hands downward as the shoulders slump",
     "tip": "Your energy draining away",
     "reviewed": false,
-    "motion": "down"
+    "motion": "down",
+    "face": "A droopy, tired look"
   },
   {
     "id": "love",
@@ -211,7 +216,8 @@
     "movement": "Brush the middle fingers up the chest in alternating circles",
     "tip": "Your heart racing",
     "reviewed": false,
-    "motion": "circle"
+    "motion": "circle",
+    "face": "A bright, excited look"
   },
   {
     "id": "one",
@@ -323,7 +329,8 @@
     "tip": "Your finger is asking 'who?'",
     "reviewed": false,
     "handshapeImage": "L",
-    "motion": "wiggle"
+    "motion": "wiggle",
+    "face": "Eyebrows down, head tilted slightly forward"
   },
   {
     "id": "what",
@@ -333,7 +340,8 @@
     "movement": "Hold both open hands palms up and shake them slightly side to side, eyebrows down",
     "tip": "A shrug with your hands",
     "reviewed": false,
-    "motion": "side-to-side"
+    "motion": "side-to-side",
+    "face": "Eyebrows down, head tilted slightly forward"
   },
   {
     "id": "where",
@@ -344,7 +352,8 @@
     "tip": "Searching back and forth",
     "reviewed": false,
     "handshapeImage": "1",
-    "motion": "side-to-side"
+    "motion": "side-to-side",
+    "face": "Eyebrows down, head tilted slightly forward"
   },
   {
     "id": "why",
@@ -355,7 +364,8 @@
     "tip": "Pulling a question out of your mind",
     "reviewed": false,
     "handshapeImage": "Y",
-    "motion": "forward-down"
+    "motion": "forward-down",
+    "face": "Eyebrows down, head tilted slightly forward"
   },
   {
     "id": "how",
@@ -365,7 +375,8 @@
     "movement": "Start with the knuckles of both bent hands together, then roll them forward so the palms face up",
     "tip": "Unfolding the answer",
     "reviewed": false,
-    "motion": "twist"
+    "motion": "twist",
+    "face": "Eyebrows down, head tilted slightly forward"
   },
   {
     "id": "eat",

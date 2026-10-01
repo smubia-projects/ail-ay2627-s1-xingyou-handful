@@ -18,6 +18,10 @@ If a sign has common regional or variant forms, note which one you'd recommend t
 
 Each sign also has a **dictionary pre-check** note. The descriptions were compared against the [Lifeprint ASL dictionary](https://www.lifeprint.com/) and other dictionary sources, and some wording was corrected. This is only a first pass. It does not replace your review.
 
+Some signs also have a **Face** line (facial expression or head movement). Please check these carefully: the wording is a beginner's summary of ASL non-manual markers and may be too simple or wrong.
+
+The app has a **left-handed mode** that mirrors the drawings and arrows. If any sign should *not* simply be mirrored for left-handed signers (for example the letters J and Z), please say so.
+
 ## Unit 1: Greetings
 
 ### 1. Hello
@@ -119,6 +123,7 @@ Notes:
 | Location | Chest |
 | Movement | Rub the fist in a circle on the chest |
 | Movement arrow in app | circle |
+| Face | A sorry, apologetic look |
 | Memory tip | A fist circling a heavy heart |
 
 > **Dictionary pre-check:** Matches Lifeprint: A-hand circling on the chest, with a sorry facial expression.
@@ -165,6 +170,7 @@ Notes:
 | Location | In front of the body |
 | Movement | Snap the index and middle fingers down onto the thumb |
 | Movement arrow in app | tap |
+| Face | Shake your head as you sign |
 | Memory tip | A little mouth snapping shut |
 
 > **Dictionary pre-check:** Consistent with Lifeprint's images. The page stresses single vs double movement and the headshake.
@@ -367,6 +373,7 @@ Notes:
 | Location | Chest |
 | Movement | Brush the hand up the chest in small forward circles, with a smile. Often done with both hands |
 | Movement arrow in app | circle |
+| Face | Smile |
 | Memory tip | Joy bubbling up from your heart |
 
 > **Dictionary pre-check:** Wording corrected: Lifeprint describes forward circles brushing up the chest, one or two hands. Previously 'brush upward'.
@@ -411,6 +418,7 @@ Notes:
 | Location | Chest |
 | Movement | Brush the middle fingers up the chest in alternating circles |
 | Movement arrow in app | circle |
+| Face | A bright, excited look |
 | Memory tip | Your heart racing |
 
 > **Dictionary pre-check:** Matches Lifeprint: middle fingers bent, alternating circles.
@@ -433,6 +441,7 @@ Notes:
 | Location | Mouth |
 | Movement | Hold both open hands in front of the face, then draw them slowly down |
 | Movement arrow in app | down |
+| Face | A sad look, head tilted down a little |
 | Memory tip | Your whole face drooping |
 
 > **Dictionary pre-check:** Matches Lifeprint: both hands, palms in, drawn down the face, with a sad expression.
@@ -455,6 +464,7 @@ Notes:
 | Location | Chest |
 | Movement | Rest the bent fingertips on the chest, then rotate the hands downward as the shoulders slump |
 | Movement arrow in app | down |
+| Face | A droopy, tired look |
 | Memory tip | Your energy draining away |
 
 > **Dictionary pre-check:** Wording refined: Lifeprint starts like HAVE and the hands rotate downward rather than sliding.
@@ -701,6 +711,7 @@ Notes:
 | Location | Chin |
 | Movement | Rest the thumb on the chin and bend the index finger a couple of times, eyebrows down |
 | Movement arrow in app | wiggle |
+| Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Your finger is asking 'who?' |
 
 > **Dictionary pre-check:** Matches Lifeprint: thumb on chin, index finger bends twice. Furrowed brows for questions.
@@ -723,6 +734,7 @@ Notes:
 | Location | In front of the body |
 | Movement | Hold both open hands palms up and shake them slightly side to side, eyebrows down |
 | Movement arrow in app | side to side |
+| Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | A shrug with your hands |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
@@ -745,6 +757,7 @@ Notes:
 | Location | In front of the body |
 | Movement | Hold the index finger up, palm out, and shake it side to side, eyebrows down |
 | Movement arrow in app | side to side |
+| Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Searching back and forth |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
@@ -767,6 +780,7 @@ Notes:
 | Location | Forehead |
 | Movement | Touch the fingertips to the forehead, then pull the hand forward and down into a Y-hand |
 | Movement arrow in app | forward down |
+| Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Pulling a question out of your mind |
 
 > **Dictionary pre-check:** Matches Lifeprint: fingertips at forehead, pull forward into a Y-hand.
@@ -789,6 +803,7 @@ Notes:
 | Location | In front of the body |
 | Movement | Start with the knuckles of both bent hands together, then roll them forward so the palms face up |
 | Movement arrow in app | twist |
+| Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Unfolding the answer |
 
 > **Dictionary pre-check:** Matches Lifeprint: bent hands knuckle-to-knuckle roll forward to palms up.
@@ -1050,7 +1065,7 @@ Notes:
 
 ### 47. A
 
-*Lesson: A to E*
+*Lesson: A to D*
 
 | | |
 |---|---|
@@ -1072,7 +1087,7 @@ Notes:
 
 ### 48. B
 
-*Lesson: A to E*
+*Lesson: A to D*
 
 | | |
 |---|---|
@@ -1094,7 +1109,7 @@ Notes:
 
 ### 49. C
 
-*Lesson: A to E*
+*Lesson: A to D*
 
 | | |
 |---|---|
@@ -1116,7 +1131,7 @@ Notes:
 
 ### 50. D
 
-*Lesson: A to E*
+*Lesson: A to D*
 
 | | |
 |---|---|
@@ -1138,7 +1153,7 @@ Notes:
 
 ### 51. E
 
-*Lesson: A to E*
+*Lesson: E to H*
 
 | | |
 |---|---|
@@ -1160,7 +1175,7 @@ Notes:
 
 ### 52. F
 
-*Lesson: F to J*
+*Lesson: E to H*
 
 | | |
 |---|---|
@@ -1182,7 +1197,7 @@ Notes:
 
 ### 53. G
 
-*Lesson: F to J*
+*Lesson: E to H*
 
 | | |
 |---|---|
@@ -1204,7 +1219,7 @@ Notes:
 
 ### 54. H
 
-*Lesson: F to J*
+*Lesson: E to H*
 
 | | |
 |---|---|
@@ -1226,7 +1241,7 @@ Notes:
 
 ### 55. I
 
-*Lesson: F to J*
+*Lesson: I to L*
 
 | | |
 |---|---|
@@ -1248,7 +1263,7 @@ Notes:
 
 ### 56. J
 
-*Lesson: F to J*
+*Lesson: I to L*
 
 | | |
 |---|---|
@@ -1270,7 +1285,7 @@ Notes:
 
 ### 57. K
 
-*Lesson: K to O*
+*Lesson: I to L*
 
 | | |
 |---|---|
@@ -1292,7 +1307,7 @@ Notes:
 
 ### 58. L
 
-*Lesson: K to O*
+*Lesson: I to L*
 
 | | |
 |---|---|
@@ -1314,7 +1329,7 @@ Notes:
 
 ### 59. M
 
-*Lesson: K to O*
+*Lesson: M to P*
 
 | | |
 |---|---|
@@ -1336,7 +1351,7 @@ Notes:
 
 ### 60. N
 
-*Lesson: K to O*
+*Lesson: M to P*
 
 | | |
 |---|---|
@@ -1358,7 +1373,7 @@ Notes:
 
 ### 61. O
 
-*Lesson: K to O*
+*Lesson: M to P*
 
 | | |
 |---|---|
@@ -1380,7 +1395,7 @@ Notes:
 
 ### 62. P
 
-*Lesson: P to T*
+*Lesson: M to P*
 
 | | |
 |---|---|
@@ -1402,7 +1417,7 @@ Notes:
 
 ### 63. Q
 
-*Lesson: P to T*
+*Lesson: Q to T*
 
 | | |
 |---|---|
@@ -1424,7 +1439,7 @@ Notes:
 
 ### 64. R
 
-*Lesson: P to T*
+*Lesson: Q to T*
 
 | | |
 |---|---|
@@ -1446,7 +1461,7 @@ Notes:
 
 ### 65. S
 
-*Lesson: P to T*
+*Lesson: Q to T*
 
 | | |
 |---|---|
@@ -1468,7 +1483,7 @@ Notes:
 
 ### 66. T
 
-*Lesson: P to T*
+*Lesson: Q to T*
 
 | | |
 |---|---|
@@ -1490,7 +1505,7 @@ Notes:
 
 ### 67. U
 
-*Lesson: U to Z*
+*Lesson: U to W*
 
 | | |
 |---|---|
@@ -1512,7 +1527,7 @@ Notes:
 
 ### 68. V
 
-*Lesson: U to Z*
+*Lesson: U to W*
 
 | | |
 |---|---|
@@ -1534,7 +1549,7 @@ Notes:
 
 ### 69. W
 
-*Lesson: U to Z*
+*Lesson: U to W*
 
 | | |
 |---|---|
@@ -1556,7 +1571,7 @@ Notes:
 
 ### 70. X
 
-*Lesson: U to Z*
+*Lesson: X to Z*
 
 | | |
 |---|---|
@@ -1578,7 +1593,7 @@ Notes:
 
 ### 71. Y
 
-*Lesson: U to Z*
+*Lesson: X to Z*
 
 | | |
 |---|---|
@@ -1600,7 +1615,7 @@ Notes:
 
 ### 72. Z
 
-*Lesson: U to Z*
+*Lesson: X to Z*
 
 | | |
 |---|---|
