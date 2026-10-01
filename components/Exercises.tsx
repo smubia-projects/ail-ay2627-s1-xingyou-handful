@@ -6,7 +6,8 @@ import { BodyDiagram, HandshapeImage, LOCATION_LABELS, type Sign } from "@/compo
 export type Exercise =
   | { type: "meaning"; sign: Sign; options: Sign[] }
   | { type: "pick-sign"; sign: Sign; options: Sign[] }
-  | { type: "match"; signs: Sign[]; words: Sign[] };
+  | { type: "match"; signs: Sign[]; words: Sign[] }
+  | { type: "sign-it"; sign: Sign };
 
 type Status = "answering" | "correct" | "wrong";
 // Reports whether the exercise was right first time, and which signs the learner got wrong.
@@ -71,6 +72,9 @@ function Prompt({ children }: { children: React.ReactNode }) {
 // Main action button. Give it a data-primary attribute so useEnterKey doesn't press it twice.
 export const PRIMARY_BUTTON =
   "rounded-full border-2 border-charcoal bg-fern px-8 py-3 text-[1.2rem] font-bold text-charcoal transition hover:bg-fern-dark active:scale-[0.97]";
+
+const SECONDARY_BUTTON =
+  "rounded-full border-2 border-charcoal bg-cream px-6 py-3 text-[1.2rem] font-bold text-charcoal transition hover:bg-white active:scale-[0.97]";
 
 // Bar fixed to the bottom of the screen, holding feedback and the main button.
 export function BottomBar({
@@ -352,6 +356,55 @@ function MatchExercise({
   );
 }
 
+// The learner makes the sign themselves, reveals the answer, and rates how they did.
+// There's no camera: this is honest self-checking, which is what makes producing signs stick.
+function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
+  const [revealed, setRevealed] = useState(false);
+  useEnterKey(revealed ? undefined : () => setRevealed(true));
+
+  return (
+    <>
+      <Prompt>Sign “{sign.word}”</Prompt>
+      <p className="mt-2 text-muted">
+        {revealed
+          ? "Did your sign match? Be honest, it helps you learn."
+          : "Make the sign yourself, then check how you did."}
+      </p>
+      {revealed ? (
+        <div className="mt-6 rounded-3xl bg-fennel p-5">
+          <SignPicture sign={sign} size="large" />
+        </div>
+      ) : (
+        <div className="mt-6 flex h-56 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-line-strong text-center">
+          <p className="font-display text-3xl font-bold text-ink">Your turn</p>
+          <p className="mt-1 text-sm text-muted">Sign it now, no peeking</p>
+        </div>
+      )}
+      <BottomBar className={revealed ? "bg-bluebell" : "bg-cream"}>
+        {revealed ? (
+          <>
+            <button type="button" onClick={() => onDone(false, [sign.id])} className={SECONDARY_BUTTON}>
+              Not yet
+            </button>
+            <button type="button" data-primary onClick={() => onDone(true, [])} className={PRIMARY_BUTTON}>
+              Got it
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            data-primary
+            onClick={() => setRevealed(true)}
+            className={`ml-auto ${PRIMARY_BUTTON}`}
+          >
+            Show the sign
+          </button>
+        )}
+      </BottomBar>
+    </>
+  );
+}
+
 // Shows one exercise of any type. onDone reports whether it was answered correctly.
 export function ExerciseView({
   exercise,
@@ -365,6 +418,9 @@ export function ExerciseView({
   }
   if (exercise.type === "pick-sign") {
     return <PickSignExercise sign={exercise.sign} options={exercise.options} onDone={onDone} />;
+  }
+  if (exercise.type === "sign-it") {
+    return <SignItExercise sign={exercise.sign} onDone={onDone} />;
   }
   return <MatchExercise signs={exercise.signs} words={exercise.words} onDone={onDone} />;
 }

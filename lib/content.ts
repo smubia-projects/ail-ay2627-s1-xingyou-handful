@@ -74,6 +74,7 @@ export function pickOptions(answer: Sign, count = 4): Sign[] {
 
 const meaningExercise = (sign: Sign): Exercise => ({ type: "meaning", sign, options: pickOptions(sign) });
 const pickSignExercise = (sign: Sign): Exercise => ({ type: "pick-sign", sign, options: pickOptions(sign) });
+const signItExercise = (sign: Sign): Exercise => ({ type: "sign-it", sign });
 
 // Match pairs only for 3+ signs that all look different, or two pairs could be swapped.
 function matchExercise(matchSigns: Sign[]): Exercise | null {
@@ -84,9 +85,13 @@ function matchExercise(matchSigns: Sign[]): Exercise | null {
   return { type: "match", signs: shuffle(matchSigns), words: shuffle(matchSigns) };
 }
 
-// Two multiple-choice exercises per sign, plus match pairs, in random order (practice and review).
+// Practice and review: for each sign, recognize it (one multiple-choice question) and produce it
+// ("sign it yourself"), plus match pairs, in random order.
 export function buildExercises(practiceSigns: Sign[]): Exercise[] {
-  const exercises = practiceSigns.flatMap((sign) => [meaningExercise(sign), pickSignExercise(sign)]);
+  const exercises = practiceSigns.flatMap((sign) => [
+    Math.random() < 0.5 ? meaningExercise(sign) : pickSignExercise(sign),
+    signItExercise(sign),
+  ]);
   const match = matchExercise(practiceSigns);
   return shuffle(match ? [...exercises, match] : exercises);
 }
@@ -100,11 +105,12 @@ export const TARGET_QUESTIONS = 8;
 export const MAX_REVIEWS = 3;
 
 export function questionCount(lessonSigns: Sign[]): number {
-  return lessonSigns.length * 2 + (matchExercise(lessonSigns) ? 1 : 0);
+  return lessonSigns.length * 3 + (matchExercise(lessonSigns) ? 1 : 0);
 }
 
 // A lesson teaches each sign and practices it straight away (intro card, then "what does this
-// mean?"), then mixes the rest: "which is the sign?" for each, match pairs, and quick reviews.
+// mean?"), then mixes the rest: "which is the sign?" and "sign it yourself" for each, match
+// pairs, and quick reviews.
 export function buildLessonSteps(lessonSigns: Sign[], reviewSigns: Sign[]): LessonStep[] {
   const taught = lessonSigns.flatMap((sign, index): LessonStep[] => [
     { kind: "intro", sign, index },
@@ -113,6 +119,7 @@ export function buildLessonSteps(lessonSigns: Sign[], reviewSigns: Sign[]): Less
   const match = matchExercise(lessonSigns);
   const mixed: LessonStep[] = [
     ...lessonSigns.map((sign): LessonStep => ({ kind: "exercise", exercise: pickSignExercise(sign) })),
+    ...lessonSigns.map((sign): LessonStep => ({ kind: "exercise", exercise: signItExercise(sign) })),
     ...(match ? [{ kind: "exercise", exercise: match } as LessonStep] : []),
     ...reviewSigns.map((sign): LessonStep => ({
       kind: "exercise",
@@ -128,6 +135,7 @@ export function reshuffleExercise(exercise: Exercise): Exercise {
   if (exercise.type === "match") {
     return { ...exercise, signs: shuffle(exercise.signs), words: shuffle(exercise.words) };
   }
+  if (exercise.type === "sign-it") return exercise;
   return { ...exercise, options: shuffle(exercise.options) };
 }
 
