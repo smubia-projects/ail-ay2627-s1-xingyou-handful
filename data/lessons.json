@@ -53,7 +53,7 @@
     "title": "Food & drink",
     "lessons": [
       { "id": "food-1", "title": "Eat and drink", "signIds": ["eat", "drink", "water"] },
-      { "id": "food-2", "title": "Hungry?", "signIds": ["hungry", "milk"] }
+      { "id": "food-2", "title": "Snack time", "signIds": ["milk", "cookie"] }
     ]
   },
   {
