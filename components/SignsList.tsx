@@ -44,16 +44,16 @@ function SignRow({
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className={`flex w-full items-center gap-3 rounded-3xl bg-surface p-3 text-left transition hover:bg-line/70 ${open ? "ring-2 ring-brand" : ""}`}
+        className={`flex w-full items-center gap-3 rounded-3xl bg-surface p-3 text-left transition hover:bg-line/70 ${open ? "ring-2 ring-charcoal" : ""}`}
       >
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cream">
           <BodyDiagram location={sign.location} className="h-10 w-10" />
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
             <span className="font-display text-lg font-bold text-ink">{sign.word}</span>
             {due && (
-              <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand">
+              <span className="rounded-full bg-bluebell px-2 py-0.5 text-xs font-semibold text-charcoal">
                 Review due
               </span>
             )}
@@ -102,7 +102,7 @@ export default function SignsList() {
           </p>
           <Link
             href="/"
-            className="mt-5 inline-block rounded-full bg-brand px-6 py-3 font-bold text-white transition hover:bg-brand-dark active:scale-[0.97]"
+            className="mt-5 inline-block rounded-full border-2 border-charcoal bg-fern px-6 py-3 text-[1.2rem] font-bold text-charcoal transition hover:bg-fern-dark active:scale-[0.97]"
           >
             Start learning
           </Link>
@@ -116,7 +116,7 @@ export default function SignsList() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search your signs"
-              className="w-full rounded-full border-0 bg-surface px-5 py-3.5 font-medium text-ink placeholder:text-muted focus:bg-white focus:ring-2 focus:ring-brand"
+              className="w-full rounded-full border-0 bg-surface px-5 py-3.5 font-medium text-ink placeholder:text-muted focus:bg-cream focus:ring-2 focus:ring-charcoal"
             />
           </label>
 

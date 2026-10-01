@@ -4,33 +4,37 @@
   --font-sans: var(--font-inter);
   --font-display: var(--font-bricolage);
 
-  /* Neutrals */
-  --color-surface: #f4f4f6;
-  --color-line: #e6e6ec;
-  --color-line-strong: #c8c8d2;
-  --color-ink: #0e0e12;
-  --color-muted: #62626d;
+  /* Palette */
+  --color-fern: #768e78; /* primary brand, correct state */
+  --color-bluebell: #b7cbdb; /* secondary accent, progress bars */
+  --color-honey: #fcc88a; /* streak, XP, highlights */
+  --color-peony: #e79897; /* errors, mistakes */
+  --color-fennel: #ebdec0; /* cards, containers */
+  --color-cream: #faf8f5; /* app background */
+  --color-charcoal: #252c26; /* text, borders, high-contrast accents */
 
-  /* Brand: indigo, with lime for wins */
-  --color-brand: #3d2bff;
-  --color-brand-dark: #2a1bd1;
-  --color-brand-soft: #ecebff;
-  --color-lime: #c6f432;
-  --color-lime-soft: #f1fbcf;
+  /* Tints and shades derived from the palette, for states the palette doesn't cover */
+  --color-fern-dark: #5f7562;
+  --color-fern-soft: #dde5dd;
+  --color-peony-dark: #b9605f;
 
-  /* Supporting colors (mistakes, units, streak freeze) */
-  --color-coral: #ff6b4a;
-  --color-coral-dark: #d9441f;
-  --color-coral-soft: #ffebe5;
-  --color-berry: #d81b60;
-  --color-berry-soft: #fde4ee;
-  --color-teal: #00796b;
-  --color-teal-soft: #d9f3ef;
-  --color-orange: #c2410c;
-  --color-orange-soft: #ffe8d9;
-  --color-ice: #0ea5e9;
-  --color-ice-dark: #0369a1;
-  --color-ice-soft: #e0f4fd;
+  /* Roles used across the app, mapped onto the palette.
+     Every pastel needs charcoal text: white on them is below readable contrast. */
+  --color-brand: var(--color-fern);
+  --color-brand-dark: var(--color-fern-dark);
+  --color-brand-soft: var(--color-bluebell);
+  --color-lime: var(--color-honey);
+  --color-lime-soft: var(--color-fern-soft);
+  --color-coral: var(--color-peony);
+  --color-coral-dark: var(--color-peony-dark);
+  --color-coral-soft: var(--color-peony);
+  --color-ice-soft: var(--color-bluebell);
+  --color-ice-dark: var(--color-charcoal);
+  --color-surface: var(--color-fennel);
+  --color-line: #e6dfd2;
+  --color-line-strong: #c9bc9e;
+  --color-ink: var(--color-charcoal);
+  --color-muted: #575e58;
 }
 
 @theme {
@@ -78,7 +82,7 @@
 }
 
 body {
-  background: #ffffff;
+  background: var(--color-cream);
   color: var(--color-ink);
 }
 

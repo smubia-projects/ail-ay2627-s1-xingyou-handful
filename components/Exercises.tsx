@@ -14,11 +14,11 @@ export type OnDone = (correct: boolean, missedSignIds: string[]) => void;
 type ChoiceState = "idle" | "selected" | "correct" | "wrong" | "done";
 
 const CHOICE_STYLES: Record<ChoiceState, string> = {
-  idle: "border-line bg-white hover:border-line-strong",
-  selected: "border-brand bg-brand-soft",
-  correct: "border-teal bg-teal-soft",
-  wrong: "border-coral bg-coral-soft",
-  done: "border-line bg-white opacity-40",
+  idle: "border-charcoal bg-cream hover:bg-white",
+  selected: "border-charcoal bg-bluebell",
+  correct: "border-charcoal bg-fern-soft",
+  wrong: "border-charcoal bg-peony",
+  done: "border-charcoal bg-cream opacity-40",
 };
 
 function choiceClass(state: ChoiceState, extra = "") {
@@ -66,11 +66,11 @@ function Prompt({ children }: { children: React.ReactNode }) {
 
 // Main action button. Give it a data-primary attribute so useEnterKey doesn't press it twice.
 export const PRIMARY_BUTTON =
-  "rounded-full bg-brand px-8 py-3.5 font-bold text-white transition hover:bg-brand-dark active:scale-[0.97]";
+  "rounded-full border-2 border-charcoal bg-fern px-8 py-3 text-[1.2rem] font-bold text-charcoal transition hover:bg-fern-dark active:scale-[0.97]";
 
 // Bar fixed to the bottom of the screen, holding feedback and the main button.
 export function BottomBar({
-  className = "bg-white",
+  className = "bg-cream",
   children,
 }: {
   className?: string;
@@ -125,24 +125,20 @@ function CheckBar({
   if (status === "answering" && !onCheck) return null;
 
   const background =
-    status === "correct" ? "bg-lime-soft" : status === "wrong" ? "bg-coral-soft" : "bg-white";
-  const button =
-    status === "wrong"
-      ? "bg-ink text-white hover:bg-ink"
-      : "";
+    status === "correct" ? "bg-fern-soft" : status === "wrong" ? "bg-peony" : "bg-cream";
 
   return (
     <BottomBar className={background}>
       <div role="status" aria-live="polite">
         {title && <p className="font-display text-2xl font-bold text-ink">{title}</p>}
-        {detail && <p className="text-sm font-semibold text-muted">{detail}</p>}
+        {detail && <p className="text-sm font-semibold text-charcoal">{detail}</p>}
       </div>
       <button
         type="button"
         data-primary
         disabled={status === "answering" && !canCheck}
         onClick={status === "answering" ? onCheck : onContinue}
-        className={`${PRIMARY_BUTTON} disabled:bg-line disabled:text-muted disabled:active:scale-100 ${button}`}
+        className={`ml-auto ${PRIMARY_BUTTON} disabled:border-line-strong disabled:bg-line disabled:text-muted disabled:active:scale-100`}
       >
         {status === "answering" ? "Check" : "Continue"}
       </button>
@@ -182,7 +178,7 @@ function MeaningExercise({
   return (
     <>
       <Prompt>What does this sign mean?</Prompt>
-      <div className="mt-6 rounded-3xl bg-white p-5 ring-1 ring-line">
+      <div className="mt-6 rounded-3xl bg-fennel p-5">
         <SignPicture sign={sign} size="large" />
       </div>
       <div className="mt-6 grid grid-cols-2 gap-3">

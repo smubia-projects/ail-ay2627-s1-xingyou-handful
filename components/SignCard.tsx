@@ -84,8 +84,8 @@ function Detail({ label, children }: { label: string; children: React.ReactNode 
 
 export default function SignCard({ sign, label = "New sign" }: { sign: Sign; label?: string }) {
   return (
-    <article className="w-full rounded-[28px] bg-white p-6 ring-1 ring-line">
-      <span className="inline-block rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">
+    <article className="w-full rounded-[28px] bg-fennel p-6">
+      <span className="inline-block rounded-full bg-bluebell px-3 py-1 text-sm font-semibold text-charcoal">
         {label}
       </span>
       <h2 className="mt-3 font-display text-5xl font-bold text-ink">{sign.word}</h2>
@@ -103,8 +103,8 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
           preload="metadata"
         />
       ) : (
-        <div className="mt-5 flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-line-strong bg-surface py-4 text-sm font-semibold text-muted">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm">
+        <div className="mt-5 flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-line-strong bg-cream py-4 text-sm font-semibold text-muted">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cream">
             <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 fill-brand" aria-hidden="true">
               <path d="M8 5v14l11-7z" />
             </svg>
@@ -114,7 +114,7 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
       )}
 
       <div className="mt-5 grid gap-5 sm:grid-cols-[auto_1fr] sm:items-center">
-        <div className="flex justify-center rounded-2xl bg-surface p-3">
+        <div className="flex justify-center rounded-2xl bg-cream p-3">
           <BodyDiagram location={sign.location} />
         </div>
         <dl className="space-y-3">
@@ -126,7 +126,7 @@ export default function SignCard({ sign, label = "New sign" }: { sign: Sign; lab
         </dl>
       </div>
 
-      <div className="mt-5 rounded-3xl bg-lime-soft p-4">
+      <div className="mt-5 rounded-3xl bg-honey p-4">
         <p className="text-sm font-semibold text-ink/70">
           Memory tip
         </p>

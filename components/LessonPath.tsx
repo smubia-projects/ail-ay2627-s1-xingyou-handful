@@ -7,13 +7,13 @@ import { dueSignIds, sessionsToday, useProgress, useProgressLoaded } from "@/lib
 type LessonState = "completed" | "current" | "locked";
 
 // Each unit gets its own bold color, cycling if there are more units than colors.
-// All are dark enough for white text.
+// All take charcoal text.
 type UnitTheme = { block: string; ring: string; dot: string };
 const UNIT_THEMES: UnitTheme[] = [
-  { block: "bg-brand", ring: "ring-brand-soft", dot: "bg-brand" },
-  { block: "bg-berry", ring: "ring-berry-soft", dot: "bg-berry" },
-  { block: "bg-teal", ring: "ring-teal-soft", dot: "bg-teal" },
-  { block: "bg-orange", ring: "ring-orange-soft", dot: "bg-orange" },
+  { block: "bg-fern", ring: "ring-fern/30", dot: "bg-fern" },
+  { block: "bg-bluebell", ring: "ring-bluebell/40", dot: "bg-bluebell" },
+  { block: "bg-honey", ring: "ring-honey/40", dot: "bg-honey" },
+  { block: "bg-fennel", ring: "ring-fennel/60", dot: "bg-line-strong" },
 ];
 
 // Gentle zigzag so the lessons read as a winding path.
@@ -25,8 +25,8 @@ function circleStyle(state: LessonState, theme: UnitTheme) {
   if (state === "locked") {
     return "h-20 w-20 bg-surface text-line-strong ring-transparent";
   }
-  const size = state === "current" ? "h-24 w-24 ring-lime" : `h-20 w-20 ${theme.ring}`;
-  return `${size} ${theme.block} text-white`;
+  const size = state === "current" ? "h-24 w-24 ring-honey" : `h-20 w-20 ${theme.ring}`;
+  return `${size} ${theme.block} text-charcoal`;
 }
 
 function CheckIcon() {
@@ -70,7 +70,7 @@ function LessonNode({
   const content = (
     <>
       {state === "current" && (
-        <span className="mb-4 rounded-full bg-ink px-3.5 py-1.5 text-sm font-bold text-white motion-safe:animate-bob">
+        <span className="mb-4 rounded-full bg-charcoal px-3.5 py-1.5 text-sm font-bold text-cream motion-safe:animate-bob">
           Start
         </span>
       )}
@@ -129,22 +129,22 @@ function DailyGoal({ done, goal }: { done: number; goal: number }) {
   const circumference = 2 * Math.PI * 26;
   const filled = Math.min(done / goal, 1) * circumference;
   return (
-    <div className="flex items-center gap-5 rounded-[28px] bg-brand p-5 text-white">
+    <div className="flex items-center gap-5 rounded-[28px] bg-honey p-5 text-charcoal">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-white/80">Today</p>
+        <p className="text-sm font-semibold text-charcoal/80">Today</p>
         <p className="mt-0.5 font-display text-3xl leading-tight font-bold">
           {reached ? "Goal reached" : `${left} ${left === 1 ? "session" : "sessions"} to go`}
         </p>
         <Link
           href="/settings"
-          className="mt-2 inline-block rounded-full text-sm font-semibold text-white/80 underline-offset-4 hover:text-white hover:underline"
+          className="mt-2 inline-block rounded-full text-sm font-semibold text-charcoal/80 underline-offset-4 hover:text-charcoal hover:underline"
         >
           Daily goal: {goal} · Change
         </Link>
       </div>
       <div className="relative h-20 w-20 shrink-0">
         <svg viewBox="0 0 64 64" className="h-20 w-20 -rotate-90" aria-hidden="true">
-          <circle cx="32" cy="32" r="26" fill="none" strokeWidth="8" className="stroke-white/20" />
+          <circle cx="32" cy="32" r="26" fill="none" strokeWidth="8" className="stroke-charcoal/15" />
           <circle
             cx="32"
             cy="32"
@@ -153,7 +153,7 @@ function DailyGoal({ done, goal }: { done: number; goal: number }) {
             strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={`${filled} ${circumference}`}
-            className="stroke-lime transition-all duration-500"
+            className="stroke-fern-dark transition-all duration-500"
           />
         </svg>
         <span className="absolute inset-0 flex items-center justify-center font-display text-lg font-bold">
@@ -186,7 +186,7 @@ function SessionCard({
   const content = (
     <>
       <span
-        className={`flex h-10 w-10 items-center justify-center rounded-2xl ${count > 0 ? iconStyle : "bg-white text-line-strong"}`}
+        className={`flex h-10 w-10 items-center justify-center rounded-2xl ${count > 0 ? iconStyle : "bg-cream text-line-strong"}`}
       >
         {icon}
       </span>
@@ -243,7 +243,7 @@ export default function LessonPath() {
             }
             count={dueCount}
             icon={REVIEW_ICON}
-            iconStyle="bg-brand text-white"
+            iconStyle="bg-fern text-charcoal"
           />
           <SessionCard
             href="/practice"
@@ -255,7 +255,7 @@ export default function LessonPath() {
             }
             count={mistakeCount}
             icon={PRACTICE_ICON}
-            iconStyle="bg-coral text-ink"
+            iconStyle="bg-peony text-charcoal"
           />
         </div>
       </div>
@@ -264,16 +264,16 @@ export default function LessonPath() {
         const done = unit.lessons.filter((lesson) => completedLessons.includes(lesson.id)).length;
         return (
           <section key={unit.id}>
-            <div className={`rounded-[28px] px-6 py-5 text-white ${theme.block}`}>
+            <div className={`rounded-[28px] px-6 py-5 text-charcoal ${theme.block}`}>
               <p className="text-sm font-semibold">
                 Unit {unitIndex + 1} · {unit.lessons.length} lessons ·{" "}
                 {unit.lessons.reduce((total, lesson) => total + lesson.signIds.length, 0)} signs
               </p>
               <h1 className="mt-1 font-display text-4xl leading-none font-bold">{unit.title}</h1>
               <div className="mt-4 flex items-center gap-3">
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/25">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-charcoal/15">
                   <div
-                    className="h-full rounded-full bg-white transition-all duration-500"
+                    className="h-full rounded-full bg-charcoal transition-all duration-500"
                     style={{ width: `${(done / unit.lessons.length) * 100}%` }}
                   />
                 </div>

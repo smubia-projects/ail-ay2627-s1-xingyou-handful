@@ -14,7 +14,9 @@ export default function HeaderStats() {
       <span className="flex items-center gap-1">
         <svg
           viewBox="0 0 24 24"
-          className={`h-6 w-6 ${streak > 0 ? "fill-coral" : "fill-line-strong"}`}
+          className={`h-6 w-6 ${streak > 0 ? "fill-honey stroke-charcoal" : "fill-line-strong"}`}
+          strokeWidth={1.4}
+          strokeLinejoin="round"
           aria-hidden="true"
         >
           <path d="M12 2c1 3.5 5.5 6.2 5.5 11.2A5.5 5.5 0 0 1 6.5 13.2c0-2.2 1.1-3.8 2.3-5 .2 1.7.9 2.9 2 3.4C10.6 8 11 4.8 12 2z" />
@@ -38,7 +40,7 @@ export default function HeaderStats() {
         </span>
       )}
       <span className="flex items-center gap-1">
-        <svg viewBox="0 0 24 24" className="h-6 w-6 fill-brand" aria-hidden="true">
+        <svg viewBox="0 0 24 24" className="h-6 w-6 fill-honey stroke-charcoal" strokeWidth={1.4} strokeLinejoin="round" aria-hidden="true">
           <path d="M13.5 2 4 13.5h6.5L9.5 22 20 9.5h-6.5L13.5 2z" />
         </svg>
         <span className="text-ink">{progress.xp}</span>

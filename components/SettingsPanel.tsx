@@ -19,7 +19,7 @@ const GOAL_LABELS: Record<number, string> = { 1: "Casual", 2: "Regular", 3: "Ser
 
 const BUTTON =
   "rounded-full px-5 py-3 font-bold transition active:scale-[0.97]";
-const SECONDARY = `${BUTTON} bg-white text-ink ring-1 ring-line-strong hover:bg-line/40`;
+const SECONDARY = `${BUTTON} border-2 border-charcoal bg-cream text-charcoal hover:bg-white`;
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -86,8 +86,8 @@ export default function SettingsPanel() {
                 onClick={() => setDailyGoal(goal)}
                 className={`rounded-3xl border-2 p-3 text-left transition ${
                   selected
-                    ? "border-brand bg-brand-soft"
-                    : "border-transparent bg-white hover:border-line-strong"
+                    ? "border-charcoal bg-bluebell"
+                    : "border-charcoal/25 bg-cream hover:border-charcoal"
                 }`}
               >
                 <span className="block font-display text-lg font-bold text-ink">{GOAL_LABELS[goal]}</span>
@@ -125,7 +125,7 @@ export default function SettingsPanel() {
         </div>
 
         {pendingRestore && (
-          <div className="mt-4 rounded-3xl bg-white p-4 ring-2 ring-coral" role="alertdialog" aria-label="Confirm restore">
+          <div className="mt-4 rounded-3xl bg-cream p-4 ring-2 ring-peony-dark" role="alertdialog" aria-label="Confirm restore">
             <p className="font-display text-lg font-bold text-ink">Replace your current progress?</p>
             <p className="mt-1 text-sm text-ink">
               Now: {summary(progress)}
@@ -140,7 +140,7 @@ export default function SettingsPanel() {
                   setPendingRestore(null);
                   setMessage({ tone: "good", text: "Backup restored." });
                 }}
-                className={`${BUTTON} bg-brand text-white`}
+                className={`${BUTTON} border-2 border-charcoal bg-fern text-charcoal hover:bg-fern-dark`}
               >
                 Replace
               </button>
@@ -158,7 +158,7 @@ export default function SettingsPanel() {
           unless you have a backup.
         </p>
         {confirmingReset ? (
-          <div className="mt-4 rounded-3xl bg-white p-4 ring-2 ring-coral" role="alertdialog" aria-label="Confirm reset">
+          <div className="mt-4 rounded-3xl bg-cream p-4 ring-2 ring-peony-dark" role="alertdialog" aria-label="Confirm reset">
             <p className="font-display text-lg font-bold text-ink">Erase everything?</p>
             <div className="mt-3 flex flex-wrap gap-3">
               <button
@@ -168,7 +168,7 @@ export default function SettingsPanel() {
                   setConfirmingReset(false);
                   setMessage({ tone: "good", text: "Progress reset. Fresh start!" });
                 }}
-                className={`${BUTTON} bg-coral text-ink`}
+                className={`${BUTTON} border-2 border-charcoal bg-peony text-charcoal`}
               >
                 Yes, erase it
               </button>
@@ -194,7 +194,7 @@ export default function SettingsPanel() {
 
       <p role="status" aria-live="polite" className="mt-6 min-h-6 text-center text-sm font-bold">
         {message && (
-          <span className={message.tone === "good" ? "text-brand-dark" : "text-ink"}>
+          <span className={message.tone === "good" ? "text-fern-dark" : "text-charcoal"}>
             {message.text}
           </span>
         )}

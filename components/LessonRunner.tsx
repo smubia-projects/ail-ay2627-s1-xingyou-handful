@@ -52,7 +52,7 @@ function ProgressBar({ value }: { value: number }) {
       aria-valuenow={Math.round(value * 100)}
     >
       <div
-        className="h-full rounded-full bg-brand transition-all duration-500"
+        className="h-full rounded-full bg-bluebell transition-all duration-500"
         style={{ width: `${value * 100}%` }}
       />
     </div>
@@ -228,11 +228,11 @@ export default function LessonRunner({
 
         {phase === "complete" && (
           <div className="flex flex-col items-center pt-6 text-center">
-            <span className="flex h-28 w-28 items-center justify-center rounded-full bg-lime">
+            <span className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-charcoal bg-honey">
               <svg viewBox="0 0 24 24" className="h-12 w-12" fill="none" aria-hidden="true">
                 <path
                   d="M5 12.5l4.5 4.5L19 7.5"
-                  stroke="#0e0e12"
+                  stroke="#252c26"
                   strokeWidth={3}
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -250,13 +250,13 @@ export default function LessonRunner({
                   : title}
             </p>
             <div className="mt-8 grid w-full grid-cols-3 gap-3">
-              <Stat label="XP earned" value={`+${xp}`} className="bg-lime" />
-              <Stat label="First try" value={`${accuracy}%`} className="bg-brand-soft" />
+              <Stat label="XP earned" value={`+${xp}`} className="bg-honey" />
+              <Stat label="First try" value={`${accuracy}%`} className="bg-bluebell" />
               <Stat
                 label="Streak"
                 value={`${streak.count} ${streak.count === 1 ? "day" : "days"}`}
                 note={streak.note}
-                className="bg-coral-soft"
+                className="bg-fern-soft"
               />
             </div>
             <BottomBar>
