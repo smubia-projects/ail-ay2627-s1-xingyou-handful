@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { getLearnedSignIds, getLessonSigns, getSign, getUnits, type Lesson } from "@/lib/content";
-import { dueSignIds, useProgress, useProgressLoaded } from "@/lib/progress";
+import { dueSignIds, sessionsToday, useProgress, useProgressLoaded } from "@/lib/progress";
 
 type LessonState = "completed" | "current" | "locked";
 
@@ -145,6 +145,42 @@ const PRACTICE_ICON = (
   </svg>
 );
 
+// Ring that fills toward today's goal, with a link to change the goal.
+function DailyGoal({ done, goal }: { done: number; goal: number }) {
+  const reached = done >= goal;
+  const circumference = 2 * Math.PI * 18;
+  const filled = Math.min(done / goal, 1) * circumference;
+  return (
+    <div className="flex items-center gap-4 rounded-3xl bg-white p-4 ring-1 ring-sand">
+      <svg viewBox="0 0 44 44" className="h-12 w-12 shrink-0 -rotate-90" aria-hidden="true">
+        <circle cx="22" cy="22" r="18" fill="none" strokeWidth="6" className="stroke-sand" />
+        <circle
+          cx="22"
+          cy="22"
+          r="18"
+          fill="none"
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeDasharray={`${filled} ${circumference}`}
+          className={`transition-all duration-500 ${reached ? "stroke-peach-dark" : "stroke-sage"}`}
+        />
+      </svg>
+      <div className="flex-1">
+        <p className="font-extrabold text-ink">{reached ? "Daily goal reached!" : "Daily goal"}</p>
+        <p className="text-sm text-muted">
+          {Math.min(done, goal)} of {goal} {goal === 1 ? "session" : "sessions"} today
+        </p>
+      </div>
+      <Link
+        href="/settings"
+        className="rounded-xl px-2 py-1 text-sm font-extrabold text-sage-dark hover:bg-sage-light"
+      >
+        Change
+      </Link>
+    </div>
+  );
+}
+
 // A compact card linking to a review or practice session; muted and not clickable when empty.
 function SessionCard({
   href,
@@ -186,7 +222,8 @@ function SessionCard({
 
 export default function LessonPath() {
   const units = getUnits();
-  const { completedLessons, mistakes, reviews } = useProgress();
+  const progress = useProgress();
+  const { completedLessons, mistakes, reviews } = progress;
   const loaded = useProgressLoaded();
   // Ignore saved mistakes for signs that have since been removed from data/signs.json.
   const mistakeCount = mistakes.filter((id) => getSign(id) !== undefined).length;
@@ -205,33 +242,36 @@ export default function LessonPath() {
 
   return (
     <div className={`flex flex-col gap-12 ${loaded ? "motion-safe:animate-fade-in" : "invisible"}`}>
-      <div className="grid grid-cols-2 gap-3">
-        <SessionCard
-          href="/review"
-          title="Review"
-          subtitle={
-            dueCount > 0
-              ? `${dueCount} ${dueCount === 1 ? "sign" : "signs"} due`
-              : learnedCount > 0
-                ? "All caught up"
-                : "Unlocks as you learn"
-          }
-          count={dueCount}
-          icon={REVIEW_ICON}
-          iconStyle="bg-lavender-light text-lavender-dark"
-        />
-        <SessionCard
-          href="/practice"
-          title="Mistakes"
-          subtitle={
-            mistakeCount > 0
-              ? `${mistakeCount} ${mistakeCount === 1 ? "sign" : "signs"} to practice`
-              : "None right now"
-          }
-          count={mistakeCount}
-          icon={PRACTICE_ICON}
-          iconStyle="bg-peach-light text-peach-dark"
-        />
+      <div className="flex flex-col gap-3">
+        <DailyGoal done={sessionsToday(progress)} goal={progress.dailyGoal} />
+        <div className="grid grid-cols-2 gap-3">
+          <SessionCard
+            href="/review"
+            title="Review"
+            subtitle={
+              dueCount > 0
+                ? `${dueCount} ${dueCount === 1 ? "sign" : "signs"} due`
+                : learnedCount > 0
+                  ? "All caught up"
+                  : "Unlocks as you learn"
+            }
+            count={dueCount}
+            icon={REVIEW_ICON}
+            iconStyle="bg-lavender-light text-lavender-dark"
+          />
+          <SessionCard
+            href="/practice"
+            title="Mistakes"
+            subtitle={
+              mistakeCount > 0
+                ? `${mistakeCount} ${mistakeCount === 1 ? "sign" : "signs"} to practice`
+                : "None right now"
+            }
+            count={mistakeCount}
+            icon={PRACTICE_ICON}
+            iconStyle="bg-peach-light text-peach-dark"
+          />
+        </div>
       </div>
       {units.map((unit, unitIndex) => {
         const theme = UNIT_THEMES[unitIndex % UNIT_THEMES.length];

@@ -11,6 +11,9 @@ export type Progress = {
   mistakes: string[];
   // Spaced review per sign: box 1-5 sets how long until it comes back; due is a dayKey.
   reviews: Record<string, Review>;
+  // Sessions (lessons, reviews, practice) to finish each day, and how many are done today.
+  dailyGoal: number;
+  today: { day: string | null; sessions: number };
 };
 
 export type Review = { box: number; due: string };
@@ -30,7 +33,11 @@ const EMPTY: Progress = {
   streak: { count: 0, lastDay: null, freezes: 0 },
   mistakes: [],
   reviews: {},
+  dailyGoal: 1,
+  today: { day: null, sessions: 0 },
 };
+
+export const DAILY_GOALS = [1, 2, 3, 5];
 
 const listeners = new Set<() => void>();
 let cachedRaw: string | null = null;
@@ -64,7 +71,12 @@ function parseProgress(raw: string | null): Progress {
       }
     }
   }
-  return { completedLessons, xp, streak, mistakes, reviews };
+  const dailyGoal = DAILY_GOALS.includes(parsed?.dailyGoal) ? parsed.dailyGoal : EMPTY.dailyGoal;
+  const today =
+    typeof parsed?.today?.day === "string" && Number.isInteger(parsed?.today?.sessions)
+      ? { day: parsed.today.day, sessions: Math.max(parsed.today.sessions, 0) }
+      : EMPTY.today;
+  return { completedLessons, xp, streak, mistakes, reviews, dailyGoal, today };
 }
 
 function readProgress(): Progress {
@@ -166,6 +178,11 @@ export function nextStreak(streak: Progress["streak"], today = dayKey()) {
   };
 }
 
+// Sessions finished today; the count resets on a new day.
+export function sessionsToday(progress: Progress, today = dayKey()): number {
+  return progress.today.day === today ? progress.today.sessions : 0;
+}
+
 // Saves a finished lesson (or practice session, when lessonId is null) and its XP.
 // Returns the new streak, whether it went up today, and any freezes used or earned.
 export function recordLessonComplete(lessonId: string | null, xpEarned: number) {
@@ -179,6 +196,7 @@ export function recordLessonComplete(lessonId: string | null, xpEarned: number) 
         : [...progress.completedLessons, lessonId],
     xp: progress.xp + xpEarned,
     streak,
+    today: { day: dayKey(), sessions: sessionsToday(progress) + 1 },
   });
   return {
     streak: streak.count,
@@ -252,4 +270,34 @@ export function clearMistakes(signIds: string[]) {
   const progress = readProgress();
   const mistakes = progress.mistakes.filter((id) => !signIds.includes(id));
   if (mistakes.length !== progress.mistakes.length) writeProgress({ ...progress, mistakes });
+}
+
+export function setDailyGoal(goal: number) {
+  if (!DAILY_GOALS.includes(goal)) return;
+  writeProgress({ ...readProgress(), dailyGoal: goal });
+}
+
+export function resetProgress() {
+  writeProgress(EMPTY);
+}
+
+// A backup file: the progress plus a marker so other JSON files are rejected on restore.
+export function exportProgress(): string {
+  const backup = { app: "signpath", exportedAt: new Date().toISOString(), progress: readProgress() };
+  return JSON.stringify(backup, null, 2);
+}
+
+// Reads a backup file. Returns the progress inside, or null if it isn't a SignPath backup.
+export function readBackup(text: string): Progress | null {
+  try {
+    const parsed = JSON.parse(text);
+    if (parsed?.app !== "signpath" || typeof parsed.progress !== "object") return null;
+    return parseProgress(JSON.stringify(parsed.progress));
+  } catch {
+    return null;
+  }
+}
+
+export function restoreProgress(progress: Progress) {
+  writeProgress(progress);
 }
