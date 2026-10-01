@@ -22,5 +22,12 @@ export default async function LessonPage({ params }: PageProps<"/lesson/[lessonI
   const lesson = getLesson(lessonId);
   if (!lesson) notFound();
 
-  return <LessonRunner lessonId={lesson.id} title={lesson.title} signs={getLessonSigns(lesson)} />;
+  return (
+    <LessonRunner
+      mode="lesson"
+      lessonId={lesson.id}
+      title={lesson.title}
+      signs={getLessonSigns(lesson)}
+    />
+  );
 }

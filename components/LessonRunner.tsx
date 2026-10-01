@@ -12,7 +12,21 @@ import {
 } from "@/components/Exercises";
 import SignCard, { type Sign } from "@/components/SignCard";
 import { buildExercises, reshuffleExercise } from "@/lib/content";
-import { clearMistakes, recordLessonComplete, recordMistakes } from "@/lib/progress";
+import {
+  clearMistakes,
+  recordLessonComplete,
+  recordMistakes,
+  recordReviewResults,
+  scheduleNewSigns,
+} from "@/lib/progress";
+
+export type SessionMode = "lesson" | "practice" | "review";
+
+const COMPLETE_HEADINGS: Record<SessionMode, string> = {
+  lesson: "Lesson complete!",
+  practice: "Practice complete!",
+  review: "Review complete!",
+};
 
 const XP_PER_FIRST_TRY = 5;
 const XP_FOR_FINISHING = 10;
@@ -65,18 +79,21 @@ function Stat({
   );
 }
 
-// Runs a lesson, or a practice session when lessonId is null. Practice skips the intro cards:
-// it only mounts in the browser after a click, so building its random exercises up front is safe.
+// Runs a lesson (intro cards, then exercises), or a practice/review session of known signs.
+// Sessions skip the intro: they only mount in the browser after a click, so building their
+// random exercises up front is safe.
 export default function LessonRunner({
+  mode,
   lessonId,
   title,
   signs,
 }: {
-  lessonId: string | null;
+  mode: SessionMode;
+  lessonId?: string;
   title: string;
   signs: Sign[];
 }) {
-  const isPractice = lessonId === null;
+  const isPractice = mode !== "lesson";
   const [phase, setPhase] = useState<"intro" | "exercises" | "complete">(
     isPractice ? "exercises" : "intro",
   );
@@ -125,13 +142,15 @@ export default function LessonRunner({
       setPosition(position + 1);
     } else {
       const xpEarned = xpFor(firstTryCorrect + (firstTry ? 1 : 0));
-      const result = recordLessonComplete(lessonId, xpEarned);
+      const result = recordLessonComplete(mode === "lesson" ? (lessonId ?? null) : null, xpEarned);
+      const signIds = signs.map((sign) => sign.id);
+      const allRight = signIds.filter((id) => !missed.includes(id));
+      if (mode === "lesson") scheduleNewSigns(signIds);
       // A practiced sign leaves the mistakes list once all its questions were right first time.
-      if (isPractice) {
-        const cleared = signs.filter((sign) => !missed.includes(sign.id)).map((sign) => sign.id);
-        clearMistakes(cleared);
-        setClearedCount(cleared.length);
-      }
+      if (mode === "practice") clearMistakes(allRight);
+      // A reviewed sign answered right first time waits longer before its next review.
+      if (mode === "review") recordReviewResults(signIds, missed);
+      setClearedCount(allRight.length);
       setStreak({
         count: result.streak,
         note: result.earnedFreeze
@@ -221,12 +240,14 @@ export default function LessonRunner({
               </svg>
             </span>
             <h1 className="mt-8 text-3xl font-extrabold text-ink">
-              {isPractice ? "Practice complete!" : "Lesson complete!"}
+              {COMPLETE_HEADINGS[mode]}
             </h1>
             <p className="mt-1 text-muted">
-              {isPractice
+              {mode === "practice"
                 ? `${clearedCount} of ${signs.length} ${signs.length === 1 ? "sign" : "signs"} cleared from your mistakes`
-                : title}
+                : mode === "review"
+                  ? `${clearedCount} of ${signs.length} ${signs.length === 1 ? "sign" : "signs"} remembered. They'll come back later`
+                  : title}
             </p>
             <div className="mt-8 grid w-full grid-cols-3 gap-3">
               <Stat label="XP earned" value={`+${xp}`} className="bg-peach-light" />

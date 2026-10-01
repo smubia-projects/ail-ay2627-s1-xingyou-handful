@@ -89,6 +89,15 @@ export function getLesson(id: string): Lesson | undefined {
   return units.flatMap((unit) => unit.lessons).find((lesson) => lesson.id === id);
 }
 
+// Signs from finished lessons, in path order, without duplicates.
+export function getLearnedSignIds(completedLessons: string[]): string[] {
+  const ids = units
+    .flatMap((unit) => unit.lessons)
+    .filter((lesson) => completedLessons.includes(lesson.id))
+    .flatMap((lesson) => lesson.signIds);
+  return [...new Set(ids)];
+}
+
 export function getLessonSigns(lesson: Lesson): Sign[] {
   return lesson.signIds.map((id) => signsById.get(id)!);
 }

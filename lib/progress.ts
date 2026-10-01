@@ -9,9 +9,17 @@ export type Progress = {
   streak: { count: number; lastDay: string | null; freezes: number };
   // Sign IDs the learner got wrong, most recent first.
   mistakes: string[];
+  // Spaced review per sign: box 1-5 sets how long until it comes back; due is a dayKey.
+  reviews: Record<string, Review>;
 };
 
+export type Review = { box: number; due: string };
+
 const STORAGE_KEY = "signpath:progress";
+
+// Days until a sign comes back for review, by box. Right answers move a sign up a box.
+const REVIEW_INTERVALS = [1, 3, 7, 14, 30];
+const MAX_BOX = REVIEW_INTERVALS.length;
 
 // A streak freeze is earned every 7 streak days, holding at most 2.
 export const MAX_FREEZES = 2;
@@ -21,6 +29,7 @@ const EMPTY: Progress = {
   xp: 0,
   streak: { count: 0, lastDay: null, freezes: 0 },
   mistakes: [],
+  reviews: {},
 };
 
 const listeners = new Set<() => void>();
@@ -47,7 +56,15 @@ function parseProgress(raw: string | null): Progress {
     Number.isInteger(parsed?.streak?.count) && typeof parsed?.streak?.lastDay === "string"
       ? { count: parsed.streak.count, lastDay: parsed.streak.lastDay, freezes }
       : EMPTY.streak;
-  return { completedLessons, xp, streak, mistakes };
+  const reviews: Record<string, Review> = {};
+  if (parsed?.reviews && typeof parsed.reviews === "object") {
+    for (const [id, review] of Object.entries(parsed.reviews as Record<string, Partial<Review>>)) {
+      if (Number.isInteger(review?.box) && typeof review?.due === "string") {
+        reviews[id] = { box: Math.min(Math.max(review.box!, 1), MAX_BOX), due: review.due };
+      }
+    }
+  }
+  return { completedLessons, xp, streak, mistakes, reviews };
 }
 
 function readProgress(): Progress {
@@ -104,6 +121,11 @@ export function dayKey(date = new Date()): string {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
+}
+
+export function addDays(key: string, days: number): string {
+  const [year, month, day] = key.split("-").map(Number);
+  return dayKey(new Date(year, month - 1, day + days));
 }
 
 function daysBetween(from: string, to: string): number {
@@ -167,14 +189,63 @@ export function recordLessonComplete(lessonId: string | null, xpEarned: number) 
 }
 
 // Adds signs to the mistakes list, moving them to the front if they're already there.
-export function recordMistakes(signIds: string[]) {
+// A sign the learner was reviewing drops back to box 1, so it comes back tomorrow.
+export function recordMistakes(signIds: string[], today = dayKey()) {
   if (signIds.length === 0) return;
   const progress = readProgress();
   const fresh = [...new Set(signIds)];
+  const reviews = { ...progress.reviews };
+  for (const id of fresh) {
+    if (reviews[id]) reviews[id] = nextReview(reviews[id], false, today);
+  }
   writeProgress({
     ...progress,
     mistakes: [...fresh, ...progress.mistakes.filter((id) => !fresh.includes(id))],
+    reviews,
   });
+}
+
+// Where a sign goes after a review: up a box when right, back to box 1 when wrong.
+export function nextReview(review: Review | undefined, correct: boolean, today = dayKey()): Review {
+  const box = correct ? Math.min((review?.box ?? 0) + 1, MAX_BOX) : 1;
+  return { box, due: addDays(today, REVIEW_INTERVALS[box - 1]) };
+}
+
+// Starts review scheduling for newly learned signs (signs already scheduled are left alone).
+export function scheduleNewSigns(signIds: string[], today = dayKey()) {
+  const progress = readProgress();
+  const reviews = { ...progress.reviews };
+  let changed = false;
+  for (const id of signIds) {
+    if (!reviews[id]) {
+      reviews[id] = nextReview(undefined, true, today);
+      changed = true;
+    }
+  }
+  if (changed) writeProgress({ ...progress, reviews });
+}
+
+// Saves the results of a review session: signs answered right first time move up a box.
+// (Missed signs were already moved back to box 1 by recordMistakes.)
+export function recordReviewResults(signIds: string[], missedIds: string[], today = dayKey()) {
+  const progress = readProgress();
+  const reviews = { ...progress.reviews };
+  for (const id of signIds) {
+    if (!missedIds.includes(id)) reviews[id] = nextReview(reviews[id], true, today);
+  }
+  writeProgress({ ...progress, reviews });
+}
+
+// Learned signs that are due today, most overdue first. Learned signs that were never
+// scheduled (finished before reviews existed) count as due.
+export function dueSignIds(
+  reviews: Progress["reviews"],
+  learnedIds: string[],
+  today = dayKey(),
+): string[] {
+  return learnedIds
+    .filter((id) => !reviews[id] || reviews[id].due <= today)
+    .sort((a, b) => (reviews[a]?.due ?? "").localeCompare(reviews[b]?.due ?? ""));
 }
 
 export function clearMistakes(signIds: string[]) {

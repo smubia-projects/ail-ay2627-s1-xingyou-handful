@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { getLessonSigns, getSign, getUnits, type Lesson } from "@/lib/content";
-import { useProgress, useProgressLoaded } from "@/lib/progress";
+import { getLearnedSignIds, getLessonSigns, getSign, getUnits, type Lesson } from "@/lib/content";
+import { dueSignIds, useProgress, useProgressLoaded } from "@/lib/progress";
 
 type LessonState = "completed" | "current" | "locked";
 
@@ -126,43 +126,57 @@ function LessonNode({
   );
 }
 
-function PracticeCard({ count }: { count: number }) {
+const REVIEW_ICON = (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
+    <rect x="4" y="5" width="16" height="15" rx="3" stroke="currentColor" strokeWidth={2.5} />
+    <path d="M4 10h16M9 3v4M15 3v4" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" />
+  </svg>
+);
+
+const PRACTICE_ICON = (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
+    <path
+      d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// A compact card linking to a review or practice session; muted and not clickable when empty.
+function SessionCard({
+  href,
+  title,
+  subtitle,
+  count,
+  icon,
+  iconStyle,
+}: {
+  href: string;
+  title: string;
+  subtitle: string;
+  count: number;
+  icon: React.ReactNode;
+  iconStyle: string;
+}) {
   const content = (
     <>
       <span
-        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${count > 0 ? "bg-peach-light text-peach-dark" : "bg-sand text-muted"}`}
+        className={`flex h-10 w-10 items-center justify-center rounded-xl ${count > 0 ? iconStyle : "bg-sand text-muted"}`}
       >
-        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" aria-hidden="true">
-          <path
-            d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        {icon}
       </span>
-      <span className="flex-1">
-        <span className="block font-extrabold text-ink">Practice mistakes</span>
-        <span className="block text-sm text-muted">
-          {count > 0
-            ? `${count} ${count === 1 ? "sign" : "signs"} to review`
-            : "No mistakes to review"}
-        </span>
-      </span>
-      {count > 0 && (
-        <svg viewBox="0 0 24 24" className="h-6 w-6 text-muted" fill="none" aria-hidden="true">
-          <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" />
-        </svg>
-      )}
+      <span className="mt-3 block font-extrabold text-ink">{title}</span>
+      <span className="block text-sm text-muted">{subtitle}</span>
     </>
   );
-
-  const card = "flex items-center gap-4 rounded-3xl bg-white p-4 ring-1 ring-sand";
+  const card = "rounded-3xl bg-white p-4 ring-1 ring-sand";
   if (count === 0) return <div className={card}>{content}</div>;
   return (
     <Link
-      href="/practice"
+      href={href}
       className={`${card} shadow-[0_4px_0_0_var(--color-sand)] transition hover:bg-cream active:translate-y-1 active:shadow-none`}
     >
       {content}
@@ -172,10 +186,12 @@ function PracticeCard({ count }: { count: number }) {
 
 export default function LessonPath() {
   const units = getUnits();
-  const { completedLessons, mistakes } = useProgress();
+  const { completedLessons, mistakes, reviews } = useProgress();
   const loaded = useProgressLoaded();
   // Ignore saved mistakes for signs that have since been removed from data/signs.json.
   const mistakeCount = mistakes.filter((id) => getSign(id) !== undefined).length;
+  const learnedCount = getLearnedSignIds(completedLessons).length;
+  const dueCount = dueSignIds(reviews, getLearnedSignIds(completedLessons)).length;
 
   // Lessons unlock in order across all units: the first unfinished one is current.
   const currentId = units
@@ -189,7 +205,34 @@ export default function LessonPath() {
 
   return (
     <div className={`flex flex-col gap-12 ${loaded ? "motion-safe:animate-fade-in" : "invisible"}`}>
-      <PracticeCard count={mistakeCount} />
+      <div className="grid grid-cols-2 gap-3">
+        <SessionCard
+          href="/review"
+          title="Review"
+          subtitle={
+            dueCount > 0
+              ? `${dueCount} ${dueCount === 1 ? "sign" : "signs"} due`
+              : learnedCount > 0
+                ? "All caught up"
+                : "Unlocks as you learn"
+          }
+          count={dueCount}
+          icon={REVIEW_ICON}
+          iconStyle="bg-lavender-light text-lavender-dark"
+        />
+        <SessionCard
+          href="/practice"
+          title="Mistakes"
+          subtitle={
+            mistakeCount > 0
+              ? `${mistakeCount} ${mistakeCount === 1 ? "sign" : "signs"} to practice`
+              : "None right now"
+          }
+          count={mistakeCount}
+          icon={PRACTICE_ICON}
+          iconStyle="bg-peach-light text-peach-dark"
+        />
+      </div>
       {units.map((unit, unitIndex) => {
         const theme = UNIT_THEMES[unitIndex % UNIT_THEMES.length];
         const done = unit.lessons.filter((lesson) => completedLessons.includes(lesson.id)).length;
