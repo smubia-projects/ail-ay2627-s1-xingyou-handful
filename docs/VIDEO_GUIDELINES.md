@@ -1,5 +1,9 @@
 # Handful video guidelines
 
+> **Current source:** Handful's sign videos come from [ASL Signbank](https://aslsignbank.com) (see `docs/CREDITS.md`).
+> These guidelines apply only if Handful ever films its own videos. To sit alongside the Signbank clips, use a
+> plain **teal** background and the same head-to-waist framing.
+
 Every sign video in Handful follows these rules, so learners always see signs at the same size, framing and quality.
 
 ## Signers

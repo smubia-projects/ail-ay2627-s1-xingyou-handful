@@ -1,5 +1,9 @@
 # Handful filming guide
 
+> **Not needed right now.** Handful's sign videos come from [ASL Signbank](https://aslsignbank.com) (see
+> `docs/CREDITS.md`). This guide is kept for the day Handful films its own videos. To match the Signbank
+> clips, film against a plain **teal** background.
+
 Everything needed to film the sign videos for Handful and hand them over. Read sections 1–5 once,
 then use the lists in section 7 while filming.
 
@@ -170,7 +174,7 @@ Film in this order. Tick each one off once you have a clip you are happy with.
 | ☐ | 36 | `eat.mov` | Eat | **Flat O-hand (fingertips together).** Tap the fingertips to the mouth a couple of times. |
 | ☐ | 37 | `drink.mov` | Drink | **C-hand.** Bring a C-hand to the mouth and tip it up as if drinking from a cup. |
 | ☐ | 38 | `water.mov` | Water | **W-hand (three middle fingers up).** Tap the index finger of a W-hand on the chin twice. |
-| ☐ | 39 | `hungry.mov` | Hungry | **C-hand, palm toward you.** Move the C-hand down the middle of the chest. |
+| ☐ | 39 | `cookie.mov` | Cookie | **Clawed C-hand on a flat palm.** Press the fingertips of the clawed hand onto the flat palm, lift, twist and press again. |
 | ☐ | 40 | `milk.mov` | Milk | **C-hand closing into an S-hand.** Squeeze an open C-hand closed into a fist a couple of times. |
 
 ### Colors

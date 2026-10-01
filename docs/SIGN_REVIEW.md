@@ -22,6 +22,8 @@ Some signs also have a **Face** line (facial expression or head movement). Pleas
 
 The app has a **left-handed mode** that mirrors the drawings and arrows. If any sign should *not* simply be mirrored for left-handed signers (for example the letters J and Z), please say so.
 
+**ASL Signbank is Handful's main reference.** Every word sign shows a video from [ASL Signbank](https://aslsignbank.com), used unaltered. Where Signbank has several versions of a sign, the one closest to the written description was chosen; the others are listed so you can say if a different one should be taught first. Please also check that each written description matches its video.
+
 ## Unit 1: Greetings
 
 ### 1. Hello
@@ -36,6 +38,7 @@ The app has a **left-handed mode** that mirrors the drawings and arrows. If any 
 | Movement | Touch fingertips to the side of the forehead, then move outward |
 | Movement arrow in app | outward |
 | Memory tip | A friendly salute |
+| Video in app | ASL Signbank **HELLO**: https://aslsignbank.com/dictionary/gloss/482/ |
 
 > **Dictionary pre-check:** Salute from the forehead is a common form. A plain side-to-side wave is also used. Please confirm which to teach first.
 
@@ -58,6 +61,7 @@ Notes:
 | Movement | Wave by bending the fingers down and up at the knuckles a few times |
 | Movement arrow in app | wiggle |
 | Memory tip | A wave goodbye |
+| Video in app | ASL Signbank **BYE-BYE**: https://aslsignbank.com/dictionary/gloss/425/ |
 
 > **Dictionary pre-check:** Wording corrected to a wave that bends at the knuckles (Lifeprint). Previously described as 'open and close the fingers against the palm'.
 
@@ -80,6 +84,7 @@ Notes:
 | Movement | Rub the palm in a circle on the chest |
 | Movement arrow in app | circle |
 | Memory tip | Warming your heart to ask nicely |
+| Video in app | ASL Signbank **PLEASE**: https://aslsignbank.com/dictionary/gloss/527/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: flat hand circling on the chest.
 
@@ -102,6 +107,7 @@ Notes:
 | Movement | Touch the fingertips to the chin or lips, then move the hand forward and down toward the person |
 | Movement arrow in app | forward down |
 | Memory tip | Sending thanks from your lips |
+| Video in app | ASL Signbank **THANK-YOU**: https://aslsignbank.com/dictionary/gloss/1198/ |
 
 > **Dictionary pre-check:** Wording corrected: Lifeprint starts near the lips, other sources at the chin. Now says 'chin or lips'. The app diagram marks the chin.
 
@@ -125,6 +131,7 @@ Notes:
 | Movement arrow in app | circle |
 | Face | A sorry, apologetic look |
 | Memory tip | A fist circling a heavy heart |
+| Video in app | ASL Signbank **SORRY**: https://aslsignbank.com/dictionary/gloss/566/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: A-hand circling on the chest, with a sorry facial expression.
 
@@ -149,6 +156,7 @@ Notes:
 | Movement | Bend the wrist so the fist nods up and down |
 | Movement arrow in app | nod |
 | Memory tip | Your fist is a head nodding yes |
+| Video in app | ASL Signbank **YES**: https://aslsignbank.com/dictionary/gloss/1472/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: S-hand nodding at the wrist.
 
@@ -172,6 +180,7 @@ Notes:
 | Movement arrow in app | tap |
 | Face | Shake your head as you sign |
 | Memory tip | A little mouth snapping shut |
+| Video in app | ASL Signbank **NO**: https://aslsignbank.com/dictionary/gloss/512/ |
 
 > **Dictionary pre-check:** Consistent with Lifeprint's images. The page stresses single vs double movement and the headshake.
 
@@ -194,6 +203,7 @@ Notes:
 | Movement | Tap the middle finger of one H-hand twice across the index finger of the other, forming an X |
 | Movement arrow in app | tap |
 | Memory tip | Two fingers cross like signing your name |
+| Video in app | ASL Signbank **NAME**: https://aslsignbank.com/dictionary/gloss/511/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: H-hands, double tap (single tap when used as a verb).
 
@@ -216,6 +226,8 @@ Notes:
 | Movement | Rest the thumbs-up fist on the other flat palm and lift both hands up together |
 | Movement arrow in app | up |
 | Memory tip | One hand gives the other a lift |
+| Video in app | ASL Signbank **HELPstr**: https://aslsignbank.com/dictionary/gloss/483/ |
+| Other Signbank versions | HELPb (https://aslsignbank.com/dictionary/gloss/2219/); HELPpa (https://aslsignbank.com/dictionary/gloss/2562/); HELPtap (https://aslsignbank.com/dictionary/gloss/2563/); HELPel (https://aslsignbank.com/dictionary/gloss/3159/) |
 
 > **Dictionary pre-check:** Matches Lifeprint: loose A-hand lifted by the other hand. Note that it is directional (I-help-you vs you-help-me).
 
@@ -238,6 +250,7 @@ Notes:
 | Movement | Tap the fingertips of both hands together a few times |
 | Movement arrow in app | tap |
 | Memory tip | Adding more and more to the pile |
+| Video in app | ASL Signbank **MORE**: https://aslsignbank.com/dictionary/gloss/508/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: flattened O-hands tapping together.
 
@@ -262,6 +275,8 @@ Notes:
 | Movement | Tap the thumb on the chin twice |
 | Movement arrow in app | tap |
 | Memory tip | Female family signs sit at the chin |
+| Video in app | ASL Signbank **MOTHERstr**: https://aslsignbank.com/dictionary/gloss/1590/ |
+| Other Signbank versions | MOTHERwig (https://aslsignbank.com/dictionary/gloss/509/) |
 
 > **Dictionary pre-check:** Matches common dictionary descriptions: 5-hand, thumb taps the chin.
 
@@ -284,6 +299,8 @@ Notes:
 | Movement | Tap the thumb on the forehead twice |
 | Movement arrow in app | tap |
 | Memory tip | Male family signs sit at the forehead |
+| Video in app | ASL Signbank **FATHERstr**: https://aslsignbank.com/dictionary/gloss/764/ |
+| Other Signbank versions | FATHERwig (https://aslsignbank.com/dictionary/gloss/452/) |
 
 > **Dictionary pre-check:** Matches common dictionary descriptions: 5-hand, thumb taps the forehead.
 
@@ -306,6 +323,7 @@ Notes:
 | Movement | Cradle one forearm on the other and rock them side to side |
 | Movement arrow in app | side to side |
 | Memory tip | Rocking a baby to sleep |
+| Video in app | ASL Signbank **BABY**: https://aslsignbank.com/dictionary/gloss/407/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: arms cradled and rocked. Often only the hands overlap in everyday signing.
 
@@ -328,6 +346,7 @@ Notes:
 | Movement | Start with both F-hands together, then circle them outward until the little fingers meet |
 | Movement arrow in app | circle |
 | Memory tip | Your hands draw a circle around everyone |
+| Video in app | ASL Signbank **FAMILYf**: https://aslsignbank.com/dictionary/gloss/1379/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: F-hands tracing a circle.
 
@@ -350,6 +369,7 @@ Notes:
 | Movement | Hook the index fingers together, then flip and hook them the other way |
 | Movement arrow in app | twist |
 | Memory tip | Two people hooked together |
+| Video in app | ASL Signbank **FRIEND**: https://aslsignbank.com/dictionary/gloss/462/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: index fingers hook together, then swap.
 
@@ -375,6 +395,7 @@ Notes:
 | Movement arrow in app | circle |
 | Face | Smile |
 | Memory tip | Joy bubbling up from your heart |
+| Video in app | ASL Signbank **HAPPY**: https://aslsignbank.com/dictionary/gloss/476/ |
 
 > **Dictionary pre-check:** Wording corrected: Lifeprint describes forward circles brushing up the chest, one or two hands. Previously 'brush upward'.
 
@@ -397,6 +418,8 @@ Notes:
 | Movement | Cross both fists over the heart and hug them to the chest |
 | Movement arrow in app | none |
 | Memory tip | Hugging something you love |
+| Video in app | ASL Signbank **LOVEs**: https://aslsignbank.com/dictionary/gloss/179/ |
+| Other Signbank versions | LOVEb (https://aslsignbank.com/dictionary/gloss/3063/) |
 
 > **Dictionary pre-check:** Matches Lifeprint: hands crossed over the chest. Fists or flat hands are both seen.
 
@@ -420,6 +443,7 @@ Notes:
 | Movement arrow in app | circle |
 | Face | A bright, excited look |
 | Memory tip | Your heart racing |
+| Video in app | ASL Signbank **EXCITED**: https://aslsignbank.com/dictionary/gloss/1344/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: middle fingers bent, alternating circles.
 
@@ -443,6 +467,7 @@ Notes:
 | Movement arrow in app | down |
 | Face | A sad look, head tilted down a little |
 | Memory tip | Your whole face drooping |
+| Video in app | ASL Signbank **SAD**: https://aslsignbank.com/dictionary/gloss/245/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: both hands, palms in, drawn down the face, with a sad expression.
 
@@ -466,6 +491,7 @@ Notes:
 | Movement arrow in app | down |
 | Face | A droopy, tired look |
 | Memory tip | Your energy draining away |
+| Video in app | ASL Signbank **TIRED**: https://aslsignbank.com/dictionary/gloss/297/ |
 
 > **Dictionary pre-check:** Wording refined: Lifeprint starts like HAVE and the hands rotate downward rather than sliding.
 
@@ -490,6 +516,7 @@ Notes:
 | Movement | Hold up the index finger, palm facing you |
 | Movement arrow in app | none |
 | Memory tip | Just like counting on your fingers |
+| Video in app | ASL Signbank **ONE**: https://aslsignbank.com/dictionary/gloss/519/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -512,6 +539,7 @@ Notes:
 | Movement | Hold up the index and middle fingers, palm facing you |
 | Movement arrow in app | none |
 | Memory tip | Two fingers for two |
+| Video in app | ASL Signbank **TWO**: https://aslsignbank.com/dictionary/gloss/1336/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -534,6 +562,7 @@ Notes:
 | Movement | Hold up the thumb, index and middle fingers, palm facing you |
 | Movement arrow in app | none |
 | Memory tip | ASL three starts with the thumb |
+| Video in app | ASL Signbank **THREE**: https://aslsignbank.com/dictionary/gloss/1216/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -556,6 +585,7 @@ Notes:
 | Movement | Hold up four fingers with the thumb folded in, palm facing you |
 | Movement arrow in app | none |
 | Memory tip | Everything but the thumb |
+| Video in app | ASL Signbank **FOUR**: https://aslsignbank.com/dictionary/gloss/461/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -578,6 +608,7 @@ Notes:
 | Movement | Hold up the open hand with all fingers spread, palm facing you |
 | Movement arrow in app | none |
 | Memory tip | A full open hand |
+| Video in app | ASL Signbank **FIVE**: https://aslsignbank.com/dictionary/gloss/459/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -600,6 +631,7 @@ Notes:
 | Movement | Touch the thumb to the little finger, other fingers up, palm out |
 | Movement arrow in app | none |
 | Memory tip | Thumb meets the smallest finger |
+| Video in app | ASL Signbank **SIX**: https://aslsignbank.com/dictionary/gloss/603/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -622,6 +654,7 @@ Notes:
 | Movement | Touch the thumb to the ring finger, other fingers up, palm out |
 | Movement arrow in app | none |
 | Memory tip | Thumb moves one finger in |
+| Video in app | ASL Signbank **SEVEN**: https://aslsignbank.com/dictionary/gloss/641/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -644,6 +677,7 @@ Notes:
 | Movement | Touch the thumb to the middle finger, other fingers up, palm out |
 | Movement arrow in app | none |
 | Memory tip | Thumb moves in again |
+| Video in app | ASL Signbank **EIGHT**: https://aslsignbank.com/dictionary/gloss/635/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -666,6 +700,7 @@ Notes:
 | Movement | Touch the thumb to the index finger, other fingers up, palm out |
 | Movement arrow in app | none |
 | Memory tip | Last stop before ten |
+| Video in app | ASL Signbank **NINE**: https://aslsignbank.com/dictionary/gloss/1570/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -688,6 +723,7 @@ Notes:
 | Movement | Hold a thumbs-up and give it a small twist or shake |
 | Movement arrow in app | twist |
 | Memory tip | A thumbs-up for reaching ten |
+| Video in app | ASL Signbank **TEN**: https://aslsignbank.com/dictionary/gloss/612/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -713,6 +749,8 @@ Notes:
 | Movement arrow in app | wiggle |
 | Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Your finger is asking 'who?' |
+| Video in app | ASL Signbank **WHObent**: https://aslsignbank.com/dictionary/gloss/1430/ |
+| Other Signbank versions | WHOflex (https://aslsignbank.com/dictionary/gloss/2236/); WHOmo (https://aslsignbank.com/dictionary/gloss/2283/); WHOb (https://aslsignbank.com/dictionary/gloss/3187/) |
 
 > **Dictionary pre-check:** Matches Lifeprint: thumb on chin, index finger bends twice. Furrowed brows for questions.
 
@@ -736,6 +774,7 @@ Notes:
 | Movement arrow in app | side to side |
 | Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | A shrug with your hands |
+| Video in app | ASL Signbank **WHAT**: https://aslsignbank.com/dictionary/gloss/1425/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -759,6 +798,7 @@ Notes:
 | Movement arrow in app | side to side |
 | Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Searching back and forth |
+| Video in app | ASL Signbank **WHERE**: https://aslsignbank.com/dictionary/gloss/1427/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -782,6 +822,7 @@ Notes:
 | Movement arrow in app | forward down |
 | Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Pulling a question out of your mind |
+| Video in app | ASL Signbank **WHY**: https://aslsignbank.com/dictionary/gloss/1431/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: fingertips at forehead, pull forward into a Y-hand.
 
@@ -805,6 +846,7 @@ Notes:
 | Movement arrow in app | twist |
 | Face | Eyebrows down, head tilted slightly forward |
 | Memory tip | Unfolding the answer |
+| Video in app | ASL Signbank **HOW**: https://aslsignbank.com/dictionary/gloss/487/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: bent hands knuckle-to-knuckle roll forward to palms up.
 
@@ -829,6 +871,7 @@ Notes:
 | Movement | Tap the fingertips to the mouth a couple of times |
 | Movement arrow in app | tap |
 | Memory tip | Bringing food to your mouth |
+| Video in app | ASL Signbank **EAT**: https://aslsignbank.com/dictionary/gloss/399/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -851,6 +894,8 @@ Notes:
 | Movement | Bring a C-hand to the mouth and tip it up as if drinking from a cup |
 | Movement arrow in app | up |
 | Memory tip | Holding an invisible cup |
+| Video in app | ASL Signbank **DRINKc**: https://aslsignbank.com/dictionary/gloss/119/ |
+| Other Signbank versions | DRINKy (https://aslsignbank.com/dictionary/gloss/120/) |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -873,6 +918,7 @@ Notes:
 | Movement | Tap the index finger of a W-hand on the chin twice |
 | Movement arrow in app | tap |
 | Memory tip | W for water at your lips |
+| Video in app | ASL Signbank **WATER**: https://aslsignbank.com/dictionary/gloss/1414/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -883,31 +929,9 @@ Notes:
 
 &nbsp;
 
-### 39. Hungry
+### 39. Milk
 
-*Lesson: Hungry?*
-
-| | |
-|---|---|
-| Handshape | C-hand, palm toward you |
-| Handshape picture in app | drawing of letter C |
-| Location | Chest |
-| Movement | Move the C-hand down the middle of the chest |
-| Movement arrow in app | down |
-| Memory tip | Food travelling down to an empty stomach |
-
-> **Dictionary pre-check:** Matches Lifeprint: C-hand moves down the chest. Same as WISH for some signers.
-
-- [ ] Approved
-- [ ] Needs changes
-
-Notes:
-
-&nbsp;
-
-### 40. Milk
-
-*Lesson: Hungry?*
+*Lesson: Snack time*
 
 | | |
 |---|---|
@@ -917,8 +941,33 @@ Notes:
 | Movement | Squeeze an open C-hand closed into a fist a couple of times |
 | Movement arrow in app | wiggle |
 | Memory tip | Milking a cow |
+| Video in app | ASL Signbank **MILKasym**: https://aslsignbank.com/dictionary/gloss/506/ |
+| Other Signbank versions | MILKsym (https://aslsignbank.com/dictionary/gloss/2906/) |
 
 > **Dictionary pre-check:** Matches Lifeprint: C-hand squeezes closed into S, twice.
+
+- [ ] Approved
+- [ ] Needs changes
+
+Notes:
+
+&nbsp;
+
+### 40. Cookie
+
+*Lesson: Snack time*
+
+| | |
+|---|---|
+| Handshape | Clawed C-hand on a flat palm |
+| Handshape picture in app | drawing of letter C |
+| Location | In front of the body |
+| Movement | Press the fingertips of the clawed hand onto the flat palm, lift, twist and press again |
+| Movement arrow in app | twist |
+| Memory tip | Cutting cookies out of dough |
+| Video in app | ASL Signbank **COOKIE**: https://aslsignbank.com/dictionary/gloss/435/ |
+
+> **Dictionary pre-check:** Added to replace Hungry, which ASL Signbank does not have. Description drafted from the Signbank video; not checked against another dictionary.
 
 - [ ] Approved
 - [ ] Needs changes
@@ -941,6 +990,7 @@ Notes:
 | Movement | Brush the index finger down across the lips and chin a couple of times |
 | Movement arrow in app | down |
 | Memory tip | The color of your lips |
+| Video in app | ASL Signbank **RED**: https://aslsignbank.com/dictionary/gloss/531/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -963,6 +1013,7 @@ Notes:
 | Movement | Hold a Y-hand and twist it back and forth at the wrist |
 | Movement arrow in app | twist |
 | Memory tip | Y for yellow |
+| Video in app | ASL Signbank **YELLOW**: https://aslsignbank.com/dictionary/gloss/1470/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -985,6 +1036,7 @@ Notes:
 | Movement | Hold up a B-hand and twist it back and forth at the wrist |
 | Movement arrow in app | twist |
 | Memory tip | B for blue |
+| Video in app | ASL Signbank **BLUE**: https://aslsignbank.com/dictionary/gloss/417/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -1007,6 +1059,7 @@ Notes:
 | Movement | Hold a G-hand and twist it back and forth at the wrist |
 | Movement arrow in app | twist |
 | Memory tip | G for green |
+| Video in app | ASL Signbank **GREEN**: https://aslsignbank.com/dictionary/gloss/475/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -1029,6 +1082,7 @@ Notes:
 | Movement | Draw the side of the index finger across the forehead |
 | Movement arrow in app | across |
 | Memory tip | A dark eyebrow line |
+| Video in app | ASL Signbank **BLACK**: https://aslsignbank.com/dictionary/gloss/415/ |
 
 > **Dictionary pre-check:** Common dictionary form. Not yet individually checked against a dictionary.
 
@@ -1051,6 +1105,7 @@ Notes:
 | Movement | Place the open hand on the chest, then pull it away while closing the fingertips together |
 | Movement arrow in app | outward |
 | Memory tip | Pulling a white shirt away from your chest |
+| Video in app | ASL Signbank **WHITE**: https://aslsignbank.com/dictionary/gloss/568/ |
 
 > **Dictionary pre-check:** Matches Lifeprint: open hand on chest pulls away, closing the fingertips.
 
@@ -1075,6 +1130,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | A fist with the thumb on the side |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1097,6 +1153,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | A flat hand, like a stop sign |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1119,6 +1176,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Your hand draws the letter C |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1141,6 +1199,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | The index finger is the stick of a d |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1163,6 +1222,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | A tight, curled-up hand |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1185,6 +1245,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Like an OK sign |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1207,6 +1268,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Like a little gap between two fingers |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1229,6 +1291,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Like G, with two fingers |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1251,6 +1314,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | The little finger stands alone, like I |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1273,6 +1337,7 @@ Notes:
 | Movement | Trace a J in the air with the little finger |
 | Movement arrow in app | none |
 | Memory tip | Draw a J with your little finger |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1295,6 +1360,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | A V with the thumb in between |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1317,6 +1383,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Your hand makes an L |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1339,6 +1406,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Three fingers over the thumb for M |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1361,6 +1429,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Two fingers over the thumb for N |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1383,6 +1452,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Your hand makes an O |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1405,6 +1475,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | K turned upside down |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1427,6 +1498,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | G turned upside down |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1449,6 +1521,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Fingers crossed, like for good luck |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1471,6 +1544,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | A solid fist |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1493,6 +1567,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | The thumb peeks out between two fingers |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1515,6 +1590,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Two fingers together, like a U |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1537,6 +1613,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Like a peace sign |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1559,6 +1636,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Three fingers make a W |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1581,6 +1659,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | A crooked finger |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1603,6 +1682,7 @@ Notes:
 | Movement | Hold the handshape still in front of your shoulder, palm facing out |
 | Movement arrow in app | none |
 | Memory tip | Like 'hang loose' |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 
@@ -1625,6 +1705,7 @@ Notes:
 | Movement | Trace a Z in the air with the index finger |
 | Movement arrow in app | none |
 | Memory tip | Draw a Z in the air with your finger |
+| Video in app | none (drawing only) |
 
 > **Dictionary pre-check:** Standard ASL manual alphabet letter. Please check the description and the drawing shown in the app.
 

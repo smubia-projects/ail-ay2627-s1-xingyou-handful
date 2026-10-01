@@ -11,6 +11,9 @@
    - Progress is saved in the browser's localStorage.
    - Sign and lesson content lives in JSON files in a data/ folder at the project root.
    - Do not add any new package without asking me first.
+   - Sign videos come from ASL Signbank (CC BY-NC-SA 4.0), so the app must stay non-commercial
+     (no ads, no paid version) and keep the credits described in docs/CREDITS.md. Use Signbank
+     as the main source for signs; a sign it doesn't have is replaced with one it does.
    - Work in batches: one short plan, one "go", then build everything, test it yourself,
      and give one combined summary. Commit each part separately so any part can be undone.
      Only stop mid-batch for real decisions (new packages, scope changes). Fewest files possible.
