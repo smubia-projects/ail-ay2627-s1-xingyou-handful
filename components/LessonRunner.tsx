@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   BottomBar,
+  Confetti,
   ExerciseView,
   PRIMARY_BUTTON,
   useEnterKey,
@@ -14,6 +15,10 @@ import SignCard, { type Sign } from "@/components/SignCard";
 import {
   buildExercises,
   buildLessonSteps,
+  buildTestExercises,
+  getUnit,
+  getUnitSigns,
+  getUnitsBefore,
   getLearnedSignIds,
   getSign,
   MAX_REVIEWS,
@@ -21,10 +26,13 @@ import {
   reshuffleExercise,
   shuffle,
   TARGET_QUESTIONS,
+  TEST_PASS_MARK,
   type LessonStep,
 } from "@/lib/content";
 import {
   clearMistakes,
+  completeLessons,
+  recordCheckpoint,
   recordLessonComplete,
   recordMistakes,
   recordReviewResults,
@@ -33,12 +41,15 @@ import {
   useProgress,
 } from "@/lib/progress";
 
-export type SessionMode = "lesson" | "practice" | "review";
+// "checkpoint" tests a finished unit; "skip" tests everything before a unit to jump ahead to it.
+export type SessionMode = "lesson" | "practice" | "review" | "checkpoint" | "skip";
 
 const COMPLETE_HEADINGS: Record<SessionMode, string> = {
   lesson: "Lesson complete!",
   practice: "Practice complete!",
   review: "Review complete!",
+  checkpoint: "Checkpoint passed!",
+  skip: "You skipped ahead!",
 };
 
 const XP_PER_FIRST_TRY = 5;
@@ -110,19 +121,26 @@ function Stat({
 export default function LessonRunner({
   mode,
   lessonId,
+  unitId,
   title,
   signs,
 }: {
   mode: SessionMode;
   lessonId?: string;
+  // The unit a checkpoint or skip-ahead test is for.
+  unitId?: string;
   title: string;
   signs: Sign[];
 }) {
   const isLesson = mode === "lesson";
+  const isTest = mode === "checkpoint" || mode === "skip";
   const progressData = useProgress();
   const [queue, setQueue] = useState<QueueItem[]>(() =>
-    isLesson ? [{ kind: "intro", sign: signs[0], index: 0 }] : toQueue(buildExercises(signs)),
+    isLesson
+      ? [{ kind: "intro", sign: signs[0], index: 0 }]
+      : toQueue(isTest ? buildTestExercises(signs) : buildExercises(signs)),
   );
+  const [passed, setPassed] = useState(true);
   const [built, setBuilt] = useState(!isLesson);
   const [position, setPosition] = useState(0);
   const [done, setDone] = useState(false);
@@ -134,6 +152,11 @@ export default function LessonRunner({
   // First-try answers in a row, for the "3 in a row!" feedback.
   const [combo, setCombo] = useState(0);
   const [streak, setStreak] = useState<{ count: number; note?: string }>({ count: 0 });
+  // Things worth celebrating on the complete screen: a streak milestone, today's goal reached.
+  const [celebration, setCelebration] = useState<{ milestone: number | null; goalReached: boolean }>({
+    milestone: null,
+    goalReached: false,
+  });
 
   // Earlier signs to top up a short lesson: due reviews first, then any other learned sign.
   function pickReviewSigns(): Sign[] {
@@ -161,6 +184,19 @@ export default function LessonRunner({
     if (mode === "practice") clearMistakes(allRight);
     // A reviewed sign answered right first time waits longer before its next review.
     if (mode === "review") recordReviewResults(signIds, missed);
+    if (isTest && unitId) {
+      const asked = queue.filter((item) => item.kind === "exercise" && !item.retry).length;
+      const pass = asked > 0 && firstTryTotal / asked >= TEST_PASS_MARK;
+      setPassed(pass);
+      if (pass && mode === "checkpoint") recordCheckpoint(unitId);
+      if (pass && mode === "skip") {
+        const earlier = getUnitsBefore(unitId);
+        completeLessons(
+          earlier.flatMap((unit) => unit.lessons.map((lesson) => lesson.id)),
+          earlier.flatMap((unit) => getUnitSigns(unit).map((sign) => sign.id)),
+        );
+      }
+    }
     setClearedCount(allRight.length);
     setStreak({
       count: result.streak,
@@ -172,6 +208,7 @@ export default function LessonRunner({
             ? "+1 today!"
             : undefined,
     });
+    setCelebration({ milestone: result.milestone, goalReached: result.goalReached });
     setDone(true);
   }
 
@@ -296,7 +333,8 @@ export default function LessonRunner({
 
         {done && (
           <div className="flex flex-col items-center pt-6 text-center">
-            <span className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-charcoal bg-honey">
+            <span className="relative flex h-28 w-28 items-center justify-center rounded-full border-2 border-charcoal bg-honey">
+              {(celebration.milestone || celebration.goalReached) && (!isTest || passed) && <Confetti />}
               <svg viewBox="0 0 24 24" className="h-12 w-12" fill="none" aria-hidden="true">
                 <path
                   d="M5 12.5l4.5 4.5L19 7.5"
@@ -308,15 +346,35 @@ export default function LessonRunner({
               </svg>
             </span>
             <h1 className="mt-8 font-display text-4xl font-bold text-ink">
-              {COMPLETE_HEADINGS[mode]}
+              {isTest && !passed ? "Not this time" : COMPLETE_HEADINGS[mode]}
             </h1>
-            <p className="mt-1 text-muted">
-              {mode === "practice"
+            <p className="mt-1 text-muted" data-test-result={isTest ? (passed ? "passed" : "failed") : undefined}>
+              {isTest
+                ? passed
+                  ? mode === "checkpoint"
+                    ? `${title}: mastered`
+                    : `Everything before ${getUnit(unitId ?? "")?.title ?? "this unit"} is unlocked`
+                  : `You need ${Math.round(TEST_PASS_MARK * 100)}% right on the first try. Practise a little and try again.`
+                : mode === "practice"
                 ? `${clearedCount} of ${signs.length} ${signs.length === 1 ? "sign" : "signs"} cleared from your mistakes`
                 : mode === "review"
                   ? `${clearedCount} of ${signs.length} ${signs.length === 1 ? "sign" : "signs"} remembered. They'll come back later`
                   : title}
             </p>
+            {(celebration.milestone || celebration.goalReached) && (
+              <div className="mt-4 flex flex-wrap justify-center gap-2" data-celebration>
+                {celebration.milestone && (
+                  <span className="rounded-full border-2 border-charcoal bg-honey px-4 py-1.5 font-display text-lg font-bold text-charcoal">
+                    {celebration.milestone}-day streak!
+                  </span>
+                )}
+                {celebration.goalReached && (
+                  <span className="rounded-full border-2 border-charcoal bg-bluebell px-4 py-1.5 font-display text-lg font-bold text-charcoal">
+                    Daily goal reached
+                  </span>
+                )}
+              </div>
+            )}
             <div className="mt-8 grid w-full grid-cols-3 gap-3">
               <Stat label="XP earned" value={`+${xp}`} className="bg-honey" />
               <Stat label="First try" value={`${accuracy}%`} className="bg-bluebell" />

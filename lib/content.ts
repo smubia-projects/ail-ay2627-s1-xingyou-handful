@@ -158,6 +158,17 @@ function spellExercises(lessonSigns: Sign[]): Exercise[] {
     });
 }
 
+// A test (unit checkpoint or skip-ahead): one multiple-choice question for each of up to
+// `count` signs picked at random. No "sign it yourself", since a test shouldn't be self-marked.
+export const TEST_QUESTIONS = 12;
+export const TEST_PASS_MARK = 0.8;
+
+export function buildTestExercises(testSigns: Sign[], count = TEST_QUESTIONS): Exercise[] {
+  return shuffle(testSigns)
+    .slice(0, count)
+    .map((sign) => (Math.random() < 0.5 ? meaningExercise(sign) : pickSignExercise(sign)));
+}
+
 export type LessonStep =
   | { kind: "intro"; sign: Sign; index: number }
   | { kind: "exercise"; exercise: Exercise; review?: boolean };
@@ -205,6 +216,20 @@ export function reshuffleExercise(exercise: Exercise): Exercise {
 
 export function getUnits(): Unit[] {
   return units;
+}
+
+export function getUnit(id: string): Unit | undefined {
+  return units.find((unit) => unit.id === id);
+}
+
+export function getUnitSigns(unit: Unit): Sign[] {
+  return unit.lessons.flatMap((lesson) => getLessonSigns(lesson));
+}
+
+// Everything that comes before a unit on the path: what a skip-ahead test covers and unlocks.
+export function getUnitsBefore(unitId: string): Unit[] {
+  const index = units.findIndex((unit) => unit.id === unitId);
+  return index > 0 ? units.slice(0, index) : [];
 }
 
 export function getSign(id: string): Sign | undefined {

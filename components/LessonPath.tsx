@@ -16,6 +16,9 @@ const UNIT_THEMES: UnitTheme[] = [
   { block: "bg-fennel", ring: "ring-fennel/60", dot: "bg-line-strong" },
 ];
 
+const BANNER_BUTTON =
+  "mt-3 inline-block rounded-full border-2 border-charcoal bg-cream px-4 py-1.5 text-sm font-bold text-charcoal transition hover:bg-white active:scale-[0.97]";
+
 // Gentle zigzag so the lessons read as a winding path.
 const PATH_OFFSETS = ["translate-x-0", "translate-x-14", "translate-x-0", "-translate-x-14"];
 // Moves the connecting dots (relative to the lesson above them) halfway to the next lesson.
@@ -209,7 +212,7 @@ function SessionCard({
 export default function LessonPath() {
   const units = getUnits();
   const progress = useProgress();
-  const { completedLessons, mistakes, reviews } = progress;
+  const { completedLessons, mistakes, reviews, checkpoints } = progress;
   const loaded = useProgressLoaded();
   // Ignore saved mistakes for signs that have since been removed from data/signs.json.
   const mistakeCount = mistakes.filter((id) => getSign(id) !== undefined).length;
@@ -262,6 +265,10 @@ export default function LessonPath() {
       {units.map((unit, unitIndex) => {
         const theme = UNIT_THEMES[unitIndex % UNIT_THEMES.length];
         const done = unit.lessons.filter((lesson) => completedLessons.includes(lesson.id)).length;
+        const complete = done === unit.lessons.length;
+        // A unit that hasn't been started and isn't next up can be skipped to with a test.
+        const canSkipTo =
+          unitIndex > 0 && done === 0 && !unit.lessons.some((lesson) => lesson.id === currentId);
         return (
           <section key={unit.id}>
             <div className={`rounded-[28px] px-6 py-5 text-charcoal ${theme.block}`}>
@@ -278,9 +285,27 @@ export default function LessonPath() {
                   />
                 </div>
                 <span className="text-sm font-bold">
-                  {done === unit.lessons.length ? "Complete" : `${done}/${unit.lessons.length}`}
+                  {complete ? "Complete" : `${done}/${unit.lessons.length}`}
                 </span>
               </div>
+              {complete && checkpoints.includes(unit.id) && (
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-charcoal px-3 py-1 text-sm font-bold text-cream">
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 fill-honey" aria-hidden="true">
+                    <path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8-4.2-4.1 5.9-.9z" />
+                  </svg>
+                  Mastered
+                </p>
+              )}
+              {complete && !checkpoints.includes(unit.id) && (
+                <Link href={`/checkpoint/${unit.id}`} className={BANNER_BUTTON}>
+                  Take the checkpoint
+                </Link>
+              )}
+              {canSkipTo && (
+                <Link href={`/skip/${unit.id}`} className={BANNER_BUTTON}>
+                  Skip to here
+                </Link>
+              )}
             </div>
 
             <ol className="mt-10 flex flex-col items-center gap-5">

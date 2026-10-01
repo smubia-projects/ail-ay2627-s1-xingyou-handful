@@ -6,7 +6,7 @@ import { BottomBar, PRIMARY_BUTTON } from "@/components/Exercises";
 import LessonRunner, { type SessionMode } from "@/components/LessonRunner";
 import type { Sign } from "@/components/SignCard";
 
-// Start screen for a practice or review session: lists the signs, then runs them on Start.
+// Start screen for a practice, review or test session: describes it, then runs it on Start.
 export default function SessionStart({
   mode,
   title,
@@ -15,8 +15,14 @@ export default function SessionStart({
   icon,
   signs,
   loaded,
+  unitId,
+  listSigns = true,
 }: {
   mode: Exclude<SessionMode, "lesson">;
+  // For checkpoint and skip-ahead tests: the unit being tested for, and no need to list
+  // every sign that might come up.
+  unitId?: string;
+  listSigns?: boolean;
   title: string;
   description: string;
   emptyText: string;
@@ -28,7 +34,7 @@ export default function SessionStart({
   const [sessionSigns, setSessionSigns] = useState<Sign[] | null>(null);
 
   if (sessionSigns) {
-    return <LessonRunner mode={mode} title={title} signs={sessionSigns} />;
+    return <LessonRunner mode={mode} title={title} signs={sessionSigns} unitId={unitId} />;
   }
 
   return (
@@ -63,13 +69,15 @@ export default function SessionStart({
       ) : (
         <>
           <p className="mt-2 text-muted">{description}</p>
-          <ul className="mt-6 flex flex-wrap gap-2">
-            {signs.map((sign) => (
-              <li key={sign.id} className="rounded-full bg-surface px-4 py-2 font-semibold text-ink">
-                {sign.word}
-              </li>
-            ))}
-          </ul>
+          {listSigns && (
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {signs.map((sign) => (
+                <li key={sign.id} className="rounded-full bg-surface px-4 py-2 font-semibold text-ink">
+                  {sign.word}
+                </li>
+              ))}
+            </ul>
+          )}
           <BottomBar>
             <button
               type="button"

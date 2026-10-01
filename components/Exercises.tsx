@@ -67,6 +67,32 @@ const FeedbackContext = createContext({ combo: 0, xp: 0 });
 
 const CONFETTI_COLORS = ["bg-honey", "bg-bluebell", "bg-fern", "bg-peony", "bg-charcoal"];
 
+// Confetti pieces that fly out from the centre of their (relative) parent, once.
+// Hidden for people who have asked their device to reduce motion.
+export function Confetti() {
+  return (
+    <span aria-hidden="true" className="motion-reduce:hidden">
+      {Array.from({ length: 16 }, (_, i) => {
+        const angle = (i / 16) * Math.PI * 2;
+        const distance = i % 2 === 0 ? 150 : 105;
+        const style = {
+          "--dx": `${Math.round(Math.cos(angle) * distance)}px`,
+          "--dy": `${Math.round(Math.sin(angle) * distance)}px`,
+          "--spin": `${i % 2 === 0 ? 260 : -200}deg`,
+          animationDelay: `${0.12 + (i % 4) * 0.03}s`,
+        } as React.CSSProperties;
+        return (
+          <span
+            key={i}
+            style={style}
+            className={`absolute top-1/2 left-1/2 h-3 w-3 animate-confetti opacity-0 ${i % 3 === 0 ? "rounded-full" : "rounded-sm"} ${CONFETTI_COLORS[i % CONFETTI_COLORS.length]}`}
+          />
+        );
+      })}
+    </span>
+  );
+}
+
 // The unmissable part: a big stamp in the middle of the screen, with confetti when it's right.
 // It fades by itself and never blocks taps. Skipped entirely for reduced-motion users, who still
 // get the colored bar, the tile badges and the message.
@@ -77,24 +103,7 @@ function ResultBurst({ correct }: { correct: boolean }) {
       className="pointer-events-none fixed inset-0 z-20 flex items-center justify-center motion-reduce:hidden"
     >
       <div className="relative animate-burst">
-        {correct &&
-          Array.from({ length: 16 }, (_, i) => {
-            const angle = (i / 16) * Math.PI * 2;
-            const distance = i % 2 === 0 ? 150 : 105;
-            const style = {
-              "--dx": `${Math.round(Math.cos(angle) * distance)}px`,
-              "--dy": `${Math.round(Math.sin(angle) * distance)}px`,
-              "--spin": `${i % 2 === 0 ? 260 : -200}deg`,
-              animationDelay: `${0.12 + (i % 4) * 0.03}s`,
-            } as React.CSSProperties;
-            return (
-              <span
-                key={i}
-                style={style}
-                className={`absolute top-1/2 left-1/2 h-3 w-3 animate-confetti opacity-0 ${i % 3 === 0 ? "rounded-full" : "rounded-sm"} ${CONFETTI_COLORS[i % CONFETTI_COLORS.length]}`}
-              />
-            );
-          })}
+        {correct && <Confetti />}
         <span
           className={`relative flex h-32 w-32 items-center justify-center rounded-full border-4 border-charcoal text-charcoal ${correct ? "bg-fern" : "bg-peony"}`}
         >
