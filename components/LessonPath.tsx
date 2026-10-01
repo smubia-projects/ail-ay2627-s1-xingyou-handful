@@ -261,6 +261,26 @@ export default function LessonPath() {
             iconStyle="bg-peony text-charcoal"
           />
         </div>
+        <Link
+          href="/camera"
+          className="flex items-center gap-4 rounded-[28px] bg-surface p-4 transition hover:bg-line/70 active:scale-[0.97]"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-bluebell text-charcoal">
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
+              <path
+                d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1-1.6h5.8l1 1.6h1.6A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z"
+                stroke="currentColor"
+                strokeWidth={2.2}
+                strokeLinejoin="round"
+              />
+              <circle cx="12" cy="12.5" r="3" stroke="currentColor" strokeWidth={2.2} />
+            </svg>
+          </span>
+          <span className="flex-1">
+            <span className="block font-display text-xl font-bold text-ink">Camera practice</span>
+            <span className="block text-sm text-muted">Check your fingerspelling with your camera</span>
+          </span>
+        </Link>
       </div>
       {units.map((unit, unitIndex) => {
         const theme = UNIT_THEMES[unitIndex % UNIT_THEMES.length];
