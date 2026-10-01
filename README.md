@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Handful
 
-## Getting Started
+Learn American Sign Language, a small handful of signs a day.
 
-First, run the development server:
+A Duolingo-style ASL learning app that runs entirely in the browser: no accounts, no backend. Progress
+is saved on the learner's own device.
+
+## What it does
+
+- **Short lessons** that teach each new sign (real signer video, handshape drawing, movement arrow,
+  memory tip) and practise it straight away.
+- **Practice and review:** multiple choice, match pairs, "sign it yourself", reading fingerspelling, a
+  mistakes list, and spaced review that brings signs back before they're forgotten.
+- **Streaks, XP, a daily goal, unit checkpoints**, skip-ahead tests and a progress page.
+- **Camera practice** for fingerspelled letters: hand tracking runs in the browser and the video never
+  leaves the device. It checks finger positions only, so it is practice feedback, not a grade.
+- Mirror view and a left-hand option, installable on a phone's home screen.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # then open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Checks (the app must be running for the browser tests):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+npm run build
+node tests/progress.test.mts     # saved-progress rules
+node tests/handshape.test.mts    # hand-shape rules
+node tests/e2e.mjs               # plays through the whole app in headless Chrome
+node tests/camera.mjs            # real signing videos through the hand tracker (about 10 minutes)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The browser tests drive Google Chrome (macOS path) with no extra packages.
 
-## Learn More
+## Where things are
 
-To learn more about Next.js, take a look at the following resources:
+| Folder | What's in it |
+|---|---|
+| `data/` | All content as JSON: `signs.json`, `lessons.json`, `spelling-words.json`. Add a sign here and it appears in the app. |
+| `app/`, `components/`, `lib/` | Next.js (App Router) pages, UI, and the logic (progress, lessons, hand shapes). |
+| `public/` | Sign videos, handshape drawings, and the hand-tracking engine and model. |
+| `docs/` | `PRD.md`, `CREDITS.md`, `SIGN_REVIEW.md` (checklist for a Deaf ASL reviewer), video guidelines. |
+| `tests/` | The tests above. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Important notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **The sign descriptions are drafts** and still need review by a Deaf ASL signer before release. Use
+  `docs/SIGN_REVIEW.md`.
+- **It must stay non-commercial** (no ads, no paid version) while it uses ASL Signbank videos, which are
+  licensed CC BY-NC-SA 4.0. Credits and conditions are in `docs/CREDITS.md`.
+- Project rules for contributors (and for Claude Code) are in `CLAUDE.md`.
 
-## Deploy on Vercel
+## Credits
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Sign videos: [ASL Signbank](https://aslsignbank.com) (Hochgesang, Crasborn & Lillo-Martin), CC BY-NC-SA 4.0.
+- Handshape drawings: wpclipart.com (public domain) and Snailsmakemehappy (CC BY-SA 4.0), via Wikimedia Commons.
+- Hand tracking: [Google MediaPipe](https://ai.google.dev/edge/mediapipe), Apache 2.0.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Full details: `docs/CREDITS.md`.
+
+Built with Next.js, React, TypeScript and Tailwind CSS. (Originally called SignPath. The saved-progress
+key keeps that name so nobody's progress is lost.)
