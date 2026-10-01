@@ -315,6 +315,39 @@ p = await progress();
 t = await text();
 check("H2 review complete; remembered signs move up a box", t.includes("Review complete!") && p.reviews.hello.box === 3 && p.reviews.hello.due === daysFromNow(7), JSON.stringify(p.reviews.hello));
 
+// ---------- N. Right and wrong feedback ----------
+await go("/lesson/feelings-2");
+await ev(PAGE_HELPERS);
+await clickText("Continue");
+await sleep(500);
+await ev("__solve(true)");
+await clickText("Check");
+await sleep(350);
+const wrongFeedback = await ev(`(() => { const r=document.querySelector('[data-result]'); return { result: r?.dataset.result, text: r?.innerText, stamp: !!document.querySelector('.animate-burst'), confetti: document.querySelectorAll('.animate-confetti').length, badges: document.querySelectorAll('.grid button .absolute').length, shaking: document.querySelectorAll('.grid button[class*="animate-shake"]').length }; })()`);
+check("N1 wrong answer: stamp without confetti, cross and check badges, shake, correct answer named, no XP", wrongFeedback.result === "wrong" && wrongFeedback.stamp && wrongFeedback.confetti === 0 && wrongFeedback.badges === 2 && wrongFeedback.shaking === 1 && wrongFeedback.text.includes("Correct answer:") && !wrongFeedback.text.includes("XP"), JSON.stringify(wrongFeedback));
+await shot("N-wrong-feedback");
+await clickText("Continue");
+await sleep(500);
+await clickText("Continue");
+await sleep(500);
+await ev("__solve(false)");
+await clickText("Check");
+await sleep(350);
+await shot("N-right-feedback");
+await clickText("Continue");
+await sleep(500);
+let runText = "";
+for (let i = 0; i < 6 && !/in a row/.test(runText); i++) {
+  const kind = await ev("__solve(false)");
+  if (kind.startsWith("signit")) { await sleep(400); continue; }
+  await clickText("Check");
+  await sleep(350);
+  runText = await ev("document.querySelector('[data-result]')?.innerText ?? ''");
+  await clickText("Continue");
+  await sleep(500);
+}
+check("N2 a run of first-try answers shows 'in a row'", /\d in a row!/.test(runText), runText.replace(/\n/g, " | "));
+
 // ---------- I. My signs ----------
 await go("/signs");
 t = await text();
@@ -352,8 +385,9 @@ const video = await ev(`(() => { const v=document.querySelector('video'); const 
 check("V1 sign card plays a silent looping video", video?.width > 0 && video.playing && video.muted && video.loop && !video.controls, JSON.stringify(video));
 check("V2 video credits ASL Signbank, linking to the entry in a new tab", video?.credit === "ASL Signbank" && /aslsignbank\.com\/dictionary\/gloss\/\d+/.test(video.href) && video.target === "_blank", video?.href);
 const facing = await ev(`(() => { const arrow=document.querySelector('svg.hand-mirror path[marker-end]'); const cap=document.querySelector('figcaption'); const shown=(c)=>getComputedStyle(cap.querySelector(c)).display !== 'none'; return { d: arrow.getAttribute('d'), right: shown('.hand-right-only'), left: shown('.hand-left-only'), text: cap.innerText }; })()`);
-check("V2b diagram matches the facing-you video: Hello's arrow moves to the viewer's left", /^M84 /.test(facing.d) && / 38 38$/.test(facing.d), facing.d);
-check("V2c caption says to copy with the right hand", facing.right && !facing.left && facing.text.includes("Copy with your right hand"), facing.text);
+check("V2b diagram is drawn the same way round as the video (they flip together)", /^M84 /.test(facing.d) && / 38 38$/.test(facing.d), facing.d);
+check("V2c caption: mirror view, copy with the right hand", facing.right && !facing.left && facing.text.includes("Mirror view. Copy what you see with your right hand."), facing.text);
+check("V2d right hand (default): video and drawings are mirrored", await ev(`[...document.querySelectorAll('.hand-mirror')].length >= 3 && [...document.querySelectorAll('.hand-mirror')].every(el => getComputedStyle(el).transform.startsWith('matrix(-1'))`));
 await ev("document.querySelector('video').click()");
 await sleep(300);
 check("V3 tapping the video pauses it", await ev("document.querySelector('video').paused"));
@@ -376,8 +410,8 @@ await ev(`[...document.querySelectorAll('[role=radio]')].find(b=>b.innerText.inc
 await sleep(400);
 check("L3 left-handed saved and switched on", (await progress()).leftHanded === true && (await ev("document.documentElement.dataset.hand")) === "left");
 await go("/lesson/greetings-1");
-check("L4 left-handed: drawings and diagram are mirrored", await ev(`[...document.querySelectorAll('.hand-mirror')].length >= 2 && [...document.querySelectorAll('.hand-mirror')].every(el => getComputedStyle(el).transform.startsWith('matrix(-1'))`));
-check("L4b left-handed: caption switches to the left hand", await ev(`(() => { const cap=document.querySelector('figcaption'); const shown=(c)=>getComputedStyle(cap.querySelector(c)).display !== 'none'; return shown('.hand-left-only') && !shown('.hand-right-only'); })()`));
+check("L4 left hand: video and drawings are shown unflipped (hand on the left)", await ev(`[...document.querySelectorAll('.hand-mirror')].length >= 3 && [...document.querySelectorAll('.hand-mirror')].every(el => getComputedStyle(el).transform === 'none')`));
+check("L4b left hand: caption says left", await ev(`(() => { const cap=document.querySelector('figcaption'); const shown=(c)=>getComputedStyle(cap.querySelector(c)).display !== 'none'; return shown('.hand-left-only') && !shown('.hand-right-only'); })()`));
 await shot("L-left-handed");
 await go("/settings");
 await ev(`[...document.querySelectorAll('[role=radio]')].find(b=>b.innerText.includes('Right hand')).click()`);
@@ -420,9 +454,10 @@ check("M2 Enter continues past a new-sign card", (await ev("__heading()")) === "
 await ev("__solve(false)");
 check("M3 selected answer is marked for screen readers", (await ev(`document.querySelectorAll('[aria-pressed="true"]').length`)) === 1);
 await pressKey("Enter", 13);
-check("M4 Enter presses Check", (await text()).includes("Nice!"));
+const feedback = await ev(`(() => { const r=document.querySelector('[data-result]'); return r && { result: r.dataset.result, text: r.innerText, stamp: !!document.querySelector('.animate-burst'), confetti: document.querySelectorAll('.animate-confetti').length, badge: document.querySelectorAll('.grid button .absolute').length }; })()`);
+check("M4 Enter presses Check; a right answer gets a stamp, confetti, a tile badge and +5 XP", feedback?.result === "correct" && feedback.stamp && feedback.confetti === 16 && feedback.badge === 1 && feedback.text.includes("+5 XP"), JSON.stringify(feedback));
 await pressKey("Enter", 13);
-check("M5 Enter presses Continue", !(await text()).includes("Nice!"));
+check("M5 Enter presses Continue", !(await ev("!!document.querySelector('[data-result]')")));
 await go("/lesson/nope");
 check("M6 styled not-found page", (await text()).includes("Page not found") && (await lower()).includes("back home"));
 await go("/");

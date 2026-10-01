@@ -131,6 +131,8 @@ export default function LessonRunner({
   const [clearedCount, setClearedCount] = useState(0);
   const router = useRouter();
   const [firstTryCorrect, setFirstTryCorrect] = useState(0);
+  // First-try answers in a row, for the "3 in a row!" feedback.
+  const [combo, setCombo] = useState(0);
   const [streak, setStreak] = useState<{ count: number; note?: string }>({ count: 0 });
 
   // Earlier signs to top up a short lesson: due reviews first, then any other learned sign.
@@ -196,6 +198,7 @@ export default function LessonRunner({
     const firstTry = correct && !item.retry;
     const firstTryTotal = firstTryCorrect + (firstTry ? 1 : 0);
     if (firstTry) setFirstTryCorrect(firstTryTotal);
+    setCombo(firstTry ? combo + 1 : 0);
 
     // Saved straight away, so mistakes count even if the learner quits mid-lesson.
     recordMistakes(missedSignIds);
@@ -281,7 +284,13 @@ export default function LessonRunner({
                 Quick review
               </p>
             ) : null}
-            <ExerciseView key={position} exercise={current.exercise} onDone={finishExercise} />
+            <ExerciseView
+              key={position}
+              exercise={current.exercise}
+              onDone={finishExercise}
+              combo={combo}
+              xp={current.retry ? 0 : XP_PER_FIRST_TRY}
+            />
           </>
         )}
 

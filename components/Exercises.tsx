@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { BodyDiagram, HandshapeImage, LOCATION_LABELS, type Sign } from "@/components/SignCard";
 import SignVideo from "@/components/SignVideo";
 
@@ -20,13 +20,89 @@ type ChoiceState = "idle" | "selected" | "correct" | "wrong" | "done";
 const CHOICE_STYLES: Record<ChoiceState, string> = {
   idle: "border-charcoal bg-cream hover:bg-white",
   selected: "border-charcoal bg-bluebell",
-  correct: "border-charcoal bg-fern-soft",
-  wrong: "border-charcoal bg-peony",
+  correct: "border-charcoal bg-fern-soft motion-safe:animate-pop",
+  wrong: "border-charcoal bg-peony motion-safe:animate-shake",
   done: "border-charcoal bg-cream opacity-40",
 };
 
 function choiceClass(state: ChoiceState, extra = "") {
-  return `rounded-3xl border-2 p-3 font-semibold text-ink transition active:scale-[0.97] disabled:active:scale-100 ${CHOICE_STYLES[state]} ${extra}`;
+  return `relative rounded-3xl border-2 p-3 font-semibold text-ink transition active:scale-[0.97] disabled:active:scale-100 ${CHOICE_STYLES[state]} ${extra}`;
+}
+
+function CheckMark({ className }: { className: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function CrossMark({ className }: { className: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Small check or cross pinned to the corner of an answer tile once it has been marked.
+function ChoiceBadge({ state }: { state: ChoiceState }) {
+  if (state !== "correct" && state !== "wrong") return null;
+  return (
+    <span
+      className={`absolute -top-2.5 -right-2.5 flex h-8 w-8 items-center justify-center rounded-full border-2 border-charcoal text-charcoal ${state === "correct" ? "bg-fern" : "bg-cream"}`}
+    >
+      {state === "correct" ? <CheckMark className="h-4 w-4" /> : <CrossMark className="h-4 w-4" />}
+    </span>
+  );
+}
+
+const PRAISE = ["Nice!", "Nailed it!", "Spot on!", "You got it!", "Yes!"];
+const ENCOURAGEMENT = ["Not quite", "So close", "Almost"];
+const pickOne = (words: string[]) => words[Math.floor(Math.random() * words.length)];
+
+// What the session knows about the current question, for the feedback: how many first-try
+// answers in a row came before it, and the XP a first-try answer earns (0 on a retry).
+const FeedbackContext = createContext({ combo: 0, xp: 0 });
+
+const CONFETTI_COLORS = ["bg-honey", "bg-bluebell", "bg-fern", "bg-peony", "bg-charcoal"];
+
+// The unmissable part: a big stamp in the middle of the screen, with confetti when it's right.
+// It fades by itself and never blocks taps. Skipped entirely for reduced-motion users, who still
+// get the colored bar, the tile badges and the message.
+function ResultBurst({ correct }: { correct: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-20 flex items-center justify-center motion-reduce:hidden"
+    >
+      <div className="relative animate-burst">
+        {correct &&
+          Array.from({ length: 16 }, (_, i) => {
+            const angle = (i / 16) * Math.PI * 2;
+            const distance = i % 2 === 0 ? 150 : 105;
+            const style = {
+              "--dx": `${Math.round(Math.cos(angle) * distance)}px`,
+              "--dy": `${Math.round(Math.sin(angle) * distance)}px`,
+              "--spin": `${i % 2 === 0 ? 260 : -200}deg`,
+              animationDelay: `${0.12 + (i % 4) * 0.03}s`,
+            } as React.CSSProperties;
+            return (
+              <span
+                key={i}
+                style={style}
+                className={`absolute top-1/2 left-1/2 h-3 w-3 animate-confetti opacity-0 ${i % 3 === 0 ? "rounded-full" : "rounded-sm"} ${CONFETTI_COLORS[i % CONFETTI_COLORS.length]}`}
+              />
+            );
+          })}
+        <span
+          className={`relative flex h-32 w-32 items-center justify-center rounded-full border-4 border-charcoal text-charcoal ${correct ? "bg-fern" : "bg-peony"}`}
+        >
+          {correct ? <CheckMark className="h-16 w-16" /> : <CrossMark className="h-16 w-16" />}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 // A sign as a looping video if one exists, otherwise its diagram and handshape.
@@ -149,16 +225,41 @@ function CheckBar({
   onContinue: () => void;
 }) {
   useEnterKey(status === "answering" ? (canCheck ? onCheck : undefined) : onContinue);
+  const { combo, xp } = useContext(FeedbackContext);
   if (status === "answering" && !onCheck) return null;
 
   const background =
     status === "correct" ? "bg-fern-soft" : status === "wrong" ? "bg-peony" : "bg-cream";
+  const marked = status !== "answering";
+  // This answer extends the run of first-try answers when it's right and not a retry.
+  const run = status === "correct" && xp > 0 ? combo + 1 : 0;
 
   return (
     <BottomBar className={background}>
-      <div role="status" aria-live="polite">
-        {title && <p className="font-display text-2xl font-bold text-ink">{title}</p>}
-        {detail && <p className="text-sm font-semibold text-charcoal">{detail}</p>}
+      {marked && <ResultBurst correct={status === "correct"} />}
+      <div
+        role="status"
+        aria-live="polite"
+        data-result={marked ? status : undefined}
+        className="flex items-center gap-3"
+      >
+        {marked && (
+          <span
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-charcoal text-charcoal ${status === "correct" ? "bg-fern" : "bg-cream"}`}
+          >
+            {status === "correct" ? <CheckMark className="h-6 w-6" /> : <CrossMark className="h-6 w-6" />}
+          </span>
+        )}
+        <div>
+          {title && <p className="font-display text-2xl font-bold text-ink">{title}</p>}
+          {detail && <p className="text-sm font-semibold text-charcoal">{detail}</p>}
+          {status === "correct" && (xp > 0 || run >= 2) && (
+            <p className="mt-0.5 flex flex-wrap gap-1.5 text-xs font-bold text-charcoal">
+              {xp > 0 && <span className="rounded-full bg-honey px-2 py-0.5">+{xp} XP</span>}
+              {run >= 2 && <span className="rounded-full bg-bluebell px-2 py-0.5">{run} in a row!</span>}
+            </p>
+          )}
+        </div>
       </div>
       <button
         type="button"
@@ -177,6 +278,7 @@ function CheckBar({
 function useMultipleChoice(answerId: string) {
   const [selected, setSelected] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("answering");
+  const [message, setMessage] = useState<string | undefined>(undefined);
 
   function stateOf(id: string): ChoiceState {
     if (status === "answering") return selected === id ? "selected" : "idle";
@@ -185,10 +287,12 @@ function useMultipleChoice(answerId: string) {
   }
 
   function check() {
-    setStatus(selected === answerId ? "correct" : "wrong");
+    const correct = selected === answerId;
+    setStatus(correct ? "correct" : "wrong");
+    setMessage(pickOne(correct ? PRAISE : ENCOURAGEMENT));
   }
 
-  return { selected, setSelected, status, stateOf, check };
+  return { selected, setSelected, status, stateOf, check, message };
 }
 
 function MeaningExercise({
@@ -200,7 +304,7 @@ function MeaningExercise({
   options: Sign[];
   onDone: OnDone;
 }) {
-  const { selected, setSelected, status, stateOf, check } = useMultipleChoice(sign.id);
+  const { selected, setSelected, status, stateOf, check, message } = useMultipleChoice(sign.id);
 
   return (
     <>
@@ -219,12 +323,13 @@ function MeaningExercise({
             className={choiceClass(stateOf(option.id), "py-4 text-lg")}
           >
             {option.word}
+            <ChoiceBadge state={stateOf(option.id)} />
           </button>
         ))}
       </div>
       <CheckBar
         status={status}
-        title={status === "correct" ? "Nice!" : status === "wrong" ? "Not quite" : undefined}
+        title={message}
         detail={status === "wrong" ? `Correct answer: ${sign.word}` : undefined}
         canCheck={selected !== null}
         onCheck={check}
@@ -243,7 +348,7 @@ function PickSignExercise({
   options: Sign[];
   onDone: OnDone;
 }) {
-  const { selected, setSelected, status, stateOf, check } = useMultipleChoice(sign.id);
+  const { selected, setSelected, status, stateOf, check, message } = useMultipleChoice(sign.id);
 
   return (
     <>
@@ -260,12 +365,13 @@ function PickSignExercise({
             className={choiceClass(stateOf(option.id))}
           >
             <SignPicture sign={option} size="small" video={options.every((o) => o.video)} />
+            <ChoiceBadge state={stateOf(option.id)} />
           </button>
         ))}
       </div>
       <CheckBar
         status={status}
-        title={status === "correct" ? "Nice!" : status === "wrong" ? "Not quite" : undefined}
+        title={message}
         detail={status === "wrong" ? "The correct sign is highlighted in green" : undefined}
         canCheck={selected !== null}
         onCheck={check}
@@ -392,7 +498,7 @@ function SpellExercise({
   options: string[];
   onDone: OnDone;
 }) {
-  const { selected, setSelected, status, stateOf, check } = useMultipleChoice(word);
+  const { selected, setSelected, status, stateOf, check, message } = useMultipleChoice(word);
 
   return (
     <>
@@ -416,12 +522,13 @@ function SpellExercise({
             className={choiceClass(stateOf(option), "py-4 text-lg")}
           >
             {titleCase(option)}
+            <ChoiceBadge state={stateOf(option)} />
           </button>
         ))}
       </div>
       <CheckBar
         status={status}
-        title={status === "correct" ? "Nice!" : status === "wrong" ? "Not quite" : undefined}
+        title={message}
         detail={status === "wrong" ? `Correct answer: ${titleCase(word)}` : undefined}
         canCheck={selected !== null}
         onCheck={check}
@@ -485,13 +592,26 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
 }
 
 // Shows one exercise of any type. onDone reports whether it was answered correctly.
+// combo and xp feed the feedback ("3 in a row!", "+5 XP").
 export function ExerciseView({
   exercise,
   onDone,
+  combo = 0,
+  xp = 0,
 }: {
   exercise: Exercise;
   onDone: OnDone;
+  combo?: number;
+  xp?: number;
 }) {
+  return (
+    <FeedbackContext.Provider value={{ combo, xp }}>
+      <ExerciseBody exercise={exercise} onDone={onDone} />
+    </FeedbackContext.Provider>
+  );
+}
+
+function ExerciseBody({ exercise, onDone }: { exercise: Exercise; onDone: OnDone }) {
   if (exercise.type === "meaning") {
     return <MeaningExercise sign={exercise.sign} options={exercise.options} onDone={onDone} />;
   }
