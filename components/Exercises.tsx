@@ -1,6 +1,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import CameraCheck from "@/components/CameraCheck";
+import { PRIMARY_BUTTON, SECONDARY_BUTTON } from "@/components/buttons";
+
+export { PRIMARY_BUTTON };
 import { BodyDiagram, HandshapeImage, LOCATION_LABELS, type Sign } from "@/components/SignCard";
 import SignVideo from "@/components/SignVideo";
 
@@ -172,13 +176,6 @@ function SignPicture({
 function Prompt({ children }: { children: React.ReactNode }) {
   return <h1 className="font-display text-3xl leading-tight font-bold text-ink">{children}</h1>;
 }
-
-// Main action button. Give it a data-primary attribute so useEnterKey doesn't press it twice.
-export const PRIMARY_BUTTON =
-  "rounded-full border-2 border-charcoal bg-fern px-8 py-3 text-[1.2rem] font-bold text-charcoal transition hover:bg-fern-dark active:scale-[0.97]";
-
-const SECONDARY_BUTTON =
-  "rounded-full border-2 border-charcoal bg-cream px-6 py-3 text-[1.2rem] font-bold text-charcoal transition hover:bg-white active:scale-[0.97]";
 
 // Bar fixed to the bottom of the screen, holding feedback and the main button.
 export function BottomBar({
@@ -552,7 +549,12 @@ function SpellExercise({
 // There's no camera: this is honest self-checking, which is what makes producing signs stick.
 function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
   const [revealed, setRevealed] = useState(false);
-  useEnterKey(revealed ? undefined : () => setRevealed(true));
+  // Letters can also be checked with the camera. It's optional and only gives feedback: the
+  // learner still rates themselves, and a match just reveals the sign.
+  const isLetter = sign.id.startsWith("letter-");
+  const [camera, setCamera] = useState(false);
+  const [cameraMatched, setCameraMatched] = useState(false);
+  useEnterKey(revealed || camera ? undefined : () => setRevealed(true));
 
   return (
     <>
@@ -564,7 +566,25 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
       </p>
       {revealed ? (
         <div className="mt-6 rounded-3xl bg-fennel p-5">
+          {cameraMatched && (
+            <p
+              className="mb-3 rounded-2xl border-2 border-charcoal bg-fern px-4 py-2 font-display text-lg font-bold text-charcoal"
+              data-camera-agrees
+            >
+              The camera agrees: that looked like {sign.word}!
+            </p>
+          )}
           <SignPicture sign={sign} size="large" credit="link" />
+        </div>
+      ) : camera ? (
+        <div className="mt-6">
+          <CameraCheck
+            letter={sign.word}
+            onMatch={() => {
+              setCameraMatched(true);
+              setRevealed(true);
+            }}
+          />
         </div>
       ) : (
         <div className="mt-6 flex h-56 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-line-strong text-center">
@@ -574,6 +594,11 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
             <span className="hand-left-only">left</span> hand. No peeking
           </p>
         </div>
+      )}
+      {isLetter && !revealed && !camera && (
+        <button type="button" onClick={() => setCamera(true)} className={`mt-4 ${SECONDARY_BUTTON}`}>
+          Check with my camera
+        </button>
       )}
       <BottomBar className={revealed ? "bg-bluebell" : "bg-cream"}>
         {revealed ? (

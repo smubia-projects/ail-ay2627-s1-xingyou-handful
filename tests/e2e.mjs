@@ -400,6 +400,44 @@ const spelled = r.log.filter((entry) => entry.startsWith("spell:")).map((entry) 
 check("J3 letters lesson includes 2 fingerspelling-reading questions", spelled.length === 2 && spelled.every((word) => /^[ABCD]+$/.test(word)), spelled.join(", "));
 check("J4 letters lesson completes", t.includes("Lesson complete!"), r.order.join(","));
 
+// ---------- Q. Camera option in "Sign it yourself" ----------
+// Plays a lesson until the "Sign it yourself" screen for one sign comes up.
+async function reachSignIt() {
+  await ev(PAGE_HELPERS);
+  for (let i = 0; i < 80; i++) {
+    const screen = await lower();
+    if (/· new sign \d+ of \d+/.test(screen)) {
+      await clickText("Continue");
+      await sleep(450);
+      continue;
+    }
+    if ((await ev("__heading()")).startsWith("Sign “")) return true;
+    await ev("__solve(false)");
+    await sleep(200);
+    await clickText("Check");
+    await sleep(300);
+    await clickText("Continue");
+    await sleep(500);
+  }
+  return false;
+}
+await go("/lesson/greetings-1");
+check("Q1 a word sign's 'Sign it yourself' reached", await reachSignIt());
+check("Q2 word signs don't offer the camera (it only checks letters)", !(await lower()).includes("check with my camera"));
+await go("/lesson/alphabet-1");
+check("Q3 a letter's 'Sign it yourself' reached", await reachSignIt());
+check("Q4 letters offer the camera", (await lower()).includes("check with my camera"));
+await clickText("Check with my camera");
+await sleep(600);
+check(
+  "Q5 choosing it opens the camera panel, switched off, with the privacy promise",
+  (await ev("document.querySelector('[data-camera-status]')?.dataset.cameraStatus")) === "idle" && (await text()).includes("Start camera") && (await text()).includes("Nothing is recorded or sent anywhere"),
+);
+await shot("Q-camera-in-lesson");
+await clickText("Show the sign");
+await sleep(500);
+check("Q6 'Show the sign' still works, and the camera panel closes", !(await ev("!!document.querySelector('[data-camera-status]')")) && (await text()).includes("Got it"));
+
 // ---------- K. Face line ----------
 await go("/lesson/questions-1");
 t = await text();

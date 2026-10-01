@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { PRIMARY_BUTTON } from "@/components/Exercises";
+import { PRIMARY_BUTTON, SECONDARY_BUTTON } from "@/components/buttons";
 import {
   analyzeHand,
   checkLetter,
@@ -24,9 +24,6 @@ const MATCH_GRACE_MS = 450;
 
 type Status = "idle" | "loading" | "running" | "error";
 type Source = "camera" | "file";
-
-const SECONDARY =
-  "rounded-full border-2 border-charcoal bg-cream px-5 py-2.5 font-bold text-charcoal transition hover:bg-white active:scale-[0.97]";
 
 function Mark({ ok }: { ok: boolean }) {
   return (
@@ -381,7 +378,7 @@ export default function CameraCheck({
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         {running ? (
-          <button type="button" onClick={stop} className={SECONDARY}>
+          <button type="button" onClick={stop} className={SECONDARY_BUTTON}>
             Stop
           </button>
         ) : (
@@ -394,7 +391,7 @@ export default function CameraCheck({
             >
               {status === "loading" ? "Starting…" : "Start camera"}
             </button>
-            <label className={`${SECONDARY} cursor-pointer`}>
+            <label className={`${SECONDARY_BUTTON} cursor-pointer`}>
               Use a video file
               <input
                 type="file"
