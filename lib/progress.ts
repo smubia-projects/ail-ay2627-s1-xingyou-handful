@@ -16,7 +16,16 @@ export type Progress = {
   today: { day: string | null; sessions: number };
   // Left-handed signers use their left hand as the main hand, so drawings are mirrored for them.
   leftHanded: boolean;
+  // Whether the first-time welcome has been seen.
+  onboarded: boolean;
+  // Unit IDs whose checkpoint test has been passed.
+  checkpoints: string[];
+  bestStreak: number;
+  // Sessions and XP per day (dayKey), for the progress chart. Only recent days are kept.
+  history: Record<string, DayStats>;
 };
+
+export type DayStats = { sessions: number; xp: number };
 
 export type Review = { box: number; due: string };
 
@@ -39,9 +48,16 @@ const EMPTY: Progress = {
   dailyGoal: 1,
   today: { day: null, sessions: 0 },
   leftHanded: false,
+  onboarded: false,
+  checkpoints: [],
+  bestStreak: 0,
+  history: {},
 };
 
 export const DAILY_GOALS = [1, 2, 3, 5];
+// Streak lengths worth celebrating.
+export const STREAK_MILESTONES = [3, 7, 14, 30, 50, 100, 200, 365];
+const HISTORY_DAYS = 60;
 
 const listeners = new Set<() => void>();
 let cachedRaw: string | null = null;
@@ -81,7 +97,32 @@ function parseProgress(raw: string | null): Progress {
       ? { day: parsed.today.day, sessions: Math.max(parsed.today.sessions, 0) }
       : EMPTY.today;
   const leftHanded = parsed?.leftHanded === true;
-  return { completedLessons, xp, streak, mistakes, reviews, dailyGoal, today, leftHanded };
+  // Anyone with progress from before the welcome existed has no need to see it.
+  const onboarded = parsed?.onboarded === true || completedLessons.length > 0 || xp > 0;
+  const checkpoints = stringList(parsed?.checkpoints);
+  const bestStreak = Math.max(Number.isInteger(parsed?.bestStreak) ? parsed.bestStreak : 0, streak.count);
+  const history: Record<string, DayStats> = {};
+  if (parsed?.history && typeof parsed.history === "object") {
+    for (const [day, stats] of Object.entries(parsed.history as Record<string, Partial<DayStats>>)) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(day) && Number.isInteger(stats?.sessions) && Number.isFinite(stats?.xp)) {
+        history[day] = { sessions: Math.max(stats.sessions!, 0), xp: Math.max(stats.xp!, 0) };
+      }
+    }
+  }
+  return {
+    completedLessons,
+    xp,
+    streak,
+    mistakes,
+    reviews,
+    dailyGoal,
+    today,
+    leftHanded,
+    onboarded,
+    checkpoints,
+    bestStreak,
+    history,
+  };
 }
 
 function readProgress(): Progress {
@@ -192,7 +233,10 @@ export function sessionsToday(progress: Progress, today = dayKey()): number {
 // Returns the new streak, whether it went up today, and any freezes used or earned.
 export function recordLessonComplete(lessonId: string | null, xpEarned: number) {
   const progress = readProgress();
+  const today = dayKey();
   const { streak, usedFreezes, earnedFreeze } = nextStreak(progress.streak);
+  const increasedToday = streak.lastDay !== progress.streak.lastDay;
+  const sessions = sessionsToday(progress) + 1;
   writeProgress({
     ...progress,
     completedLessons:
@@ -201,14 +245,40 @@ export function recordLessonComplete(lessonId: string | null, xpEarned: number) 
         : [...progress.completedLessons, lessonId],
     xp: progress.xp + xpEarned,
     streak,
-    today: { day: dayKey(), sessions: sessionsToday(progress) + 1 },
+    today: { day: today, sessions },
+    bestStreak: Math.max(progress.bestStreak, streak.count),
+    history: addToHistory(progress.history, today, xpEarned),
   });
   return {
     streak: streak.count,
-    increasedToday: streak.lastDay !== progress.streak.lastDay,
+    increasedToday,
     usedFreezes,
     earnedFreeze,
+    // Set when today's session takes the streak to a length worth celebrating.
+    milestone: increasedToday && STREAK_MILESTONES.includes(streak.count) ? streak.count : null,
+    // True for the one session that reaches the daily goal.
+    goalReached: sessions === progress.dailyGoal,
   };
+}
+
+// Adds one session to a day's totals, dropping days older than the chart ever shows.
+export function addToHistory(
+  history: Progress["history"],
+  day: string,
+  xpEarned: number,
+): Progress["history"] {
+  const oldest = addDays(day, -HISTORY_DAYS);
+  const kept = Object.fromEntries(Object.entries(history).filter(([key]) => key >= oldest));
+  const current = kept[day] ?? { sessions: 0, xp: 0 };
+  return { ...kept, [day]: { sessions: current.sessions + 1, xp: current.xp + xpEarned } };
+}
+
+// The last `count` days ending today, oldest first, with zeros for days without activity.
+export function recentDays(history: Progress["history"], count: number, today = dayKey()) {
+  return Array.from({ length: count }, (_, index) => {
+    const day = addDays(today, index - (count - 1));
+    return { day, ...(history[day] ?? { sessions: 0, xp: 0 }) };
+  });
 }
 
 // Adds signs to the mistakes list, moving them to the front if they're already there.
@@ -275,6 +345,31 @@ export function clearMistakes(signIds: string[]) {
   const progress = readProgress();
   const mistakes = progress.mistakes.filter((id) => !signIds.includes(id));
   if (mistakes.length !== progress.mistakes.length) writeProgress({ ...progress, mistakes });
+}
+
+export function setOnboarded() {
+  writeProgress({ ...readProgress(), onboarded: true });
+}
+
+export function recordCheckpoint(unitId: string) {
+  const progress = readProgress();
+  if (progress.checkpoints.includes(unitId)) return;
+  writeProgress({ ...progress, checkpoints: [...progress.checkpoints, unitId] });
+}
+
+// Marks lessons as finished without doing them (after passing a skip-ahead test), and starts
+// review scheduling for their signs.
+export function completeLessons(lessonIds: string[], signIds: string[], today = dayKey()) {
+  const progress = readProgress();
+  const reviews = { ...progress.reviews };
+  for (const id of signIds) {
+    if (!reviews[id]) reviews[id] = nextReview(undefined, true, today);
+  }
+  writeProgress({
+    ...progress,
+    completedLessons: [...new Set([...progress.completedLessons, ...lessonIds])],
+    reviews,
+  });
 }
 
 export function setDailyGoal(goal: number) {

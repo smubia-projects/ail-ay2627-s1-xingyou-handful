@@ -1,6 +1,7 @@
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import LessonPath from "@/components/LessonPath";
+import Welcome from "@/components/Welcome";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
         <LessonPath />
       </main>
       <BottomNav />
+      <Welcome />
     </div>
   );
 }
