@@ -129,8 +129,9 @@ const page = await launch({ graphics: true });
 await page.go("/camera");
 check("C1 the practice page lists all 26 letters, with the privacy promise", (await page.ev(`document.querySelectorAll('[role=radio]').length`)) === 26 && (await page.ev("document.body.innerText")).includes("Nothing is recorded or sent anywhere"));
 check(
-  "C2 letters are marked: 14 tricky, 7 not yet checked on real hands, 5 verified",
-  (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('tricky')).length`)) === 14 &&
+  "C2 letters are marked: 8 tricky, 6 checked on a public set of real hands, 7 not yet checked, 5 verified",
+  (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('tricky')).length`)) === 8 &&
+    (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('public set')).length`)) === 6 &&
     (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('not yet checked')).length`)) === 7,
 );
 
@@ -172,8 +173,10 @@ const CASES = [
   { video: "nine", accept: "F", reject: ["B", "W", "V"] },
   // An upright pointing finger is not a sideways G or a downward Q: direction now tells them apart.
   { video: "one", accept: "Z", reject: ["L", "V", "B", "G", "Q"] },
-  { video: "yes", accept: "S", reject: ["B", "V", "Y"] },
-  { video: "sorry", accept: "A", reject: ["B", "V", "W"] },
+  // Real fists from Signbank signers who are not in the model's training data (YES is an S hand,
+  // SORRY an A hand). Before the fist model, every fist letter accepted both 100% of the time.
+  { video: "yes", accept: "S", reject: ["B", "V", "Y", "T", "E", "M", "N"] },
+  { video: "sorry", accept: "A", reject: ["B", "V", "W", "S", "T", "M", "N"] },
   { video: "five", accept: null, reject: ["B", "L", "V"] },
   { video: "please", accept: null, reject: ["B", "V", "Y"] },
 ];
@@ -230,8 +233,8 @@ check(
   JSON.stringify(announcedBox) + " timeline: " + timeline.join(" "),
 );
 
-// A fist held up for S: the camera must not announce it as a confident match, because A, E, M, N, S
-// and T look the same to it.
+// A fist held up for S (the YES sign) is announced for S, but not for T, and the practice page explains
+// how the fist letters are told apart.
 await page.clickText("Stop");
 await page.pickLetter("S");
 await page.chooseFile(join(ROOT, "public/videos/yes.mp4"));
@@ -242,9 +245,13 @@ for (let i = 0; i < 90; i++) {
   if (fistBox) break;
 }
 check(
-  "C3b a fist held up for S says the shape fits but the camera can't be sure",
-  fistBox?.confidence === "tricky" && fistBox.text.includes("can't be sure") && !fistBox.text.includes("That looks like"),
+  "C3b a fist held up for S (the YES sign) is announced as S, sure or not",
+  /\bS\b/.test(fistBox?.text ?? "") && ["unsure", "learned"].includes(fistBox?.confidence),
   JSON.stringify(fistBox),
+);
+check(
+  "C3b2 the fist letters show a note about how they are told apart",
+  (await page.ev(`document.querySelector('[data-camera-note=learned]')?.innerText ?? ''`)).includes("close cousins"),
 );
 check(
   "C3c letters with unconfirmed rules show a note",

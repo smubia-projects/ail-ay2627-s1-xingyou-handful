@@ -2,8 +2,11 @@
 // bends, so the rules are tested without a camera. Real-camera behaviour is covered by
 // tests/e2e.mjs, which runs the tracker on real signing videos.
 // Run with:  node tests/handshape.test.mts
-import { analyzeHand, checkLetter, describeReading, LETTER_SPECS, letterConfidence, letterMatches } from "../lib/handshape.ts";
+import { readFileSync } from "node:fs";
+import { analyzeHand, checkLetter, describeReading, LETTER_SPECS, letterConfidence, letterMatches, matchIsSure } from "../lib/handshape.ts";
 import type { Finger, Point } from "../lib/handshape.ts";
+import { guessFist } from "../lib/fist.ts";
+import fistModel from "../data/fist-model.json" with { type: "json" };
 
 let passed = 0;
 let failed = 0;
@@ -173,15 +176,15 @@ const TWINS: Record<string, string[]> = {
   R: ["U"],
   // The camera can't see the curve of C or O, so they match looser shapes. Both are flagged.
   C: [],
-  O: ["A", "E", "M", "N", "S", "T", "X"],
+  O: ["X"],
 };
 for (const letter of Object.keys(POSES)) {
   const others = lettersMatching(POSES[letter]).filter((other) => other !== letter && !(TWINS[letter] ?? []).includes(other));
   check(`${letter}: no unrelated letter is mistaken for it`, others.length === 0, `also matched ${others.join(", ")}`);
 }
-check("the fist letters really can't be told apart (honest about it)", ["A", "M", "N", "S", "T"].every((letter) => passes(letter, fist())));
 const confidence = (level: string) => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").filter((letter) => letterConfidence(letter) === level).join("");
-check("the letters the camera can't separate are flagged tricky", confidence("tricky") === "ACDEKMNOPRSTXZ", confidence("tricky"));
+check("the letters the camera can't separate are flagged tricky", confidence("tricky") === "CDKOPRXZ", confidence("tricky"));
+check("the fist letters are flagged learned (told apart by the trained model)", confidence("learned") === "AEMNST", confidence("learned"));
 check("the letters with sound rules but no real-hand check yet are flagged unconfirmed", confidence("unconfirmed") === "GHIJLQU", confidence("unconfirmed"));
 check("only letters confirmed on real signers are called verified", confidence("verified") === "BFVWY", confidence("verified"));
 // Direction now separates letters that used to be twins.
@@ -190,6 +193,32 @@ check("an upright U is no longer accepted as an H", !passes("H", POSES.U));
 check("a sideways H is no longer accepted as a U", !passes("U", POSES.H));
 check("a V is no longer accepted as a K or a P", !passes("K", POSES.V) && !passes("P", POSES.V));
 check("an uncrossed U is not accepted as an R", !passes("R", POSES.U));
+
+// ---- The fist letters (A, E, M, N, S, T): the finger rules need all four folded, then the model decides ----
+const folded = read(fist());
+const withGuess = (letter: string, share: number) => ({ ...folded, fist: { letter, share } });
+check("a fist with no guess from the model is not accepted for any fist letter", "AEMNST".split("").every((letter) => !passes(letter, fist())));
+check("a fist the model reads as S is accepted for S", letterMatches(checkLetter("S", withGuess("S", 0.9))));
+check("... and not for T, which is told it looks more like S", !letterMatches(checkLetter("T", withGuess("S", 0.9))) && checkLetter("T", withGuess("S", 0.9)).some((c) => c.tip.startsWith("That looks more like S. Tuck your thumb between")));
+check("a guess with under half the weight is not accepted", !letterMatches(checkLetter("S", withGuess("S", 0.45))));
+check("a hand the model calls 'other' is not accepted, and isn't told it looks like another letter", !letterMatches(checkLetter("S", withGuess("other", 0.9))) && !checkLetter("S", withGuess("other", 0.9)).some((c) => c.tip.includes("looks more like")));
+check("an open hand is never accepted as a fist letter, whatever the guess says", !letterMatches(checkLetter("S", { ...open, fist: { letter: "S", share: 0.99 } })));
+check("a match is 'sure' at 0.75 and up, and not below", matchIsSure("S", withGuess("S", 0.8)) && !matchIsSure("S", withGuess("S", 0.6)) && !matchIsSure("S", folded));
+check("other letters keep their old rule: sure unless tricky", matchIsSure("B", open) && !matchIsSure("X", folded));
+check("the reading names the model's guess", describeReading(withGuess("T", 0.8)).includes("Looks most like T") && describeReading(withGuess("other", 0.8)).includes("Not one of the fist letters"));
+
+// 56 recorded hands (8 each of A, E, M, N, S, T, and 8 folded-finger hands of other letters, from the
+// ASLNow! set). The model was trained on these among others, so this only guards against the model
+// file or its feature code breaking. How well it does on hands it hasn't seen (about 92 in 100) is
+// printed by tools/train-fists.mts.
+const recorded: { letter: string; points: number[][] }[] = JSON.parse(readFileSync(new URL("./fist-samples.json", import.meta.url), "utf8"));
+const guesses = recorded.map((sample) => ({ sample, guess: guessFist(sample.points.map(([x, y, z]) => ({ x, y, z })), 4 / 3, fistModel) }));
+const right = guesses.filter(({ sample, guess }) => guess.letter === sample.letter).length;
+check("the model names the recorded hands correctly (4:3 camera)", right >= 50, `${right} of ${guesses.length}`);
+const mirroredRight = recorded.filter((sample) => guessFist(sample.points.map(([x, y, z]) => ({ x: 1 - x, y, z })), 4 / 3, fistModel).letter === sample.letter).length;
+check("a mirrored picture (the other hand) gives the same answers", mirroredRight >= 50, `${mirroredRight} of ${recorded.length}`);
+const wideRight = recorded.filter((sample) => guessFist(sample.points.map(([x, y, z]) => ({ x, y, z })), 16 / 9, fistModel).letter === sample.letter).length;
+check("a 16:9 camera gives almost the same answers", wideRight >= 48, `${wideRight} of ${recorded.length}`);
 
 // ---- Advice when it's wrong ----
 const tips = (letter: string, pose: Pose) => checkLetter(letter, read(pose)).filter((c) => !c.ok).map((c) => c.tip);
