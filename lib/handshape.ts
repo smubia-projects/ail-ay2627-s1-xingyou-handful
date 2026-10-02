@@ -15,6 +15,10 @@ export type Finger = (typeof FINGERS)[number];
 // tight fist from a gentle curve (a curved C-hand reads as straight), so there are only two.
 export type FingerState = "extended" | "bent";
 export type ThumbState = "out" | "tucked";
+// Which way the hand points, measured from the wrist to the middle knuckle: up (within 45 degrees
+// of vertical), down (within 45 degrees of straight down), or sideways in between. Measured on
+// real signers: upright hands read 4 to 37 degrees, sideways hands 59 to 91.
+export type Facing = "up" | "side" | "down";
 
 const JOINTS: Record<Finger, [number, number, number, number]> = {
   index: [5, 6, 7, 8],
@@ -34,6 +38,11 @@ const THUMB_OUT_FROM = 0.25;
 const TOUCH_WITHIN = 0.45;
 // Index to middle fingertip, in palm widths, counts as spread apart.
 const APART_FROM = 0.5;
+// The thumb tip within this many palm widths of the middle finger's middle joint counts as resting
+// on it (as in K).
+const ON_MIDDLE_JOINT = 0.4;
+// The index tip is no further out than the middle tip, by this many palm widths: crossed.
+const CROSSED_WITHIN = 0.03;
 
 const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
@@ -44,7 +53,25 @@ export type HandReading = {
   touching: Finger | null;
   // True when the index and middle fingertips are spread apart.
   indexMiddleApart: boolean;
+  facing: Facing;
+  // True when the thumb tip is resting on the middle finger's middle joint.
+  thumbOnMiddle: boolean;
+  // True when the index fingertip has crossed over (or sits level with) the middle fingertip.
+  crossed: boolean;
 };
+
+function handFacing(points: Point[]): Facing {
+  const axis = sub(points[9], points[0]);
+  const fromUp = (Math.atan2(Math.abs(axis.x), -axis.y) * 180) / Math.PI;
+  return fromUp <= 45 ? "up" : fromUp >= 135 ? "down" : "side";
+}
+
+// Index tip minus middle tip along the knuckle line, in palm widths: positive when they are in their
+// normal order, near zero or negative when crossed.
+function tipOrder(points: Point[], palmWidth: number): number {
+  const across = unit(sub(points[5], points[17]));
+  return (dot(points[8], across) - dot(points[12], across)) / palmWidth;
+}
 
 // The raw numbers behind a reading, for tuning the thresholds against real hands.
 export function measureHand(points: Point[]) {
@@ -55,8 +82,23 @@ export function measureHand(points: Point[]) {
     const flat = distance(points[mcp], points[pip]) + distance(points[pip], points[dip]) + distance(points[dip], points[tip]);
     finger[name] = round(distance(points[mcp], points[tip]) / flat);
   }
+  // Angle at a joint, in degrees: 180 is perfectly straight, smaller is more bent.
+  const jointAngle = (a: number, b: number, c: number) => {
+    const u = sub(points[a], points[b]);
+    const v = sub(points[c], points[b]);
+    const cosine = dot(u, v) / ((Math.hypot(u.x, u.y, u.z) * Math.hypot(v.x, v.y, v.z)) || 1);
+    return Math.round((Math.acos(Math.max(-1, Math.min(1, cosine))) * 180) / Math.PI);
+  };
+  const axis = sub(points[9], points[0]);
   return {
     finger,
+    // Angle at the middle and tip joints of each finger.
+    pipAngle: Object.fromEntries(FINGERS.map((f) => [f, jointAngle(JOINTS[f][0], JOINTS[f][1], JOINTS[f][2])])),
+    dipAngle: Object.fromEntries(FINGERS.map((f) => [f, jointAngle(JOINTS[f][1], JOINTS[f][2], JOINTS[f][3])])),
+    // Which way the hand points (wrist to the middle knuckle), as camera x (right) and y (down).
+    axisX: round(axis.x / (Math.hypot(axis.x, axis.y, axis.z) || 1)),
+    axisY: round(axis.y / (Math.hypot(axis.x, axis.y, axis.z) || 1)),
+    thumbToMiddleJoint: round(distance(points[4], points[10]) / palmWidth),
     thumbLateral: round(thumbLateral(points, palmWidth)),
     thumbTo: Object.fromEntries(FINGERS.map((f) => [f, round(distance(points[4], points[TIP[f]]) / palmWidth)])),
     indexMiddleGap: round(distance(points[8], points[12]) / palmWidth),
@@ -103,7 +145,15 @@ export function analyzeHand(points: Point[]): HandReading {
 
   const indexMiddleApart = distance(points[8], points[12]) / palmWidth >= APART_FROM;
 
-  return { fingers, thumb, touching, indexMiddleApart };
+  return {
+    fingers,
+    thumb,
+    touching,
+    indexMiddleApart,
+    facing: handFacing(points),
+    thumbOnMiddle: distance(points[4], points[10]) / palmWidth < ON_MIDDLE_JOINT,
+    crossed: tipOrder(points, palmWidth) < CROSSED_WITHIN,
+  };
 }
 
 export type LetterSpec = {
@@ -115,12 +165,31 @@ export type LetterSpec = {
   apart?: boolean;
   // All four fingers must be in the same state (all straight or all bent), as in a C.
   alike?: boolean;
+  // Which way the hand must point. Letters that are the same finger shape turned sideways or down
+  // (G and L, H and U, K and P) are told apart this way.
+  facing?: Facing;
+  // The thumb must rest on the middle finger's middle joint (K and P).
+  thumbOnMiddle?: boolean;
+  // Index and middle fingertips must be crossed (true) as in R.
+  crossed?: boolean;
   // Set for letters the camera tends to get wrong, with the reason.
   tricky?: string;
+  // Set for letters whose rules are sound but haven't been confirmed on a real hand yet.
+  unconfirmed?: boolean;
 };
 
+// How far to trust the camera for a letter: "verified" letters were confirmed on real signers,
+// "unconfirmed" ones have sound rules that haven't been tried on a real hand, and "tricky" ones are
+// shapes the camera can't reliably tell apart.
+export type Confidence = "verified" | "unconfirmed" | "tricky";
+
+export function letterConfidence(letter: string): Confidence {
+  const spec = LETTER_SPECS[letter.toUpperCase()];
+  return spec?.tricky ? "tricky" : spec?.unconfirmed ? "unconfirmed" : "verified";
+}
+
 const FIST = "A, E, M, N, S and T are all fists. The camera sees a fist, not where the thumb is tucked.";
-const SIDEWAYS = "This letter is the same finger shape as another letter, turned sideways or down. The camera checks fingers, not which way the hand faces.";
+const KMIDDLE = "K is a V with the thumb resting on the middle finger. The camera can't see that detail well yet.";
 const CROSSED = "The crossed fingers are hard for the camera to see.";
 const HOOK = "A hooked finger is hard for the camera to tell from a straight one.";
 const CURVED = "Curved fingers look almost straight to the camera, so it can't check the curve itself.";
@@ -136,21 +205,24 @@ export const LETTER_SPECS: Record<string, LetterSpec> = {
   D: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, touch: "middle", tricky: POINTING },
   E: { fingers: BENT, thumb: "tucked", tricky: FIST },
   F: { fingers: { middle: "extended", ring: "extended", pinky: "extended" }, touch: "index" },
-  G: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, thumb: "out", tricky: SIDEWAYS },
-  H: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: false, tricky: SIDEWAYS },
-  I: { fingers: { index: "bent", middle: "bent", ring: "bent", pinky: "extended" }, thumb: "tucked" },
-  J: { fingers: { index: "bent", middle: "bent", ring: "bent", pinky: "extended" }, thumb: "tucked" },
-  K: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, tricky: SIDEWAYS },
-  L: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, thumb: "out" },
+  // G and Q: the thumb lies right beside the index finger, which the camera can't call in or out
+  // (measured at the edge of the limit), so only the fingers and direction are checked.
+  G: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, facing: "side", unconfirmed: true },
+  H: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: false, facing: "side", unconfirmed: true },
+  I: { fingers: { index: "bent", middle: "bent", ring: "bent", pinky: "extended" }, thumb: "tucked", unconfirmed: true },
+  // J is an I that moves; only the hand shape is checked.
+  J: { fingers: { index: "bent", middle: "bent", ring: "bent", pinky: "extended" }, thumb: "tucked", unconfirmed: true },
+  K: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, facing: "up", thumbOnMiddle: true, tricky: KMIDDLE },
+  L: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, thumb: "out", facing: "up", unconfirmed: true },
   M: { fingers: BENT, tricky: FIST },
   N: { fingers: BENT, tricky: FIST },
   O: { fingers: { middle: "bent", ring: "bent", pinky: "bent" }, touch: "index", tricky: CURVED },
-  P: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, tricky: SIDEWAYS },
-  Q: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, thumb: "out", tricky: SIDEWAYS },
-  R: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: false, tricky: CROSSED },
+  P: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, facing: "down", thumbOnMiddle: true, tricky: KMIDDLE },
+  Q: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, facing: "down", unconfirmed: true },
+  R: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: false, facing: "up", crossed: true, tricky: CROSSED },
   S: { fingers: BENT, tricky: FIST },
   T: { fingers: BENT, tricky: FIST },
-  U: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, thumb: "tucked", apart: false },
+  U: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, thumb: "tucked", apart: false, facing: "up", unconfirmed: true },
   V: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, thumb: "tucked", apart: true },
   // The thumb touches the little finger: the same shape as the number 6.
   W: { fingers: { index: "extended", middle: "extended", ring: "extended" }, touch: "pinky", apart: true },
@@ -192,6 +264,28 @@ export function checkLetter(letter: string, reading: HandReading): Check[] {
       label: `Thumb touching your ${NAMES[spec.touch].toLowerCase()}`,
       ok: reading.touching === spec.touch,
       tip: `Touch your thumb tip to your ${NAMES[spec.touch].toLowerCase()} tip`,
+    });
+  }
+  if (spec.facing) {
+    const words: Record<Facing, string> = { up: "pointing up", side: "pointing sideways", down: "pointing down" };
+    checks.push({
+      label: `Hand ${words[spec.facing]}`,
+      ok: reading.facing === spec.facing,
+      tip: `Turn your hand so it points ${spec.facing === "side" ? "sideways" : spec.facing}`,
+    });
+  }
+  if (spec.thumbOnMiddle) {
+    checks.push({
+      label: "Thumb resting on the middle finger",
+      ok: reading.thumbOnMiddle,
+      tip: "Rest your thumb tip on the middle of your middle finger",
+    });
+  }
+  if (spec.crossed !== undefined) {
+    checks.push({
+      label: "Fingers crossed",
+      ok: reading.crossed === spec.crossed,
+      tip: spec.crossed ? "Cross your middle finger over your index finger" : "Uncross your fingers",
     });
   }
   if (spec.alike) {

@@ -2,7 +2,7 @@
 // bends, so the rules are tested without a camera. Real-camera behaviour is covered by
 // tests/e2e.mjs, which runs the tracker on real signing videos.
 // Run with:  node tests/handshape.test.mts
-import { analyzeHand, checkLetter, describeReading, LETTER_SPECS, letterMatches } from "../lib/handshape.ts";
+import { analyzeHand, checkLetter, describeReading, LETTER_SPECS, letterConfidence, letterMatches } from "../lib/handshape.ts";
 import type { Finger, Point } from "../lib/handshape.ts";
 
 let passed = 0;
@@ -21,9 +21,11 @@ type Pose = {
   middle: Bend;
   ring: Bend;
   pinky: Bend;
-  thumb: "out" | "tucked" | Finger; // a finger name means the thumb tip touches that fingertip
+  thumb: "out" | "tucked" | "middleJoint" | Finger; // a finger name means the thumb tip touches that fingertip
   apart?: boolean; // index and middle spread
   wide?: boolean; // ring spread too (W)
+  crossed?: boolean; // index fingertip crossed over the middle one (R)
+  facing?: "up" | "side" | "down"; // which way the hand points (default up)
 };
 
 // Joint bends in degrees at the knuckle, middle joint and tip joint.
@@ -46,8 +48,8 @@ const rad = (degrees: number) => (degrees * Math.PI) / 180;
 function buildHand(pose: Pose): Point[] {
   const points: Point[] = Array.from({ length: 21 }, () => ({ x: 0, y: 0, z: 0 }));
   const splay: Record<Finger, number> = {
-    index: pose.apart ? -14 : 0,
-    middle: pose.apart ? 10 : 0,
+    index: pose.crossed ? 20 : pose.apart ? -14 : 0,
+    middle: pose.crossed ? -5 : pose.apart ? 10 : 0,
     ring: pose.wide ? 22 : 0,
     pinky: 0,
   };
@@ -77,6 +79,12 @@ function buildHand(pose: Pose): Point[] {
     points[2] = { x: 0.04, y: 0.035, z: 0 };
     points[3] = { x: 0.03, y: 0.055, z: -0.012 };
     points[4] = { x: 0.015, y: 0.07, z: -0.02 };
+  } else if (pose.thumb === "middleJoint") {
+    const joint = points[10];
+    points[1] = { x: 0.03, y: 0.02, z: 0 };
+    points[2] = { x: 0.025, y: 0.05, z: -0.01 };
+    points[3] = { x: joint.x + 0.004, y: joint.y - 0.02, z: joint.z - 0.01 };
+    points[4] = { x: joint.x, y: joint.y, z: joint.z - 0.004 };
   } else {
     const tip = points[FINGER_START[pose.thumb] + 3];
     points[1] = { x: 0.03, y: 0.02, z: 0 };
@@ -84,7 +92,14 @@ function buildHand(pose: Pose): Point[] {
     points[3] = { x: (0.04 + tip.x) / 2, y: (0.04 + tip.y) / 2, z: (tip.z - 0.005) / 2 - 0.005 };
     points[4] = { x: tip.x + 0.004, y: tip.y, z: tip.z - 0.003 };
   }
-  return points;
+  // Camera coordinates: y points down, so up is negative. Then turn the hand about the wrist to
+  // point it up (as built), sideways or down.
+  const turn = rad({ up: 0, side: 90, down: 180 }[pose.facing ?? "up"]);
+  return points.map((point) => {
+    const x = point.x;
+    const y = -point.y;
+    return { x: x * Math.cos(turn) - y * Math.sin(turn), y: x * Math.sin(turn) + y * Math.cos(turn), z: point.z };
+  });
 }
 
 const read = (pose: Pose) => analyzeHand(buildHand(pose));
@@ -112,6 +127,14 @@ check("describeReading lists the thumb and four fingers", describeReading(open).
 const mirrored = (pose: Pose) => buildHand(pose).map((point) => ({ ...point, x: -point.x }));
 check("a left hand reads the same as a right hand", JSON.stringify(analyzeHand(mirrored({ ...fist(), index: "extended", thumb: "out" }))) === JSON.stringify(read({ ...fist(), index: "extended", thumb: "out" })));
 
+// ---- Which way the hand points ----
+check("an upright hand reads as pointing up", read({ ...fist(), index: "extended" }).facing === "up");
+check("a sideways hand reads as pointing sideways", read({ ...fist(), index: "extended", facing: "side" }).facing === "side");
+check("a hand pointing down reads as down", read({ ...fist(), index: "extended", facing: "down" }).facing === "down");
+check("pointing left or right is the same: sideways", analyzeHand(buildHand({ ...fist(), index: "extended", facing: "side" }).map((point) => ({ ...point, x: -point.x }))).facing === "side");
+check("crossed fingers read as crossed, uncrossed ones do not", read({ ...fist(), index: "extended", middle: "extended", crossed: true }).crossed && !read({ ...fist(), index: "extended", middle: "extended" }).crossed && !read({ ...fist(), index: "extended", middle: "extended", apart: true }).crossed);
+check("a thumb on the middle joint reads as resting there", read({ ...fist(), index: "extended", middle: "extended", thumb: "middleJoint" }).thumbOnMiddle && !read({ ...fist(), index: "extended", middle: "extended" }).thumbOnMiddle);
+
 // ---- Each reliable letter, as a hand actually makes it ----
 const POSES: Record<string, Pose> = {
   B: { index: "extended", middle: "extended", ring: "extended", pinky: "extended", thumb: "tucked" },
@@ -125,6 +148,13 @@ const POSES: Record<string, Pose> = {
   V: { index: "extended", middle: "extended", ring: "bent", pinky: "bent", thumb: "tucked", apart: true },
   W: { index: "extended", middle: "extended", ring: "extended", pinky: "gentle", thumb: "pinky", apart: true, wide: true },
   Y: { index: "bent", middle: "bent", ring: "bent", pinky: "extended", thumb: "out" },
+  // Letters told apart by which way the hand points, and by the thumb and crossed fingers.
+  G: { index: "extended", middle: "bent", ring: "bent", pinky: "bent", thumb: "out", facing: "side" },
+  H: { index: "extended", middle: "extended", ring: "bent", pinky: "bent", thumb: "tucked", facing: "side" },
+  Q: { index: "extended", middle: "bent", ring: "bent", pinky: "bent", thumb: "out", facing: "down" },
+  K: { index: "extended", middle: "extended", ring: "bent", pinky: "bent", thumb: "middleJoint", apart: true },
+  P: { index: "extended", middle: "extended", ring: "bent", pinky: "bent", thumb: "middleJoint", apart: true, facing: "down" },
+  R: { index: "extended", middle: "extended", ring: "bent", pinky: "bent", thumb: "tucked", crossed: true },
 };
 for (const [letter, pose] of Object.entries(POSES)) {
   check(`${letter} is recognised from a ${letter} hand`, passes(letter, pose), checkLetter(letter, read(pose)).filter((c) => !c.ok).map((c) => c.label).join(", "));
@@ -135,15 +165,14 @@ for (const [letter, pose] of Object.entries(POSES)) {
 // lists them honestly: a hand making the first letter is also accepted for the ones in its list.
 const TWINS: Record<string, string[]> = {
   I: ["J"],
-  U: ["H", "R"],
-  L: ["G", "Q"],
   D: ["Z"],
-  V: ["K", "P"],
-  B: [],
+  // A K or P hand also fits a V, which asks nothing about the thumb on the middle finger.
+  K: ["V"],
+  P: ["V"],
+  // Crossed fingers also fit a U, which doesn't mind them being crossed.
+  R: ["U"],
   // The camera can't see the curve of C or O, so they match looser shapes. Both are flagged.
   C: [],
-  // O's curved fingers read as bent, so any bent-fingered letter that doesn't constrain the thumb
-  // accepts an O hand.
   O: ["A", "E", "M", "N", "S", "T", "X"],
 };
 for (const letter of Object.keys(POSES)) {
@@ -151,8 +180,16 @@ for (const letter of Object.keys(POSES)) {
   check(`${letter}: no unrelated letter is mistaken for it`, others.length === 0, `also matched ${others.join(", ")}`);
 }
 check("the fist letters really can't be told apart (honest about it)", ["A", "M", "N", "S", "T"].every((letter) => passes(letter, fist())));
-check("every letter the camera can't separate is flagged tricky", ["A", "C", "D", "E", "G", "H", "K", "M", "N", "O", "P", "Q", "R", "S", "T", "X", "Z"].every((letter) => LETTER_SPECS[letter].tricky));
-check("letters that are told apart well are not flagged tricky", ["B", "F", "I", "L", "U", "V", "W", "Y"].every((letter) => !LETTER_SPECS[letter].tricky));
+const confidence = (level: string) => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").filter((letter) => letterConfidence(letter) === level).join("");
+check("the letters the camera can't separate are flagged tricky", confidence("tricky") === "ACDEKMNOPRSTXZ", confidence("tricky"));
+check("the letters with sound rules but no real-hand check yet are flagged unconfirmed", confidence("unconfirmed") === "GHIJLQU", confidence("unconfirmed"));
+check("only letters confirmed on real signers are called verified", confidence("verified") === "BFVWY", confidence("verified"));
+// Direction now separates letters that used to be twins.
+check("an upright L is no longer accepted as a G or a Q", !passes("G", POSES.L) && !passes("Q", POSES.L));
+check("an upright U is no longer accepted as an H", !passes("H", POSES.U));
+check("a sideways H is no longer accepted as a U", !passes("U", POSES.H));
+check("a V is no longer accepted as a K or a P", !passes("K", POSES.V) && !passes("P", POSES.V));
+check("an uncrossed U is not accepted as an R", !passes("R", POSES.U));
 
 // ---- Advice when it's wrong ----
 const tips = (letter: string, pose: Pose) => checkLetter(letter, read(pose)).filter((c) => !c.ok).map((c) => c.tip);
@@ -165,6 +202,10 @@ check("B with the thumb out: told to tuck it in", tips("B", { ...POSES.B, thumb:
 check("B with the thumb on the little finger (a W, not a B): told to keep a gap", tips("B", { ...POSES.B, pinky: "gentle", thumb: "pinky" }).includes("Keep a gap between your thumb and fingers"));
 check("W with the thumb away: told to touch the little finger", tips("W", { ...POSES.W, thumb: "out" }).includes("Touch your thumb tip to your little finger tip"));
 check("O with the thumb away: told to touch the index tip", tips("O", { ...POSES.O, thumb: "out" }).includes("Touch your thumb tip to your index finger tip"));
+check("G held upright: told to turn it sideways", tips("G", { ...POSES.G, facing: "up" }).includes("Turn your hand so it points sideways"));
+check("Q held up: told to point it down", tips("Q", { ...POSES.Q, facing: "up" }).includes("Turn your hand so it points down"));
+check("R without crossing: told to cross the fingers", tips("R", { ...POSES.R, crossed: false }).includes("Cross your middle finger over your index finger"));
+check("K without the thumb on the middle finger: told where to put it", tips("K", { ...POSES.K, thumb: "tucked" }).includes("Rest your thumb tip on the middle of your middle finger"));
 check("a correct hand has no advice", tips("Y", POSES.Y).length === 0);
 check("an unknown letter gives no checks", checkLetter("1", open).length === 0);
 check("every letter A-Z has a spec", "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").every((letter) => LETTER_SPECS[letter]));
