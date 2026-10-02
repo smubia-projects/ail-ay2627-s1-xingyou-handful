@@ -129,10 +129,10 @@ const page = await launch({ graphics: true });
 await page.go("/camera");
 check("C1 the practice page lists all 26 letters, with the privacy promise", (await page.ev(`document.querySelectorAll('[role=radio]').length`)) === 26 && (await page.ev("document.body.innerText")).includes("Nothing is recorded or sent anywhere"));
 check(
-  "C2 letters are marked: 8 tricky, 6 checked on a public set of real hands, 7 not yet checked, 5 verified",
-  (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('tricky')).length`)) === 8 &&
+  "C2 letters are marked: 11 tricky, 6 checked on a public set of real hands, 1 not yet checked (J)",
+  (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('tricky')).length`)) === 11 &&
     (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('public set')).length`)) === 6 &&
-    (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('not yet checked')).length`)) === 7,
+    (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('not yet checked')).length`)) === 1,
 );
 
 // Share of sampled frames, over a few seconds, in which the tracker found a hand and the hand passed.
@@ -171,8 +171,8 @@ const CASES = [
   { video: "two", accept: "V", reject: ["W", "L", "Y", "K", "H"] },
   // The sign for 9 is an F hand: thumb and index touching, other fingers straight.
   { video: "nine", accept: "F", reject: ["B", "W", "V"] },
-  // An upright pointing finger is not a sideways G or a downward Q: direction now tells them apart.
-  { video: "one", accept: "Z", reject: ["L", "V", "B", "G", "Q"] },
+  // G and Q aren't told apart from a pointing finger any more (people sign them upright to a camera).
+  { video: "one", accept: "Z", reject: ["L", "V", "B"] },
   // Real fists from Signbank signers who are not in the model's training data (YES is an S hand,
   // SORRY an A hand). Before the fist model, every fist letter accepted both 100% of the time.
   { video: "yes", accept: "S", reject: ["B", "V", "Y", "T", "E", "M", "N"] },
@@ -257,7 +257,7 @@ check(
   "C3c letters with unconfirmed rules show a note",
   await (async () => {
     await page.clickText("Stop");
-    await page.pickLetter("L");
+    await page.pickLetter("J");
     return (await page.ev(`document.querySelector('[data-camera-note=unconfirmed]')?.innerText ?? ''`)).includes("Not yet checked against real hands");
   })(),
 );

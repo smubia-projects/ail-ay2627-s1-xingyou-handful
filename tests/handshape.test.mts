@@ -168,12 +168,18 @@ for (const [letter, pose] of Object.entries(POSES)) {
 // lists them honestly: a hand making the first letter is also accepted for the ones in its list.
 const TWINS: Record<string, string[]> = {
   I: ["J"],
-  D: ["Z"],
+  D: ["Z", "G", "Q"],
+  // G, Q and L (without its thumb check on G and Q), and H and U, differ only by direction, which people
+  // signing to a camera don't use (90 to 100 in 100 real signers held them upright). Flagged tricky.
+  L: ["G", "Q"],
+  G: ["Q"],
+  Q: ["G"],
+  U: ["H"],
   // A K or P hand also fits a V, which asks nothing about the thumb on the middle finger.
-  K: ["V"],
+  K: ["V", "P"],
   P: ["V"],
   // Crossed fingers also fit a U, which doesn't mind them being crossed.
-  R: ["U"],
+  R: ["U", "H"],
   // The camera can't see the curve of C or O, so they match looser shapes. Both are flagged.
   C: [],
   O: ["X"],
@@ -183,14 +189,13 @@ for (const letter of Object.keys(POSES)) {
   check(`${letter}: no unrelated letter is mistaken for it`, others.length === 0, `also matched ${others.join(", ")}`);
 }
 const confidence = (level: string) => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").filter((letter) => letterConfidence(letter) === level).join("");
-check("the letters the camera can't separate are flagged tricky", confidence("tricky") === "CDKOPRXZ", confidence("tricky"));
+check("the letters the camera can't separate are flagged tricky", confidence("tricky") === "CDGHKOPQRXZ", confidence("tricky"));
 check("the fist letters are flagged learned (told apart by the trained model)", confidence("learned") === "AEMNST", confidence("learned"));
-check("the letters with sound rules but no real-hand check yet are flagged unconfirmed", confidence("unconfirmed") === "GHIJLQU", confidence("unconfirmed"));
-check("only letters confirmed on real signers are called verified", confidence("verified") === "BFVWY", confidence("verified"));
-// Direction now separates letters that used to be twins.
-check("an upright L is no longer accepted as a G or a Q", !passes("G", POSES.L) && !passes("Q", POSES.L));
-check("an upright U is no longer accepted as an H", !passes("H", POSES.U));
-check("a sideways H is no longer accepted as a U", !passes("U", POSES.H));
+check("the letters with sound rules but no real-hand check yet are flagged unconfirmed", confidence("unconfirmed") === "J", confidence("unconfirmed"));
+check("only letters confirmed on real signers are called verified", confidence("verified") === "BFILUVWY", confidence("verified"));
+// Direction is not asked of G, H, P and Q (real signers face the camera), but U and L still need an upright hand.
+check("G, H, P and Q are accepted whichever way the hand points", ["G", "H", "P", "Q"].every((letter) => ["up", "side", "down"].every((facing) => passes(letter, { ...POSES[letter], facing: facing as Pose["facing"] }))));
+check("a sideways H is still not accepted as a U", !passes("U", POSES.H));
 check("a V is no longer accepted as a K or a P", !passes("K", POSES.V) && !passes("P", POSES.V));
 check("an uncrossed U is not accepted as an R", !passes("R", POSES.U));
 
@@ -231,8 +236,7 @@ check("B with the thumb out: told to tuck it in", tips("B", { ...POSES.B, thumb:
 check("B with the thumb on the little finger (a W, not a B): told to keep a gap", tips("B", { ...POSES.B, pinky: "gentle", thumb: "pinky" }).includes("Keep a gap between your thumb and fingers"));
 check("W with the thumb away: told to touch the little finger", tips("W", { ...POSES.W, thumb: "out" }).includes("Touch your thumb tip to your little finger tip"));
 check("O with the thumb away: told to touch the index tip", tips("O", { ...POSES.O, thumb: "out" }).includes("Touch your thumb tip to your index finger tip"));
-check("G held upright: told to turn it sideways", tips("G", { ...POSES.G, facing: "up" }).includes("Turn your hand so it points sideways"));
-check("Q held up: told to point it down", tips("Q", { ...POSES.Q, facing: "up" }).includes("Turn your hand so it points down"));
+check("G held upright: nothing to fix about direction", tips("G", { ...POSES.G, facing: "up" }).length === 0);
 check("R without crossing: told to cross the fingers", tips("R", { ...POSES.R, crossed: false }).includes("Cross your middle finger over your index finger"));
 check("K without the thumb on the middle finger: told where to put it", tips("K", { ...POSES.K, thumb: "tucked" }).includes("Rest your thumb tip on the middle of your middle finger"));
 check("a correct hand has no advice", tips("Y", POSES.Y).length === 0);
