@@ -9,7 +9,7 @@
 // switched on here. Detection is slow in that mode (about 0.15-0.3 s a frame), so each video is
 // sampled for several seconds and judged on the share of frames that matched.
 import { spawn } from "node:child_process";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -32,14 +32,24 @@ setTimeout(() => {
   process.exit(2);
 }, RUN_LIMIT_MS);
 
+// Each test browser has a profile folder of about 70 MB. Clear any left by earlier runs now, and
+// delete this run's when it ends, so runs never pile up on the disk.
+for (const name of readdirSync(tmpdir())) {
+  if (name.startsWith("handful-cam-")) rmSync(join(tmpdir(), name), { recursive: true, force: true });
+}
+const profileFolders = [];
+process.on("exit", () => profileFolders.forEach((folder) => rmSync(folder, { recursive: true, force: true })));
+
 async function launch({ graphics }) {
   const port = 9400 + Math.floor(Math.random() * 400);
+  const profile = mkdtempSync(join(tmpdir(), "handful-cam-"));
+  profileFolders.push(profile);
   const flags = graphics
     ? ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"]
     : ["--disable-gpu", "--disable-software-rasterizer"];
   const chrome = spawn(
     CHROME,
-    ["--headless=new", ...flags, "--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--autoplay-policy=no-user-gesture-required", `--remote-debugging-port=${port}`, `--user-data-dir=${mkdtempSync(join(tmpdir(), "handful-cam-"))}`, "about:blank"],
+    ["--headless=new", ...flags, "--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--autoplay-policy=no-user-gesture-required", `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, "about:blank"],
     { stdio: "ignore" },
   );
   let targets;
