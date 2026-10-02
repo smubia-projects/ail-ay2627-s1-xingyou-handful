@@ -7,6 +7,8 @@
 //   0 wrist | thumb 1-4 | index 5-8 | middle 9-12 | ring 13-16 | pinky 17-20
 // Each finger runs knuckle (MCP), middle joint, tip-side joint, tip.
 
+import type { FistGuess } from "./fist";
+
 export type Point = { x: number; y: number; z: number };
 
 export const FINGERS = ["index", "middle", "ring", "pinky"] as const;
@@ -58,6 +60,9 @@ export type HandReading = {
   thumbOnMiddle: boolean;
   // True when the index fingertip has crossed over (or sits level with) the middle fingertip.
   crossed: boolean;
+  // Which fist letter the whole hand shape looks most like. Added by the caller, and only when all
+  // four fingers are folded, because it needs the picture landmarks that analyzeHand doesn't get.
+  fist?: FistGuess;
 };
 
 function handFacing(points: Point[]): Facing {
@@ -174,6 +179,8 @@ export type LetterSpec = {
   crossed?: boolean;
   // Set for letters the camera tends to get wrong, with the reason.
   tricky?: string;
+  // The fist letters: the tip that says how to place the thumb. They are told apart by lib/fist.ts.
+  fist?: string;
   // Set for letters whose rules are sound but haven't been confirmed on a real hand yet.
   unconfirmed?: boolean;
 };
@@ -181,14 +188,26 @@ export type LetterSpec = {
 // How far to trust the camera for a letter: "verified" letters were confirmed on real signers,
 // "unconfirmed" ones have sound rules that haven't been tried on a real hand, and "tricky" ones are
 // shapes the camera can't reliably tell apart.
-export type Confidence = "verified" | "unconfirmed" | "tricky";
+// "learned" ones (the fist letters) are told apart by a model trained on a public set of real hands,
+// and tested on sessions it hadn't seen.
+export type Confidence = "verified" | "learned" | "unconfirmed" | "tricky";
 
 export function letterConfidence(letter: string): Confidence {
   const spec = LETTER_SPECS[letter.toUpperCase()];
-  return spec?.tricky ? "tricky" : spec?.unconfirmed ? "unconfirmed" : "verified";
+  return spec?.tricky ? "tricky" : spec?.fist ? "learned" : spec?.unconfirmed ? "unconfirmed" : "verified";
 }
 
-const FIST = "A, E, M, N, S and T are all fists. The camera sees a fist, not where the thumb is tucked.";
+// The model has to put at least this much weight on the letter for the camera to accept it, and this
+// much for it to say "That looks like" rather than "fits, but can't be sure".
+export const FIST_ACCEPT = 0.5;
+export const FIST_SURE = 0.75;
+
+// Whether a match for this letter is one the camera can stand behind.
+export function matchIsSure(letter: string, reading: HandReading): boolean {
+  return LETTER_SPECS[letter.toUpperCase()]?.fist
+    ? (reading.fist?.share ?? 0) >= FIST_SURE
+    : letterConfidence(letter) !== "tricky";
+}
 const KMIDDLE = "K is a V with the thumb resting on the middle finger. The camera can't see that detail well yet.";
 const CROSSED = "The crossed fingers are hard for the camera to see.";
 const HOOK = "A hooked finger is hard for the camera to tell from a straight one.";
@@ -199,11 +218,11 @@ const BENT: Partial<Record<Finger, FingerState>> = { index: "bent", middle: "ben
 
 // What each letter needs, as far as finger positions go. The drawings show the full detail.
 export const LETTER_SPECS: Record<string, LetterSpec> = {
-  A: { fingers: BENT, tricky: FIST },
+  A: { fingers: BENT, fist: "Make a fist with your thumb resting along the side of your index finger" },
   B: { fingers: { index: "extended", middle: "extended", ring: "extended", pinky: "extended" }, thumb: "tucked", touch: "none", apart: false },
   C: { fingers: {}, thumb: "out", touch: "none", alike: true, tricky: CURVED },
   D: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, touch: "middle", tricky: POINTING },
-  E: { fingers: BENT, thumb: "tucked", tricky: FIST },
+  E: { fingers: BENT, fist: "Curl your fingertips down onto your thumb, with the thumb tucked under them" },
   F: { fingers: { middle: "extended", ring: "extended", pinky: "extended" }, touch: "index" },
   // G and Q: the thumb lies right beside the index finger, which the camera can't call in or out
   // (measured at the edge of the limit), so only the fingers and direction are checked.
@@ -214,14 +233,14 @@ export const LETTER_SPECS: Record<string, LetterSpec> = {
   J: { fingers: { index: "bent", middle: "bent", ring: "bent", pinky: "extended" }, thumb: "tucked", unconfirmed: true },
   K: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, facing: "up", thumbOnMiddle: true, tricky: KMIDDLE },
   L: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, thumb: "out", facing: "up", unconfirmed: true },
-  M: { fingers: BENT, tricky: FIST },
-  N: { fingers: BENT, tricky: FIST },
+  M: { fingers: BENT, fist: "Tuck your thumb under your first three fingers" },
+  N: { fingers: BENT, fist: "Tuck your thumb under your first two fingers" },
   O: { fingers: { middle: "bent", ring: "bent", pinky: "bent" }, touch: "index", tricky: CURVED },
   P: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, facing: "down", thumbOnMiddle: true, tricky: KMIDDLE },
   Q: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, facing: "down", unconfirmed: true },
   R: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: false, facing: "up", crossed: true, tricky: CROSSED },
-  S: { fingers: BENT, tricky: FIST },
-  T: { fingers: BENT, tricky: FIST },
+  S: { fingers: BENT, fist: "Make a fist with your thumb wrapped across the front of your fingers" },
+  T: { fingers: BENT, fist: "Tuck your thumb between your index and middle fingers" },
   U: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, thumb: "tucked", apart: false, facing: "up", unconfirmed: true },
   V: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, thumb: "tucked", apart: true },
   // The thumb touches the little finger: the same shape as the number 6.
@@ -256,6 +275,13 @@ export function checkLetter(letter: string, reading: HandReading): Check[] {
       ok: reading.thumb === spec.thumb,
       tip: spec.thumb === "out" ? "Stick your thumb out" : "Tuck your thumb in against your palm",
     });
+  }
+  if (spec.fist) {
+    const seen = reading.fist;
+    const ok = seen?.letter === letter.toUpperCase() && seen.share >= FIST_ACCEPT;
+    // The model's other guess is a letter, or "other" for hands that aren't one of the fist letters.
+    const other = seen && !ok && seen.letter in LETTER_SPECS ? `That looks more like ${seen.letter}. ` : "";
+    checks.push({ label: `Thumb and fist look like ${letter.toUpperCase()}`, ok, tip: other + spec.fist });
   }
   if (spec.touch === "none") {
     checks.push({ label: "Thumb not touching a finger", ok: reading.touching === null, tip: "Keep a gap between your thumb and fingers" });
@@ -311,8 +337,12 @@ export const letterMatches = (checks: Check[]) => checks.length > 0 && checks.ev
 // Plain words for what the camera currently sees, for showing the learner.
 export function describeReading(reading: HandReading): string[] {
   const word: Record<FingerState, string> = { extended: "straight", bent: "bent" };
+  const guess = reading.fist
+    ? [reading.fist.letter in LETTER_SPECS ? `Looks most like ${reading.fist.letter}` : "Not one of the fist letters"]
+    : [];
   return [
     `Thumb ${reading.thumb === "out" ? "out" : "tucked"}`,
     ...FINGERS.map((finger) => `${NAMES[finger]} ${word[reading.fingers[finger]]}`),
+    ...guess,
   ];
 }

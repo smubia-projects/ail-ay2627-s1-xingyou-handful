@@ -275,6 +275,19 @@ export default function SettingsPanel() {
           </a>
           , via Wikimedia Commons.
         </p>
+        <p className="mt-3 text-sm text-muted">
+          Camera check: hand tracking by Google MediaPipe (Apache 2.0). The fist-letter model (A, E, M, N, S, T) was trained on the
+          ASLNow! hand-landmark set (MIT license),{" "}
+          <a
+            href="https://huggingface.co/datasets/sid220/asl-now-fingerspelling"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-charcoal underline underline-offset-2"
+          >
+            sid220/asl-now-fingerspelling
+          </a>
+          . Your video never leaves your device.
+        </p>
       </Section>
     </div>
   );

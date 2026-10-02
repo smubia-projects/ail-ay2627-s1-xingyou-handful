@@ -41,3 +41,18 @@ Source: https://commons.wikimedia.org/wiki/File:Sign_language_1.jpg (and 2–9)
 
 CC BY-SA 4.0 requires crediting the author and linking the license, which Settings → About in the
 app does. If these drawings are ever edited, the edited versions must also be shared under CC BY-SA 4.0.
+
+## Fist-letter model (`data/fist-model.json`)
+
+The camera tells the fist letters (A, E, M, N, S, T) apart with a small logistic-regression model
+trained on **ASLNow!** (`sid220/asl-now-fingerspelling` on Hugging Face), a set of about 2,100
+MediaPipe hand-landmark samples (21 points per hand, no photos or video) collected from several
+signers, under the **MIT License**: https://huggingface.co/datasets/sid220/asl-now-fingerspelling
+The set is used only to train; the app contains the model's numbers, not the samples. About 56
+samples are kept in `tests/fist-samples.json` to check the model hasn't broken. The MIT notice
+("permission is granted... provided the copyright notice and permission notice are included") is
+met by this credit, and Settings → About repeats it.
+
+`node tools/train-fists.mts <folder>` rebuilds the model from a copy of the set. On hands from
+sessions it was not trained on it picks the right fist letter about 92 times in 100 (M is weakest,
+about 76).

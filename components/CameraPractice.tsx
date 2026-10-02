@@ -33,7 +33,7 @@ export default function CameraPractice() {
               type="button"
               role="radio"
               aria-checked={selected}
-              aria-label={`${candidate}${confidence === "tricky" ? ", tricky for the camera" : confidence === "unconfirmed" ? ", not yet checked against real hands" : ""}`}
+              aria-label={`${candidate}${confidence === "tricky" ? ", tricky for the camera" : confidence === "unconfirmed" ? ", not yet checked against real hands" : confidence === "learned" ? ", checked on a public set of real hands" : ""}`}
               onClick={() => setLetter(candidate)}
               className={`relative flex aspect-square items-center justify-center rounded-2xl border-2 font-display text-xl font-bold text-ink transition ${
                 selected ? "border-charcoal bg-bluebell" : "border-charcoal/25 bg-cream hover:border-charcoal"
@@ -46,7 +46,9 @@ export default function CameraPractice() {
                     ? "bg-honey ring-1 ring-charcoal"
                     : confidence === "unconfirmed"
                       ? "border border-charcoal bg-cream"
-                      : "bg-fern"
+                      : confidence === "learned"
+                        ? "bg-bluebell ring-1 ring-charcoal"
+                        : "bg-fern"
                 }`}
                 aria-hidden="true"
               />
@@ -57,6 +59,9 @@ export default function CameraPractice() {
       <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-fern" aria-hidden="true" /> Checked on real signers
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-bluebell ring-1 ring-charcoal" aria-hidden="true" /> Checked on a public set of real hands
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full border border-charcoal bg-cream" aria-hidden="true" /> Not checked on real hands yet
