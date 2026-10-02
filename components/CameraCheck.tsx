@@ -8,6 +8,7 @@ import {
   measureHand,
   describeReading,
   LETTER_SPECS,
+  letterConfidence,
   letterMatches,
   type HandReading,
   type Point,
@@ -52,7 +53,8 @@ export default function CameraCheck({
   onMatch,
 }: {
   letter: string;
-  onMatch?: () => void;
+  // certain is false for letters the camera can't reliably tell apart from others.
+  onMatch?: (result: { certain: boolean }) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -91,6 +93,7 @@ export default function CameraCheck({
   }, [letter]);
 
   const spec = LETTER_SPECS[letter.toUpperCase()];
+  const confidence = letterConfidence(letter);
   const checks = useMemo(() => (reading ? checkLetter(letter, reading) : []), [reading, letter]);
   const nextFix = checks.find((check) => !check.ok);
 
@@ -234,7 +237,7 @@ export default function CameraCheck({
       ) {
         matchedRef.current = true;
         setMatchedLetter(letterRef.current);
-        onMatchRef.current?.();
+        onMatchRef.current?.({ certain: letterConfidence(letterRef.current) !== "tricky" });
       }
       // Only redraw the checklist when something changed, and at most about 8 times a second.
       const signature = JSON.stringify(now);
@@ -342,8 +345,20 @@ export default function CameraCheck({
 
       {running && (
         <div className="mt-4">
-          {matched ? (
-            <p className="rounded-2xl border-2 border-charcoal bg-fern px-4 py-2 font-display text-lg font-bold text-charcoal" data-camera-success>
+          {matched && confidence === "tricky" ? (
+            <p
+              className="rounded-2xl border-2 border-charcoal bg-honey px-4 py-2 font-display text-lg font-bold text-charcoal"
+              data-camera-success
+              data-camera-confidence="tricky"
+            >
+              The finger shape fits {letter.toUpperCase()}, but the camera can&apos;t be sure
+            </p>
+          ) : matched ? (
+            <p
+              className="rounded-2xl border-2 border-charcoal bg-fern px-4 py-2 font-display text-lg font-bold text-charcoal"
+              data-camera-success
+              data-camera-confidence={confidence}
+            >
               That looks like {letter.toUpperCase()}!
             </p>
           ) : nextFix ? (
@@ -370,9 +385,16 @@ export default function CameraCheck({
       )}
 
       {spec?.tricky && (
-        <p className="mt-3 rounded-2xl bg-cream px-3 py-2 text-xs text-muted">
-          <span className="font-bold text-charcoal">A tricky one for the camera.</span> {spec.tricky} Check
-          your hand against the drawing too.
+        <p className="mt-3 rounded-2xl bg-cream px-3 py-2 text-xs text-muted" data-camera-note="tricky">
+          <span className="font-bold text-charcoal">A tricky one for the camera.</span> {spec.tricky} It can
+          only check the finger shape, so compare your hand with the drawing too.
+        </p>
+      )}
+      {confidence === "unconfirmed" && (
+        <p className="mt-3 rounded-2xl bg-cream px-3 py-2 text-xs text-muted" data-camera-note="unconfirmed">
+          <span className="font-bold text-charcoal">Not yet checked against real hands.</span> The rules for
+          this letter make sense, so treat the camera as a guide.
+          {letter.toUpperCase() === "J" && " J also moves, which the camera doesn't check."}
         </p>
       )}
 

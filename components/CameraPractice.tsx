@@ -4,7 +4,7 @@ import { useState } from "react";
 import CameraCheck from "@/components/CameraCheck";
 import { HandshapeImage } from "@/components/SignCard";
 import { getSign } from "@/lib/content";
-import { LETTER_SPECS } from "@/lib/handshape";
+import { letterConfidence } from "@/lib/handshape";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -26,14 +26,14 @@ export default function CameraPractice() {
       <div className="mt-3 grid grid-cols-7 gap-2" role="radiogroup" aria-label="Letter to practise">
         {LETTERS.map((candidate) => {
           const selected = candidate === letter;
-          const tricky = Boolean(LETTER_SPECS[candidate].tricky);
+          const confidence = letterConfidence(candidate);
           return (
             <button
               key={candidate}
               type="button"
               role="radio"
               aria-checked={selected}
-              aria-label={`${candidate}${tricky ? ", tricky for the camera" : ""}`}
+              aria-label={`${candidate}${confidence === "tricky" ? ", tricky for the camera" : confidence === "unconfirmed" ? ", not yet checked against real hands" : ""}`}
               onClick={() => setLetter(candidate)}
               className={`relative flex aspect-square items-center justify-center rounded-2xl border-2 font-display text-xl font-bold text-ink transition ${
                 selected ? "border-charcoal bg-bluebell" : "border-charcoal/25 bg-cream hover:border-charcoal"
@@ -41,7 +41,13 @@ export default function CameraPractice() {
             >
               {candidate}
               <span
-                className={`absolute right-1 bottom-1 h-2 w-2 rounded-full ${tricky ? "bg-honey ring-1 ring-charcoal" : "bg-fern"}`}
+                className={`absolute right-1 bottom-1 h-2 w-2 rounded-full ${
+                  confidence === "tricky"
+                    ? "bg-honey ring-1 ring-charcoal"
+                    : confidence === "unconfirmed"
+                      ? "border border-charcoal bg-cream"
+                      : "bg-fern"
+                }`}
                 aria-hidden="true"
               />
             </button>
@@ -50,10 +56,13 @@ export default function CameraPractice() {
       </div>
       <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-fern" aria-hidden="true" /> The camera checks this well
+          <span className="h-2 w-2 rounded-full bg-fern" aria-hidden="true" /> Checked on real signers
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-honey ring-1 ring-charcoal" aria-hidden="true" /> Tricky for the camera
+          <span className="h-2 w-2 rounded-full border border-charcoal bg-cream" aria-hidden="true" /> Not checked on real hands yet
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-honey ring-1 ring-charcoal" aria-hidden="true" /> Tricky: the camera can&apos;t be sure
         </span>
       </p>
 

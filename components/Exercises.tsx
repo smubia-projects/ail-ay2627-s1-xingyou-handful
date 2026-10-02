@@ -553,7 +553,8 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
   // learner still rates themselves, and a match just reveals the sign.
   const isLetter = sign.id.startsWith("letter-");
   const [camera, setCamera] = useState(false);
-  const [cameraMatched, setCameraMatched] = useState(false);
+  // "sure" when the camera can tell this letter apart; "maybe" when it can't (like a fist letter).
+  const [cameraMatched, setCameraMatched] = useState<"sure" | "maybe" | null>(null);
   useEnterKey(revealed || camera ? undefined : () => setRevealed(true));
 
   return (
@@ -566,12 +567,21 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
       </p>
       {revealed ? (
         <div className="mt-6 rounded-3xl bg-fennel p-5">
-          {cameraMatched && (
+          {cameraMatched === "sure" && (
             <p
               className="mb-3 rounded-2xl border-2 border-charcoal bg-fern px-4 py-2 font-display text-lg font-bold text-charcoal"
               data-camera-agrees
             >
               The camera agrees: that looked like {sign.word}!
+            </p>
+          )}
+          {cameraMatched === "maybe" && (
+            <p
+              className="mb-3 rounded-2xl border-2 border-charcoal bg-honey px-4 py-2 font-display text-lg font-bold text-charcoal"
+              data-camera-unsure
+            >
+              The finger shape fits {sign.word}, but the camera can&apos;t be sure. Compare it with the
+              drawing.
             </p>
           )}
           <SignPicture sign={sign} size="large" credit="link" />
@@ -580,8 +590,8 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
         <div className="mt-6">
           <CameraCheck
             letter={sign.word}
-            onMatch={() => {
-              setCameraMatched(true);
+            onMatch={({ certain }) => {
+              setCameraMatched(certain ? "sure" : "maybe");
               setRevealed(true);
             }}
           />

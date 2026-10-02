@@ -118,7 +118,11 @@ const check = (name, ok, detail = "") => {
 const page = await launch({ graphics: true });
 await page.go("/camera");
 check("C1 the practice page lists all 26 letters, with the privacy promise", (await page.ev(`document.querySelectorAll('[role=radio]').length`)) === 26 && (await page.ev("document.body.innerText")).includes("Nothing is recorded or sent anywhere"));
-check("C2 tricky letters are marked, reliable ones are not", (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('tricky')).length`)) === 17);
+check(
+  "C2 letters are marked: 14 tricky, 7 not yet checked on real hands, 5 verified",
+  (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('tricky')).length`)) === 14 &&
+    (await page.ev(`[...document.querySelectorAll('[role=radio]')].filter(b => b.getAttribute('aria-label').includes('not yet checked')).length`)) === 7,
+);
 
 // Share of sampled frames, over a few seconds, in which the tracker found a hand and the hand passed.
 async function sampleVideo(video, letter) {
@@ -153,8 +157,11 @@ const CASES = [
   { video: "yellow", accept: "Y", reject: ["L", "V", "B"] },
   { video: "water", accept: "W", reject: ["V", "B"] },
   { video: "six", accept: "W", reject: ["V", "B"] },
-  { video: "two", accept: "V", reject: ["W", "L", "Y"] },
-  { video: "one", accept: "Z", reject: ["L", "V", "B"] },
+  { video: "two", accept: "V", reject: ["W", "L", "Y", "K", "H"] },
+  // The sign for 9 is an F hand: thumb and index touching, other fingers straight.
+  { video: "nine", accept: "F", reject: ["B", "W", "V"] },
+  // An upright pointing finger is not a sideways G or a downward Q: direction now tells them apart.
+  { video: "one", accept: "Z", reject: ["L", "V", "B", "G", "Q"] },
   { video: "yes", accept: "S", reject: ["B", "V", "Y"] },
   { video: "sorry", accept: "A", reject: ["B", "V", "W"] },
   { video: "five", accept: null, reject: ["B", "L", "V"] },
@@ -211,6 +218,31 @@ check(
   "C3 holding a Y long enough is announced as a match",
   announced && (await page.ev("document.body.innerText")).includes("That looks like Y!"),
   JSON.stringify(announcedBox) + " timeline: " + timeline.join(" "),
+);
+
+// A fist held up for S: the camera must not announce it as a confident match, because A, E, M, N, S
+// and T look the same to it.
+await page.clickText("Stop");
+await page.pickLetter("S");
+await page.chooseFile(join(ROOT, "public/videos/yes.mp4"));
+let fistBox = null;
+for (let i = 0; i < 90; i++) {
+  await sleep(200);
+  fistBox = await page.ev(`(() => { const b = document.querySelector('[data-camera-success]'); return b && { text: b.innerText, confidence: b.dataset.cameraConfidence }; })()`);
+  if (fistBox) break;
+}
+check(
+  "C3b a fist held up for S says the shape fits but the camera can't be sure",
+  fistBox?.confidence === "tricky" && fistBox.text.includes("can't be sure") && !fistBox.text.includes("That looks like"),
+  JSON.stringify(fistBox),
+);
+check(
+  "C3c letters with unconfirmed rules show a note",
+  await (async () => {
+    await page.clickText("Stop");
+    await page.pickLetter("L");
+    return (await page.ev(`document.querySelector('[data-camera-note=unconfirmed]')?.innerText ?? ''`)).includes("Not yet checked against real hands");
+  })(),
 );
 
 // The fake camera (a test pattern, no hands): the camera path starts, runs and stops cleanly.
