@@ -34,10 +34,12 @@ const TIP: Record<Finger, number> = { index: 8, middle: 12, ring: 16, pinky: 20 
 // Measured on real signers: straight fingers read 0.93 or more, bent ones 0.87 or less.
 const EXTENDED_FROM = 0.9;
 // How far the thumb tip sticks out sideways past the index knuckle, in palm widths. Measured:
-// thumbs held out read 0.29 to 1.1, tucked thumbs 0.10 or less.
-const THUMB_OUT_FROM = 0.25;
-// Thumb tip to a fingertip, in palm widths, counts as touching (touching pairs read 0.27 to 0.41).
-const TOUCH_WITHIN = 0.45;
+// thumbs held out read 0.29 to 1.1, tucked thumbs 0.10 or less. On about 2,000 real hands (the
+// ASLNow! set), a cutoff of 0.35 accepts 96 in 100 tucked thumbs and calls an out thumb tucked 1 in 100.
+const THUMB_OUT_FROM = 0.35;
+// Thumb tip to a fingertip, in palm widths, counts as touching (touching pairs read 0.27 to 0.41 on
+// signing videos; on the same real hands, 0.55 accepts 85 to 97 in 100 touching pairs).
+const TOUCH_WITHIN = 0.55;
 // Index to middle fingertip, in palm widths, counts as spread apart.
 const APART_FROM = 0.5;
 // The thumb tip within this many palm widths of the middle finger's middle joint counts as resting
@@ -185,8 +187,9 @@ export type LetterSpec = {
   unconfirmed?: boolean;
 };
 
-// How far to trust the camera for a letter: "verified" letters were confirmed on real signers,
-// "unconfirmed" ones have sound rules that haven't been tried on a real hand, and "tricky" ones are
+// How far to trust the camera for a letter: "verified" letters were confirmed on real signers (videos,
+// and about 2,000 real hands for I, L and U), "unconfirmed" ones (only J, which moves) have sound
+// rules that haven't been tried on a real hand, and "tricky" ones are
 // shapes the camera can't reliably tell apart.
 // "learned" ones (the fist letters) are told apart by a model trained on a public set of real hands,
 // and tested on sessions it hadn't seen.
@@ -208,6 +211,7 @@ export function matchIsSure(letter: string, reading: HandReading): boolean {
     ? (reading.fist?.share ?? 0) >= FIST_SURE
     : letterConfidence(letter) !== "tricky";
 }
+const DIRECTION = "G and Q have the same finger shape, and H is a U turned on its side. They differ by which way the hand points, but most people sign to a camera with the hand upright, so the camera can't tell them apart.";
 const KMIDDLE = "K is a V with the thumb resting on the middle finger. The camera can't see that detail well yet.";
 const CROSSED = "The crossed fingers are hard for the camera to see.";
 const HOOK = "A hooked finger is hard for the camera to tell from a straight one.";
@@ -224,24 +228,26 @@ export const LETTER_SPECS: Record<string, LetterSpec> = {
   D: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, touch: "middle", tricky: POINTING },
   E: { fingers: BENT, fist: "Curl your fingertips down onto your thumb, with the thumb tucked under them" },
   F: { fingers: { middle: "extended", ring: "extended", pinky: "extended" }, touch: "index" },
-  // G and Q: the thumb lies right beside the index finger, which the camera can't call in or out
-  // (measured at the edge of the limit), so only the fingers and direction are checked.
-  G: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, facing: "side", unconfirmed: true },
-  H: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: false, facing: "side", unconfirmed: true },
-  I: { fingers: { index: "bent", middle: "bent", ring: "bent", pinky: "extended" }, thumb: "tucked", unconfirmed: true },
+  // G, H and Q are told apart from L, U and G by which way the hand points (sideways, or down for Q).
+  // On about 2,000 real hands, 90 to 100 in 100 signers held them upright to the camera, so asking for
+  // the textbook direction rejected nearly everyone. Direction is no longer checked, and they are
+  // flagged tricky. The thumb lies right beside the index finger, which the camera can't call in or out.
+  G: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, tricky: DIRECTION },
+  H: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: false, tricky: DIRECTION },
+  I: { fingers: { index: "bent", middle: "bent", ring: "bent", pinky: "extended" }, thumb: "tucked" },
   // J is an I that moves; only the hand shape is checked.
   J: { fingers: { index: "bent", middle: "bent", ring: "bent", pinky: "extended" }, thumb: "tucked", unconfirmed: true },
   K: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, facing: "up", thumbOnMiddle: true, tricky: KMIDDLE },
-  L: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, thumb: "out", facing: "up", unconfirmed: true },
+  L: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, thumb: "out", facing: "up" },
   M: { fingers: BENT, fist: "Tuck your thumb under your first three fingers" },
   N: { fingers: BENT, fist: "Tuck your thumb under your first two fingers" },
   O: { fingers: { middle: "bent", ring: "bent", pinky: "bent" }, touch: "index", tricky: CURVED },
-  P: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, facing: "down", thumbOnMiddle: true, tricky: KMIDDLE },
-  Q: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, facing: "down", unconfirmed: true },
+  P: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: true, thumbOnMiddle: true, tricky: KMIDDLE },
+  Q: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, tricky: DIRECTION },
   R: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, apart: false, facing: "up", crossed: true, tricky: CROSSED },
   S: { fingers: BENT, fist: "Make a fist with your thumb wrapped across the front of your fingers" },
   T: { fingers: BENT, fist: "Tuck your thumb between your index and middle fingers" },
-  U: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, thumb: "tucked", apart: false, facing: "up", unconfirmed: true },
+  U: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, thumb: "tucked", apart: false, facing: "up" },
   V: { fingers: { index: "extended", middle: "extended", ring: "bent", pinky: "bent" }, thumb: "tucked", apart: true },
   // The thumb touches the little finger: the same shape as the number 6.
   W: { fingers: { index: "extended", middle: "extended", ring: "extended" }, touch: "pinky", apart: true },
