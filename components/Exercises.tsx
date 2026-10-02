@@ -590,10 +590,9 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
         <div className="mt-6">
           <CameraCheck
             letter={sign.word}
-            onMatch={({ certain }) => {
-              setCameraMatched(certain ? "sure" : "maybe");
-              setRevealed(true);
-            }}
+            // A match is shown on the camera panel itself. The learner stays on it, to see the
+            // checklist and compare, and reveals the sign when they choose.
+            onMatch={({ certain }) => setCameraMatched(certain ? "sure" : "maybe")}
           />
         </div>
       ) : (

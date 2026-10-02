@@ -6,21 +6,27 @@
 //   node tests/e2e.mjs http://localhost:3100   (tests another copy, e.g. `npx next start -p 3100`)
 // Screenshots go to a temporary folder printed at the end.
 import { spawn } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const BASE = process.argv[2] ?? "http://localhost:3000";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+// Each run starts a fresh test browser, whose profile folder is about 150 MB. Delete the folders of
+// earlier runs now, and this run's browser profile when it ends, so runs never pile up on the disk.
+for (const name of readdirSync(tmpdir())) {
+  if (name.startsWith("handful-e2e-")) rmSync(join(tmpdir(), name), { recursive: true, force: true });
+}
 const OUT = mkdtempSync(join(tmpdir(), "handful-e2e-"));
+process.on("exit", () => rmSync(join(OUT, "profile"), { recursive: true, force: true }));
 const SIGNS = JSON.parse(readFileSync(join(ROOT, "data/signs.json"), "utf8"));
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 9340 + Math.floor(Math.random() * 200);
 
 const chrome = spawn(
   CHROME,
-  ["--headless=new", "--disable-gpu", "--hide-scrollbars", `--remote-debugging-port=${PORT}`, `--user-data-dir=${join(OUT, "profile")}`, "about:blank"],
+  ["--headless=new", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--hide-scrollbars", `--remote-debugging-port=${PORT}`, `--user-data-dir=${join(OUT, "profile")}`, "about:blank"],
   { stdio: "ignore" },
 );
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -45,7 +51,11 @@ ws.addEventListener("message", (event) => {
     pending.delete(message.id);
   }
   if (message.method === "Runtime.consoleAPICalled" && ["error", "warning"].includes(message.params.type)) {
-    consoleProblems.push(`${message.params.type}: ${message.params.args.map((a) => a.value ?? a.description).join(" ").slice(0, 300)}`);
+    // MediaPipe's tracker reports routine progress through console.error and warnings. Not problems.
+    const line = message.params.args.map((a) => a.value ?? a.description).join(" ");
+    if (!/XNNPACK|NORM_RECT|gl_context|Graph successfully|Source Location|third_party|landmark_projection/.test(line)) {
+      consoleProblems.push(`${message.params.type}: ${line.slice(0, 300)}`);
+    }
   }
   if (message.method === "Runtime.exceptionThrown") {
     consoleProblems.push(`exception: ${message.params.exceptionDetails.exception?.description?.slice(0, 300)}`);
@@ -434,9 +444,55 @@ check(
   (await ev("document.querySelector('[data-camera-status]')?.dataset.cameraStatus")) === "idle" && (await text()).includes("Start camera") && (await text()).includes("Nothing is recorded or sent anywhere"),
 );
 await shot("Q-camera-in-lesson");
+check("Q5b the real camera panel offers to load a video file, like the live camera does", await ev("!!document.querySelector('input[type=file]')"));
 await clickText("Show the sign");
 await sleep(500);
 check("Q6 'Show the sign' still works, and the camera panel closes", !(await ev("!!document.querySelector('[data-camera-status]')")) && (await text()).includes("Got it"));
+
+// A camera match inside a lesson stays on the camera panel: it doesn't jump to the answer.
+await go("/lesson/alphabet-1");
+let stayed = false;
+for (let attempt = 0; attempt < 5 && !stayed; attempt++) {
+  if (!(await reachSignIt())) break;
+  const heading = await ev("__heading()");
+  const clip = { "Sign “B”": "blue", "Sign “A”": "sorry" }[heading];
+  if (!clip) {
+    await ev("__solve(false)"); // not a letter with a clip to play: do it and move on to the next one
+    await sleep(500);
+    continue;
+  }
+  await clickText("Check with my camera");
+  await sleep(500);
+  const doc = await send("DOM.getDocument", {});
+  const input = await send("DOM.querySelector", { nodeId: doc.result.root.nodeId, selector: "input[type=file]" });
+  await send("DOM.setFileInputFiles", { nodeId: input.result.nodeId, files: [join(ROOT, "public/videos", `${clip}.mp4`)] });
+  await sleep(1200);
+  await ev(`(() => { const v = document.querySelector('video'); if (v) v.playbackRate = 0.3; })()`);
+  let matchedText = "";
+  for (let i = 0; i < 150 && !matchedText; i++) {
+    await sleep(200);
+    matchedText = await ev(`document.querySelector('[data-camera-success]')?.innerText ?? ''`);
+  }
+  await sleep(1500); // give a wrongly-eager version time to jump ahead
+  check(
+    "Q7 a camera match in a lesson stays on the camera panel (it doesn't jump to the answer)",
+    matchedText !== "" && (await ev("__heading()")).startsWith("Sign “") && (await ev("!!document.querySelector('[data-camera-status]')")) && !(await lower()).includes("got it"),
+    JSON.stringify({
+      matchedText,
+      heading: await ev("__heading()"),
+      panelStillThere: await ev("!!document.querySelector('[data-camera-status]')"),
+      buttons: await ev("[...document.querySelectorAll('button')].map(b => b.innerText.trim()).filter(Boolean).slice(-6)"),
+    }),
+  );
+  await clickText("Show the sign");
+  await sleep(500);
+  check(
+    "Q8 pressing 'Show the sign' then reveals the answer, with what the camera said",
+    (await lower()).includes("got it") && (await ev("!!document.querySelector('[data-camera-agrees], [data-camera-unsure]')")),
+  );
+  stayed = true;
+}
+check("Q9 the camera-in-lesson check found a letter with a clip to test", stayed);
 
 // ---------- K. Face line ----------
 await go("/lesson/questions-1");
