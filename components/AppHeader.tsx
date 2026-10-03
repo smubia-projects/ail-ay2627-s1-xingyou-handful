@@ -27,7 +27,16 @@ export default function AppHeader() {
       <div className="mx-auto flex max-w-md items-center gap-2 px-5 py-3.5">
         <Link href="/" className="flex items-center gap-2 rounded-xl" aria-label="Handful home">
           <LogoMark />
-          <span className="font-display text-2xl font-bold text-ink">handful</span>
+          <span className="flex flex-col">
+            <span className="font-display text-2xl leading-none font-bold text-ink">handful</span>
+            <span
+              className="mt-0.5 text-[10px] leading-none font-semibold text-muted"
+              data-early-label
+              title="Early version: sign descriptions are drafts awaiting review by a Deaf ASL signer"
+            >
+              Early version
+            </span>
+          </span>
         </Link>
         <HeaderStats />
       </div>

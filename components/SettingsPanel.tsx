@@ -237,6 +237,14 @@ export default function SettingsPanel() {
           Handful teaches American Sign Language (ASL), a small handful of signs a day. The sign descriptions are drafts that still
           need to be checked by a Deaf ASL signer. Some signs have videos, with more to come.
         </p>
+        <p className="mt-3 text-sm text-muted" data-about-early>
+          <span className="font-semibold text-charcoal">This is an early version.</span> Things may change, and the camera is a
+          practice guide, not a grade. It can&apos;t judge signing the way a Deaf teacher can.
+        </p>
+        <p className="mt-3 text-sm text-muted" data-about-privacy>
+          <span className="font-semibold text-charcoal">Your privacy:</span> the camera check runs on your own device. Video is never
+          recorded, saved or sent anywhere, and there are no accounts. Your progress is saved only in this browser.
+        </p>
         <p className="mt-3 text-sm text-muted">
           Sign videos, and the hand-shape data the camera uses to check word signs: (ASL Signbank, 2026), videos shown mirrored in right-hand view, used with thanks under{" "}
           <a

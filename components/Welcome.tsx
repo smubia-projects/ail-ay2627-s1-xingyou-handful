@@ -90,6 +90,9 @@ export default function Welcome() {
                 Welcome to Handful
               </h1>
               <p className="mt-3 text-lg text-muted">Learn ASL, a small handful of signs a day.</p>
+              <p className="mt-2 text-sm text-muted">
+                An early version: the sign descriptions are drafts that a Deaf ASL signer hasn&apos;t checked yet.
+              </p>
               <ul className="mt-8 space-y-3 text-ink">
                 {[
                   "Short lessons with videos of real signers",
