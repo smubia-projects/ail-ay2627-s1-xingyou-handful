@@ -42,6 +42,14 @@ Source: https://commons.wikimedia.org/wiki/File:Sign_language_1.jpg (and 2–9)
 CC BY-SA 4.0 requires crediting the author and linking the license, which Settings → About in the
 app does. If these drawings are ever edited, the edited versions must also be shared under CC BY-SA 4.0.
 
+## Word-sign reference data (`data/word-refs.json`)
+
+The camera's check for one-handed word signs compares a learner's hand with a description of the
+Signbank video for the same word: 24 measures of the hand's shape and direction at 30 steps through the
+sign (numbers only, no pictures). It is **derived from the ASL Signbank videos**, so it is under the same
+**CC BY-NC-SA 4.0** license and the app must stay non-commercial. `node tools/build-word-refs.mjs`
+rebuilds it from `public/videos`. Settings → About credits Signbank for the videos and this data.
+
 ## Fist-letter model (`data/fist-model.json`)
 
 The camera tells the fist letters (A, E, M, N, S, T) apart with a small logistic-regression model

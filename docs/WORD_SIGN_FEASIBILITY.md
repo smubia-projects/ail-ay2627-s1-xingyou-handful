@@ -80,3 +80,13 @@ Start with single-hand signs where hand shape and direction carry the sign, chec
 what to fix (hand shape, movement size, speed) rather than a grade, and keep the existing
 "practice, not a grade" wording. Don't offer the camera for signs it can't check reliably (as already
 done for word signs now).
+
+## Built (2026-10-04)
+The camera now checks 11 one-handed words in "Sign it yourself": BLUE, YELLOW, WHERE, SORRY, MILK, NO, YES,
+TWO, EIGHT, PLEASE and WHY. `tools/build-word-refs.mjs` picks them by rule (one hand; not defined by
+location or a wave; hand shapes at least 0.40 apart) from its own measurements, so GREEN, THREE and others
+dropped out when they were too close to another word. The check uses hand shape and direction only. It says
+"That matches", "Close" or "Not yet" with one hint, and names the word an attempt looked more like.
+On the learner's 15 real attempts through the shipped code: 14 matched, 1 was close, and a wrong word was
+accepted as a full match 0 times in 150 (14 times as "close"). The limits were tuned on those same attempts,
+so expect slightly worse with other people.

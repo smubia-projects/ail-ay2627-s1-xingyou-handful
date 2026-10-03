@@ -238,7 +238,7 @@ export default function SettingsPanel() {
           need to be checked by a Deaf ASL signer. Some signs have videos, with more to come.
         </p>
         <p className="mt-3 text-sm text-muted">
-          Sign videos: (ASL Signbank, 2026), shown mirrored in right-hand view, used with thanks under{" "}
+          Sign videos, and the hand-shape data the camera uses to check word signs: (ASL Signbank, 2026), videos shown mirrored in right-hand view, used with thanks under{" "}
           <a
             href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
             target="_blank"

@@ -21,6 +21,9 @@
      Only stop mid-batch for real decisions (new packages, scope changes). Fewest files possible.
    - Before saying "done", run `npm run lint` and `npm run build` and show me the output.
    - Tests live in tests/ (no packages needed). With the app running: `node tests/progress.test.mts`
-     checks the saved-progress rules, `node tests/handshape.test.mts` the hand-shape rules, and
+     checks the saved-progress rules, `node tests/handshape.test.mts` the hand-shape rules,
+     `node tests/wordsign.test.mts` the word-sign matching, and
      `node tests/e2e.mjs` plays through the app in headless Chrome. `node tests/camera.mjs` runs real signing
      videos through the hand tracker (about 10 minutes; use `QUICK=1` for the short version).
+     Both browser tests stop their Chrome when they end; if one is ever killed, check for a leftover
+     `--headless` Chrome (`pgrep -f -- --headless`) and stop it, since a stale one slows every later run.
