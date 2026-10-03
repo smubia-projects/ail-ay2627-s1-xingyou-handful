@@ -52,6 +52,8 @@ async function launch({ graphics }) {
     ["--headless=new", ...flags, "--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", "--autoplay-policy=no-user-gesture-required", `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, "about:blank"],
     { stdio: "ignore" },
   );
+  // However the run ends, the test browser must not be left running (a stale one can burn the CPU for hours).
+  process.on("exit", () => chrome.kill());
   let targets;
   for (let i = 0; i < 60; i++) {
     try {
@@ -168,7 +170,9 @@ const CASES = [
   { video: "yellow", accept: "Y", reject: ["L", "V", "B"] },
   { video: "water", accept: "W", reject: ["V", "B"] },
   { video: "six", accept: "W", reject: ["V", "B"] },
-  { video: "two", accept: "V", reject: ["W", "L", "Y", "K", "H"] },
+  // H isn't listed: it no longer asks for a sideways hand (people sign it facing the camera), so a V whose
+  // two fingers briefly look together fits H, which is flagged tricky ("fits, but can't be sure").
+  { video: "two", accept: "V", reject: ["W", "L", "Y", "K"] },
   // The sign for 9 is an F hand: thumb and index touching, other fingers straight.
   { video: "nine", accept: "F", reject: ["B", "W", "V"] },
   // G and Q aren't told apart from a pointing finger any more (people sign them upright to a camera).

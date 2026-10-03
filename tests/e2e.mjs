@@ -29,6 +29,11 @@ const chrome = spawn(
   ["--headless=new", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--hide-scrollbars", `--remote-debugging-port=${PORT}`, `--user-data-dir=${join(OUT, "profile")}`, "about:blank"],
   { stdio: "ignore" },
 );
+// However the run ends (a failure, a time-out, Ctrl-C), the test browser must not be left running: a
+// stale one can burn the CPU for hours and slow every later run.
+process.on("exit", () => chrome.kill());
+process.on("SIGINT", () => process.exit(130));
+process.on("SIGTERM", () => process.exit(143));
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let targets;
 for (let i = 0; i < 60; i++) {
@@ -61,10 +66,24 @@ ws.addEventListener("message", (event) => {
     consoleProblems.push(`exception: ${message.params.exceptionDetails.exception?.description?.slice(0, 300)}`);
   }
 });
+// A hung browser must fail the run, not freeze it: every request has a time limit, and the whole run too.
+const REQUEST_TIMEOUT_MS = 60_000;
+const RUN_LIMIT_MS = 25 * 60_000;
+setTimeout(() => {
+  console.log(`TIMEOUT: the run took longer than ${RUN_LIMIT_MS / 60_000} minutes, so it was stopped.`);
+  process.exit(2);
+}, RUN_LIMIT_MS);
 const send = (method, params = {}) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     const id = ++nextId;
-    pending.set(id, resolve);
+    const timer = setTimeout(() => {
+      pending.delete(id);
+      reject(new Error(`the browser did not answer ${method} within ${REQUEST_TIMEOUT_MS / 1000}s: ${JSON.stringify(params).slice(0, 160)}`));
+    }, REQUEST_TIMEOUT_MS);
+    pending.set(id, (message) => {
+      clearTimeout(timer);
+      resolve(message);
+    });
     ws.send(JSON.stringify({ id, method, params }));
   });
 const ev = async (expression) => {
@@ -81,10 +100,12 @@ await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, devi
 
 let passed = 0;
 let failed = 0;
+const startedAt = Date.now();
 const check = (name, ok, detail = "") => {
   if (ok) passed++;
   else failed++;
-  console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? "  — " + detail : ""}`);
+  const seconds = String(Math.round((Date.now() - startedAt) / 1000)).padStart(4);
+  console.log(`${ok ? "PASS" : "FAIL"} ${seconds}s  ${name}${detail ? "  — " + detail : ""}`);
 };
 const shot = async (name) => {
   const reply = await send("Page.captureScreenshot", { format: "png" });
@@ -433,7 +454,7 @@ async function reachSignIt() {
 }
 await go("/lesson/greetings-1");
 check("Q1 a word sign's 'Sign it yourself' reached", await reachSignIt());
-check("Q2 word signs don't offer the camera (it only checks letters)", !(await lower()).includes("check with my camera"));
+check("Q2 words the camera can't check (HELLO, GOODBYE) don't offer it", !(await lower()).includes("check with my camera"));
 await go("/lesson/alphabet-1");
 check("Q3 a letter's 'Sign it yourself' reached", await reachSignIt());
 check("Q4 letters offer the camera", (await lower()).includes("check with my camera"));
@@ -493,6 +514,66 @@ for (let attempt = 0; attempt < 5 && !stayed; attempt++) {
   stayed = true;
 }
 check("Q9 the camera-in-lesson check found a letter with a clip to test", stayed);
+
+// One-handed words: BLUE is checked with the camera, RED (too close to other words) is not.
+await go("/lesson/colors-1");
+let wordTested = false;
+let redChecked = false;
+for (let attempt = 0; attempt < 6 && !wordTested; attempt++) {
+  if (!(await reachSignIt())) break;
+  const heading = (await ev("__heading()")).toLowerCase();
+  if (heading !== "sign “blue”") {
+    if (heading === "sign “red”" && !redChecked) {
+      redChecked = true;
+      check("R1 a word the camera can't check reliably (RED) doesn't offer it", !(await lower()).includes("check with my camera"));
+    }
+    await ev("__solve(false)");
+    await sleep(500);
+    continue;
+  }
+  check("R2 BLUE offers the camera", (await lower()).includes("check with my camera"));
+  await clickText("Check with my camera");
+  await sleep(600);
+  check(
+    "R3 the word panel starts switched off, with the privacy promise and the 'practice guide' note",
+    (await ev("document.querySelector('[data-word-status]')?.dataset.wordStatus")) === "idle" &&
+      (await text()).includes("Nothing is recorded or sent anywhere") &&
+      (await ev("document.querySelector('[data-word-note]')?.innerText ?? ''")).includes("not a grade"),
+  );
+  await shot("R-word-camera");
+  const play = async (clip) => {
+    const doc = await send("DOM.getDocument", {});
+    const input = await send("DOM.querySelector", { nodeId: doc.result.root.nodeId, selector: "input[type=file]" });
+    await send("DOM.setFileInputFiles", { nodeId: input.result.nodeId, files: [join(ROOT, "public/videos", `${clip}.mp4`)] });
+    await sleep(1200);
+    await ev(`(() => { const v = document.querySelector('video'); if (v) v.playbackRate = 0.3; })()`);
+    let verdict = "";
+    for (let i = 0; i < 400 && !verdict; i++) {
+      await sleep(200);
+      verdict = await ev(`document.querySelector('[data-word-result]')?.dataset.wordResult ?? ''`);
+    }
+    return { verdict, distance: await ev(`document.querySelector('[data-word-result]')?.dataset.wordDistance ?? ''`), closest: await ev(`document.querySelector('[data-word-result]')?.dataset.wordClosest ?? ''`) };
+  };
+  // YELLOW's real video, with BLUE as the target: not a match, and it says what it looked like.
+  const wrong = await play("yellow");
+  check("R4 YELLOW's video is not accepted as BLUE", wrong.verdict !== "" && wrong.verdict !== "match" && wrong.closest === "yellow", JSON.stringify(wrong));
+  check("R5 the not-yet verdict names the word it looked like and gives a hint", /looked more like YELLOW/.test(await text()) && /Watch the video again/.test(await text()));
+  await clickText("Stop");
+  await sleep(500);
+  const right = await play("blue");
+  check("R6 BLUE's real video is accepted as BLUE", right.verdict === "match" && right.closest === "blue", JSON.stringify(right));
+  await sleep(1500);
+  check(
+    "R7 the match stays on the camera panel (it doesn't jump to the answer)",
+    (await text()).includes("That matches BLUE") && (await ev("!!document.querySelector('[data-word-status]')")) && !(await lower()).includes("got it"),
+  );
+  await clickText("Show the sign");
+  await sleep(500);
+  check("R8 'Show the sign' then reveals the answer, with 'the camera agrees'", (await lower()).includes("got it") && (await ev("!!document.querySelector('[data-camera-agrees]')")));
+  wordTested = true;
+}
+check("R9 the word camera check found BLUE to test", wordTested);
+check("R10 RED was reached and checked", redChecked);
 
 // ---------- K. Face line ----------
 await go("/lesson/questions-1");
