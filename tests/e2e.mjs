@@ -252,7 +252,7 @@ let r;
 // ---------- W. First-time welcome ----------
 await go("/");
 const welcomeText = () => ev(`document.querySelector('[role=dialog]')?.innerText ?? ''`);
-check("W1 a new learner is welcomed", (await welcomeText()).includes("Welcome to Handful"));
+check("W1 a new learner is welcomed, and told this is an early version", (await welcomeText()).includes("Welcome to Handful") && (await welcomeText()).includes("An early version"));
 await clickText("Next");
 await sleep(600);
 check("W2 step 2 explains mirror view with a video", (await welcomeText()).includes("Copy what you see") && (await ev("!!document.querySelector('[role=dialog] video')")));
@@ -519,10 +519,11 @@ check("Q9 the camera-in-lesson check found a letter with a clip to test", stayed
 await go("/lesson/colors-1");
 let wordTested = false;
 let redChecked = false;
-for (let attempt = 0; attempt < 6 && !wordTested; attempt++) {
+// The lesson's exercises come in no fixed order, so keep going until both BLUE and RED have been seen.
+for (let attempt = 0; attempt < 14 && !(wordTested && redChecked); attempt++) {
   if (!(await reachSignIt())) break;
   const heading = (await ev("__heading()")).toLowerCase();
-  if (heading !== "sign “blue”") {
+  if (heading !== "sign “blue”" || wordTested) {
     if (heading === "sign “red”" && !redChecked) {
       redChecked = true;
       check("R1 a word the camera can't check reliably (RED) doesn't offer it", !(await lower()).includes("check with my camera"));
@@ -660,6 +661,15 @@ check("V6 lesson with videos completes, and answer choices never mix videos with
 // ---------- L. Settings ----------
 await go("/settings");
 check("L1 settings page, tab and title", (await currentTab()) === "settings" && (await ev("document.title")) === "Settings · Handful");
+check(
+  "L1b About states the privacy promise and that this is an early version, and credits the camera sources",
+  /never\s+recorded, saved or sent anywhere/.test(await ev("document.querySelector('[data-about-privacy]')?.innerText.replace(/\\s+/g, ' ') ?? ''")) &&
+    (await ev("document.querySelector('[data-about-early]')?.innerText ?? ''")).includes("early version") &&
+    (await text()).includes("MediaPipe") &&
+    (await text()).includes("ASLNow!") &&
+    (await text()).includes("ASL Signbank"),
+);
+check("L1c every page carries the 'Early version' label in the header", (await ev("document.querySelector('header [data-early-label]')?.innerText ?? ''")) === "Early version");
 await ev(`[...document.querySelectorAll('[role=radio]')].find(b=>b.innerText.includes('Serious')).click()`);
 await sleep(300);
 check("L2 daily goal saved", (await progress()).dailyGoal === 3);
@@ -725,6 +735,12 @@ check("M8 keyboard focus is visible", /solid 3px/.test(focus), focus);
 const manifest = await ev(`fetch('/manifest.webmanifest').then(r => r.json())`);
 const assets = await ev(`Promise.all(['/icons/icon-192.png','/icons/icon-512.png','/apple-icon.png','/icon.svg','/handshapes/letter-a.svg','/handshapes/number-5.jpg'].map(u => fetch(u).then(r => r.status)))`);
 check("M9 install manifest, icons and handshape drawings load", manifest.name === "Handful" && manifest.display === "standalone" && assets.every((status) => status === 200), JSON.stringify(assets));
+
+// The header must fit a phone even with a long streak and a lot of XP (the "Early version" label once pushed the XP off the edge).
+await patchProgress("p.xp = 12500; p.streak = { count: 123, lastDay: '" + daysFromNow(0) + "', freezes: 2 }");
+await go("/settings");
+const headerFit = await ev(`(() => { const h = document.querySelector("header"); const tag = h.querySelector("[data-early-label]").getBoundingClientRect(); return { headerWidth: Math.round(h.getBoundingClientRect().width), scrollWidth: h.scrollWidth, pageOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth, tagWrapped: tag.height > 14 }; })()`);
+check("M10 the header fits at phone width with a 123-day streak and 12,500 XP, label not wrapped", !headerFit.pageOverflow && headerFit.scrollWidth <= headerFit.headerWidth && !headerFit.tagWrapped, JSON.stringify(headerFit));
 
 console.log(`\n${passed} passed, ${failed} failed`);
 console.log(consoleProblems.length ? "Console problems:\n  " + [...new Set(consoleProblems)].join("\n  ") : "No console errors or warnings");
