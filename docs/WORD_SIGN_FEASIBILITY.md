@@ -3,11 +3,11 @@
 **Question:** can the camera tell that a learner made a word sign (hand shape plus movement), the way it
 now checks fingerspelled letters?
 
-**Short answer:** probably yes for a good share of the 46 signs, but it is not proven. With the amount of
-difference we measured between real signers it accepts about 75 in 100 right attempts while accepting
-5 in 100 wrong signs, and 20 of the 46 signs would be unreliable. With half that difference it is
-99 in 100 and 1 sign is unreliable. The real answer sits between, and only real attempts by a learner
-can settle it.
+**Short answer:** yes for single-hand signs, on the evidence so far. A simulation with the difference we
+measured between real signers gave 75 in 100 right attempts accepted (99 with half the difference). Then
+a real learner filmed 5 words 3 times each (see "Real attempts" below): hand shape alone gave 14 to 15
+of 15 right attempts accepted while accepting 3 to 8 wrong signs in 100. That is one person and five
+words chosen because they had tested well, so it is encouraging, not proof.
 
 ## What was done
 1. All 46 Signbank word videos were run through the hand tracker, 15 frames a second.
@@ -54,13 +54,29 @@ can settle it.
   extra face or body tracking model. That means a new model file from the already approved
   `@mediapipe/tasks-vision` package, which needs the owner's OK.
 
+## Real attempts (2026-10-03)
+One learner (not fluent in ASL, right-handed) filmed BLUE, YELLOW, WHERE, SORRY and MILK, 3 times each,
+hands only, on a phone at 1080p, with no special background or clothes. The clips were kept outside the
+project and are not in the repo. The tracker found the hand continuously through every repeat.
+- **Hand shape and direction over time alone** found the right sign closest of 46 in 11 of 15 repeats,
+  and in the top 3 in 15 of 15. With the accept limit at 0.35 to 0.4 it accepted 14 to 15 of 15 right
+  attempts and 2.7% to 8.4% of wrong signs.
+- **Movement as first measured was a flaw.** The hand's path was measured from where it started, so the
+  hand rising into view counted as movement and BLUE, YELLOW and WHERE came out far from their
+  references. Measuring around the hand's average spot fixed most of it (combined result 6 to 11 of 15
+  right), but it still adds nothing here: BLUE and YELLOW are twists, WHERE is a finger shake and MILK a
+  squeeze, where the hand's centre barely moves. The twist is already in the direction of the hand.
+- **Mix-ups on real attempts:** YELLOW with HOW, SORRY with LOVE (both fists, the fist model isn't used
+  for words yet), BLUE with FOUR and SIX, WHERE with WHO, MILK with TEN.
+- **Not yet tested:** movement-heavy signs (MORE, GOODBYE, THANK-YOU), other learners, and left-handers on
+  a real hand.
+
 ## What would settle it
-A few real attempts. About 5 to 10 words, each signed 3 times by one learner (hands only, the face can
-be out of frame), kept on the owner's computer and not added to the project, would show how far a real
-beginner is from the Signbank signer. That replaces the simulation with the real number.
+More real attempts, especially from other learners and for movement-heavy words. The five-word test above
+is the first; a few more people signing the same words would show how much one person's result carries over.
 
 ## If we build it
-Start with the single-hand signs the test handled best, tell the learner "close" or "not yet" and
+Start with single-hand signs where hand shape and direction carry the sign, check hand shape first, tell the learner "close" or "not yet" and
 what to fix (hand shape, movement size, speed) rather than a grade, and keep the existing
 "practice, not a grade" wording. Don't offer the camera for signs it can't check reliably (as already
 done for word signs now).
