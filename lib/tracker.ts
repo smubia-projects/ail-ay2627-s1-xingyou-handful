@@ -47,6 +47,30 @@ export function loadHandTracker(): Promise<HandLandmarker> {
   return loading;
 }
 
+// Plain words for why the camera didn't start, from the error the browser gave.
+export function cameraProblem(error: unknown): string {
+  const name = typeof error === "object" && error !== null && "name" in error ? String((error as { name: unknown }).name) : "";
+  if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+    return "The camera is blocked. Allow it in your browser's address bar, then try again.";
+  }
+  if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+    return "No camera was found. You can pick a video file instead.";
+  }
+  if (name === "NotReadableError" || name === "TrackStartError") {
+    return "Your camera is busy, probably used by another app or browser tab. Close that and try again, or pick a video file instead.";
+  }
+  if (name === "SecurityError") return cameraUnavailable(false);
+  return "The camera couldn't start. You can pick a video file instead.";
+}
+
+// Why there is no camera support at all. Browsers only allow the camera on a secure (https) address,
+// or on the same computer.
+export function cameraUnavailable(secure = typeof window === "undefined" ? true : window.isSecureContext): string {
+  return secure
+    ? "This browser can't use the camera here. You can pick a video file instead."
+    : "The camera only works on a secure (https) connection, or on the same computer the app runs on. Open the app from its https address, or pick a video file instead.";
+}
+
 // The lines between the 21 hand points, for drawing the skeleton.
 export const HAND_LINES: [number, number][] = [
   [0, 1], [1, 2], [2, 3], [3, 4],

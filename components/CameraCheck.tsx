@@ -16,7 +16,7 @@ import {
 } from "@/lib/handshape";
 import { guessFist } from "@/lib/fist";
 import fistModel from "@/data/fist-model.json";
-import { HAND_LINES, loadHandTracker, NoGraphicsError } from "@/lib/tracker";
+import { cameraProblem, cameraUnavailable, HAND_LINES, loadHandTracker, NoGraphicsError } from "@/lib/tracker";
 
 // A letter counts once the hand has matched continuously for this long, over at least a few
 // frames. Using time as well as frames keeps it fair on slow devices and fast ones alike.
@@ -270,7 +270,7 @@ export default function CameraCheck({
     setMessage("Asking for your camera…");
     if (!navigator.mediaDevices?.getUserMedia) {
       setStatus("error");
-      setMessage("This browser can't use the camera here. You can pick a video file instead.");
+      setMessage(cameraUnavailable());
       return;
     }
     try {
@@ -283,16 +283,9 @@ export default function CameraCheck({
       await video.play();
       await begin("camera");
     } catch (error) {
-      const name = error instanceof DOMException ? error.name : "";
       stop();
       setStatus("error");
-      setMessage(
-        name === "NotAllowedError"
-          ? "The camera is blocked. Allow it in your browser's address bar, then try again."
-          : name === "NotFoundError"
-            ? "No camera was found. You can pick a video file instead."
-            : "The camera couldn't start. You can pick a video file instead.",
-      );
+      setMessage(cameraProblem(error));
     }
   }
 

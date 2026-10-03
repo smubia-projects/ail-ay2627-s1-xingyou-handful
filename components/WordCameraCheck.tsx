@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PRIMARY_BUTTON, SECONDARY_BUTTON } from "@/components/buttons";
 import { getSign } from "@/lib/content";
-import { HAND_LINES, loadHandTracker, NoGraphicsError } from "@/lib/tracker";
+import { cameraProblem, cameraUnavailable, HAND_LINES, loadHandTracker, NoGraphicsError } from "@/lib/tracker";
 import { HINT_TEXT, judgeAttempt, type Judgement, type Sample, type WordRefs } from "@/lib/wordsign";
 import wordRefs from "@/data/word-refs.json";
 
@@ -200,7 +200,7 @@ export default function WordCameraCheck({
     setMessage("Asking for your camera…");
     if (!navigator.mediaDevices?.getUserMedia) {
       setStatus("error");
-      setMessage("This browser can't use the camera here. You can pick a video file instead.");
+      setMessage(cameraUnavailable());
       return;
     }
     try {
@@ -213,16 +213,9 @@ export default function WordCameraCheck({
       await video.play();
       await begin("camera");
     } catch (error) {
-      const name = error instanceof DOMException ? error.name : "";
       stop();
       setStatus("error");
-      setMessage(
-        name === "NotAllowedError"
-          ? "The camera is blocked. Allow it in your browser's address bar, then try again."
-          : name === "NotFoundError"
-            ? "No camera was found. You can pick a video file instead."
-            : "The camera couldn't start. You can pick a video file instead.",
-      );
+      setMessage(cameraProblem(error));
     }
   }
 
