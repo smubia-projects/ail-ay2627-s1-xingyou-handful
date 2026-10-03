@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import CameraCheck from "@/components/CameraCheck";
+import WordCameraCheck, { canCheckWord } from "@/components/WordCameraCheck";
 import { PRIMARY_BUTTON, SECONDARY_BUTTON } from "@/components/buttons";
 
 export { PRIMARY_BUTTON };
@@ -549,11 +550,12 @@ function SpellExercise({
 // There's no camera: this is honest self-checking, which is what makes producing signs stick.
 function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
   const [revealed, setRevealed] = useState(false);
-  // Letters can also be checked with the camera. It's optional and only gives feedback: the
-  // learner still rates themselves, and a match just reveals the sign.
+  // Letters, and a few one-handed words, can also be checked with the camera. It's optional and only
+  // gives feedback: the learner still rates themselves, and a match just reveals the sign.
   const isLetter = sign.id.startsWith("letter-");
+  const cameraOffered = isLetter || canCheckWord(sign.id);
   const [camera, setCamera] = useState(false);
-  // "sure" when the camera can tell this letter apart; "maybe" when it can't (like a fist letter).
+  // "sure" when the camera is confident in the match; "maybe" when it isn't (a close word, or a letter it can't tell apart).
   const [cameraMatched, setCameraMatched] = useState<"sure" | "maybe" | null>(null);
   useEnterKey(revealed || camera ? undefined : () => setRevealed(true));
 
@@ -580,20 +582,30 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
               className="mb-3 rounded-2xl border-2 border-charcoal bg-honey px-4 py-2 font-display text-lg font-bold text-charcoal"
               data-camera-unsure
             >
-              The finger shape fits {sign.word}, but the camera can&apos;t be sure. Compare it with the
-              drawing.
+              {isLetter
+                ? `The finger shape fits ${sign.word}, but the camera can't be sure. Compare it with the drawing.`
+                : `Your hand shape was close to ${sign.word}. Compare it with the video.`}
             </p>
           )}
           <SignPicture sign={sign} size="large" credit="link" />
         </div>
       ) : camera ? (
         <div className="mt-6">
-          <CameraCheck
-            letter={sign.word}
-            // A match is shown on the camera panel itself. The learner stays on it, to see the
-            // checklist and compare, and reveals the sign when they choose.
-            onMatch={({ certain }) => setCameraMatched(certain ? "sure" : "maybe")}
-          />
+          {isLetter ? (
+            <CameraCheck
+              letter={sign.word}
+              // A match is shown on the camera panel itself. The learner stays on it, to see the
+              // checklist and compare, and reveals the sign when they choose.
+              onMatch={({ certain }) => setCameraMatched(certain ? "sure" : "maybe")}
+            />
+          ) : (
+            <WordCameraCheck
+              signId={sign.id}
+              word={sign.word}
+              // A "close" never replaces a "sure" from an earlier try.
+              onMatch={({ certain }) => setCameraMatched((before) => (certain ? "sure" : before === "sure" ? before : "maybe"))}
+            />
+          )}
         </div>
       ) : (
         <div className="mt-6 flex h-56 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-line-strong text-center">
@@ -604,7 +616,7 @@ function SignItExercise({ sign, onDone }: { sign: Sign; onDone: OnDone }) {
           </p>
         </div>
       )}
-      {isLetter && !revealed && !camera && (
+      {cameraOffered && !revealed && !camera && (
         <button type="button" onClick={() => setCamera(true)} className={`mt-4 ${SECONDARY_BUTTON}`}>
           Check with my camera
         </button>
