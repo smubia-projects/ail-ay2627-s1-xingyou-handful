@@ -19,9 +19,10 @@ const samples = (name: string): Sample[] => raw[name].map((s) => ({ t: s.t, worl
 const signs = Object.keys(refs.signs);
 
 // ---- The data ----
-check("the camera checks 11 words", signs.length === 11, signs.join(", "));
+const VERIFIED = ["blue", "yellow", "where", "sorry", "milk", "eight", "why", "yes"];
+check("the camera checks exactly the 8 words a real learner got right 3 tries out of 3", signs.length === VERIFIED.length && VERIFIED.every((id) => signs.includes(id)), signs.join(", "));
+check("words that failed a real learner's tries (NO, PLEASE, TWO) are not offered", !["no", "please", "two"].some((id) => signs.includes(id)));
 check("every word has 30 steps of 24 numbers", signs.every((id) => refs.signs[id].length === STEPS && refs.signs[id].every((row) => row.length === 24)) && refs.std.length === 24 && refs.std.every((v) => v > 0));
-check("the words tested on a real learner are included", ["blue", "yellow", "where", "sorry", "milk"].every((id) => signs.includes(id)));
 check("words that depend on where the hand is (MOTHER, BLACK) or a wave (GOODBYE) are not offered", !["mother", "black", "goodbye"].some((id) => signs.includes(id)));
 let nearest = Infinity;
 let nearestPair = "";
