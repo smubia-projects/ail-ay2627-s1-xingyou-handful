@@ -9,8 +9,9 @@ import wordRefs from "@/data/word-refs.json";
 
 const REFS = wordRefs as WordRefs;
 
-// Whether the camera can check this word sign.
+// Whether the camera can check this word sign, and which words it can.
 export const canCheckWord = (signId: string) => signId in REFS.signs;
+export const checkableWordIds = () => Object.keys(REFS.signs);
 
 // An attempt is the stretch of video in which a hand is in view. It ends when the hand has been gone this long.
 const GONE_MS = 600;

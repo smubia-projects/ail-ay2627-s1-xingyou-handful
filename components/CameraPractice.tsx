@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import CameraCheck from "@/components/CameraCheck";
 import { HandshapeImage } from "@/components/SignCard";
@@ -8,6 +9,27 @@ import { letterConfidence } from "@/lib/handshape";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
+// The switch between the letters page and the words page.
+export function CameraTabs({ current }: { current: "letters" | "words" }) {
+  const tab = (key: "letters" | "words", href: string, label: string) => (
+    <Link
+      href={href}
+      aria-current={current === key ? "page" : undefined}
+      className={`flex-1 rounded-full px-4 py-2 text-center text-sm font-semibold transition ${
+        current === key ? "bg-charcoal text-cream" : "text-muted hover:text-charcoal"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+  return (
+    <nav aria-label="Camera practice" className="mb-5 flex gap-1 rounded-full bg-fennel p-1" data-camera-tabs>
+      {tab("letters", "/camera", "Letters")}
+      {tab("words", "/camera/words", "Words")}
+    </nav>
+  );
+}
+
 export default function CameraPractice() {
   const [letter, setLetter] = useState("A");
   const sign = getSign(`letter-${letter.toLowerCase()}`);
@@ -15,6 +37,7 @@ export default function CameraPractice() {
 
   return (
     <div>
+      <CameraTabs current="letters" />
       <h1 className="font-display text-4xl font-bold text-ink">Camera practice</h1>
       <p className="mt-2 text-muted">
         Practise fingerspelling with your camera. Handful looks at where your fingers are and tells you

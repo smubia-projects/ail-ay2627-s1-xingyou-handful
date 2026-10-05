@@ -278,7 +278,7 @@ export default function LessonPath() {
           </span>
           <span className="flex-1">
             <span className="block font-display text-xl font-bold text-ink">Camera practice</span>
-            <span className="block text-sm text-muted">Check your fingerspelling with your camera</span>
+            <span className="block text-sm text-muted">Check letters and words with your camera</span>
           </span>
         </Link>
         <Link
