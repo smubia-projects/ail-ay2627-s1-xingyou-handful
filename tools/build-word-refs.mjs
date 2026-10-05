@@ -2,6 +2,11 @@
 // Run with the app NOT needed, from the project folder:  node tools/build-word-refs.mjs
 // Optionally:  node tools/build-word-refs.mjs --raw <folder>   also saves each video's hand points there.
 //
+// Or check a learner's own clips against the data already built, without changing it:
+//   node tools/build-word-refs.mjs --check <folder with word.MOV, word.mp4 ... files>
+// Each clip is named after its word and holds several tries with the hand lowered between them. For each
+// try it prints what the camera in the app would say, and how often a wrong word would have been accepted.
+//
 // It opens each Signbank video in public/videos in headless Chrome, steps through it 15 times a
 // second with the same hand tracker the app uses (one hand, same settings), and turns the hand
 // points into the description lib/wordsign.ts compares against. The Signbank videos are
@@ -12,28 +17,33 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compare, describeAttempt, STEPS } from "../lib/wordsign.ts";
+import { compare, describeAttempt, judgeAttempt, STEPS } from "../lib/wordsign.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 3300;
 const FPS = 15;
 
-// Which signs the camera checks is decided by rule, from the numbers this tool measures:
-//  1. One hand only (the check sees one hand), and the sign is not defined by where the hand is on the body
-//     (MOTHER, BLACK, FATHER) or by a wave (GOODBYE), which this check can't see.
-//  2. Hand shapes at least MIN_GAP apart. The sign closest to another is dropped, one at a time, until all are.
-//     Signs tested on a real learner (docs/WORD_SIGN_FEASIBILITY.md) are kept in preference to untested ones.
-const CANDIDATES = [
-  "blue", "yellow", "green", "where", "sorry", "milk", "drink", "eat", "no", "yes", "one", "two", "three", "four", "five", "six",
-  "seven", "eight", "nine", "ten", "please", "thank-you", "water", "who", "why", "red", "hello",
-];
+// Which signs the camera checks:
+//  1. Only words a real learner has tried on camera, 3 tries each, and all 3 matched. The learner's tries
+//     are in docs/WORD_SIGN_FEASIBILITY.md. Tried and left out: NO (close, never a match), PLEASE and TWO (not
+//     yet every time). Words nobody has tried yet are not offered, whatever their Signbank video looks like.
+//  2. One hand only (the check sees one hand), and not defined by where the hand is on the body (MOTHER, BLACK)
+//     or by a wave (GOODBYE), which this check can't see.
+//  3. Hand shapes at least MIN_GAP apart. The sign closest to another is dropped, one at a time, until all are.
+// To add a word: have a learner film it 3 times, run this tool with --check, and add it here if all 3 match.
+const CANDIDATES = ["blue", "yellow", "where", "sorry", "milk", "eight", "why", "yes"];
 const TESTED = new Set(["blue", "yellow", "where", "sorry", "milk"]);
 const MIN_GAP = 0.4;
 
 const rawFolder = process.argv.includes("--raw") ? process.argv[process.argv.indexOf("--raw") + 1] : null;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const names = readdirSync(join(ROOT, "public/videos")).filter((f) => f.endsWith(".mp4")).map((f) => f.replace(".mp4", "")).sort();
+const checkFolder = process.argv.includes("--check") ? process.argv[process.argv.indexOf("--check") + 1] : null;
+// In check mode the videos are the learner's clips, found by their file names; otherwise the Signbank videos.
+const clipFiles = checkFolder
+  ? Object.fromEntries(readdirSync(checkFolder).filter((f) => /\.(mov|mp4|m4v)$/i.test(f)).map((f) => [f.replace(/\.[^.]+$/, "").toLowerCase(), f]))
+  : {};
+const names = checkFolder ? Object.keys(clipFiles).sort() : readdirSync(join(ROOT, "public/videos")).filter((f) => f.endsWith(".mp4")).map((f) => f.replace(".mp4", "")).sort();
 
 const PAGE = `<!doctype html><meta charset="utf-8"><video id="v" muted playsinline></video>
 <script type="module">
@@ -48,7 +58,7 @@ window.__results = {};
 let stamp = 0;
 for (const name of ${JSON.stringify(names)}) {
   window.__progress = name;
-  v.src = "/videos/" + name + ".mp4";
+  v.src = ${checkFolder ? '"/clip/" + name' : '"/videos/" + name + ".mp4"'};
   await new Promise((r) => v.addEventListener("loadeddata", r, { once: true }));
   const samples = [];
   for (let t = 0; t < v.duration - 0.02; t += 1 / ${FPS}) {
@@ -63,7 +73,7 @@ for (const name of ${JSON.stringify(names)}) {
 window.__progress = "DONE";
 </script>`;
 
-const types = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/javascript", ".wasm": "application/wasm", ".task": "application/octet-stream", ".mp4": "video/mp4" };
+const types = { ".html": "text/html", ".mjs": "text/javascript", ".js": "text/javascript", ".wasm": "application/wasm", ".task": "application/octet-stream", ".mp4": "video/mp4", ".m4v": "video/mp4", ".mov": "video/quicktime" };
 const server = createServer((req, res) => {
   const url = decodeURIComponent(req.url.split("?")[0]);
   if (url === "/") {
@@ -71,8 +81,10 @@ const server = createServer((req, res) => {
     res.end(PAGE);
     return;
   }
-  const file =
-    url === "/lib/vision_bundle.mjs"
+  const clip = checkFolder && url.match(/^\/clip\/([a-z0-9-]+)$/);
+  const file = clip
+    ? clipFiles[clip[1]] && join(checkFolder, clipFiles[clip[1]])
+    : url === "/lib/vision_bundle.mjs"
       ? join(ROOT, "node_modules/@mediapipe/tasks-vision/vision_bundle.mjs")
       : url.startsWith("/mediapipe/") || url.startsWith("/videos/")
         ? join(ROOT, "public", url)
@@ -83,7 +95,7 @@ const server = createServer((req, res) => {
     return;
   }
   const data = readFileSync(file);
-  res.setHeader("content-type", types[file.slice(file.lastIndexOf("."))] ?? "application/octet-stream");
+  res.setHeader("content-type", types[file.slice(file.lastIndexOf(".")).toLowerCase()] ?? "application/octet-stream");
   res.setHeader("accept-ranges", "bytes");
   const range = req.headers.range;
   if (range) {
@@ -147,6 +159,49 @@ for (let waited = 0; waited < 30 * 60_000; waited += 3000) {
 }
 if (last !== "DONE") throw new Error("The hand tracker did not finish all the videos.");
 const results = JSON.parse(await evaluate("JSON.stringify(window.__results)"));
+
+if (checkFolder) {
+  // Split each clip into its tries (the hand is gone for over 0.6 s between them), and judge each one as the app would.
+  const refs = JSON.parse(readFileSync(join(ROOT, "data/word-refs.json"), "utf8"));
+  const offered = Object.keys(refs.signs);
+  const tally = { match: 0, close: 0, "not-yet": 0, wrongMatch: 0, wrongClose: 0, wrongTotal: 0 };
+  const perWord = {};
+  for (const [word, samples] of Object.entries(results)) {
+    const tries = [];
+    let current = [];
+    for (const sample of samples) {
+      if (current.length && sample.t - current[current.length - 1].t > 600) {
+        tries.push(current);
+        current = [];
+      }
+      current.push(sample);
+    }
+    if (current.length) tries.push(current);
+    const real = tries.filter((t) => t.length >= 8 && t[t.length - 1].t - t[0].t >= 400);
+    console.log(`\n${word.toUpperCase()}: ${real.length} tries found${offered.includes(word) ? "" : " (the camera doesn't check this word, so only wrong-word acceptance is counted)"}`);
+    perWord[word] = { match: 0, close: 0, notYet: 0, tries: real.length };
+    real.forEach((t, i) => {
+      const own = judgeAttempt(t, word, refs);
+      if (own) {
+        tally[own.verdict]++;
+        perWord[word][own.verdict === "not-yet" ? "notYet" : own.verdict]++;
+        console.log(`  try ${i + 1}: ${own.verdict.padEnd(7)} distance ${own.distance.toFixed(2)}  closest ${own.closest}  hint ${own.hint}`);
+      }
+      for (const other of offered.filter((o) => o !== word)) {
+        const wrong = judgeAttempt(t, other, refs);
+        if (!wrong) continue;
+        tally.wrongTotal++;
+        if (wrong.verdict === "match") tally.wrongMatch++;
+        if (wrong.verdict === "close") tally.wrongClose++;
+      }
+    });
+  }
+  console.log("\nPER WORD (match / close / not yet):");
+  for (const [word, r] of Object.entries(perWord)) console.log(`  ${word.padEnd(8)} ${r.match} / ${r.close} / ${r.notYet}`);
+  console.log(`\nRight word as target: ${tally.match} match, ${tally.close} close, ${tally["not-yet"]} not yet`);
+  console.log(`Wrong word as target (${tally.wrongTotal} comparisons): ${tally.wrongMatch} accepted as a match, ${tally.wrongClose} as close`);
+  process.exit(0);
+}
 
 if (rawFolder) {
   mkdirSync(rawFolder, { recursive: true });
