@@ -1,46 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { PRIMARY_BUTTON, SECONDARY_BUTTON } from "@/components/buttons";
+import { useMemo, useState } from "react";
+import { SECONDARY_BUTTON } from "@/components/buttons";
 import { HandshapeImage } from "@/components/SignCard";
 import { getSign } from "@/lib/content";
 import { hasDoubleLetter, hasMovingLetter, spellOut } from "@/lib/spell";
 
-// How long each letter is held while playing, and the extra pause between words.
-const SPEEDS = { Slow: 1400, Normal: 900 } as const;
-type Speed = keyof typeof SPEEDS;
-const WORD_PAUSE = 1.6;
 const EXAMPLES = ["Anna", "Sam", "Maya"];
 
 export default function SpellIt() {
   const [text, setText] = useState("");
-  const [speed, setSpeed] = useState<Speed>("Normal");
-  // The position (across all words) of the letter being shown while playing, or -1 when not playing.
-  const [at, setAt] = useState(-1);
-
   const spelling = useMemo(() => spellOut(text), [text]);
-  const letters = useMemo(
-    () => spelling.words.flatMap((word, wordIndex) => word.map((letter, i) => ({ letter, wordIndex, first: i === 0 }))),
-    [spelling],
-  );
-  const playing = at >= 0;
-
-  // Playing steps through the letters, pausing a little longer when a new word starts.
-  useEffect(() => {
-    if (!playing) return;
-    if (at >= letters.length - 1) {
-      const done = setTimeout(() => setAt(-1), SPEEDS[speed]);
-      return () => clearTimeout(done);
-    }
-    const next = letters[at + 1];
-    const wait = SPEEDS[speed] * (next.first ? WORD_PAUSE : 1);
-    const timer = setTimeout(() => setAt(at + 1), wait);
-    return () => clearTimeout(timer);
-  }, [at, playing, letters, speed]);
-
-  let index = 0;
-  const current = playing ? letters[at] : null;
 
   return (
     <div>
@@ -57,10 +28,7 @@ export default function SpellIt() {
         id="spell-text"
         type="text"
         value={text}
-        onChange={(event) => {
-          setText(event.target.value);
-          setAt(-1);
-        }}
+        onChange={(event) => setText(event.target.value)}
         maxLength={60}
         autoComplete="off"
         autoCapitalize="off"
@@ -70,7 +38,7 @@ export default function SpellIt() {
         className="mt-2 w-full rounded-2xl border-2 border-charcoal bg-white px-4 py-3 text-lg text-ink placeholder:text-muted focus:outline-none focus-visible:ring-4 focus-visible:ring-bluebell"
       />
 
-      {letters.length === 0 ? (
+      {spelling.words.length === 0 ? (
         <div className="mt-4" data-spell-empty>
           <p className="text-sm text-muted">Not sure what to type? Tap one to try it:</p>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -83,33 +51,6 @@ export default function SpellIt() {
         </div>
       ) : (
         <>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setAt(playing ? -1 : 0)}
-              className={PRIMARY_BUTTON}
-              data-spell-play
-            >
-              {playing ? "Stop" : "Play"}
-            </button>
-            <div role="radiogroup" aria-label="Speed" className="flex gap-2">
-              {(Object.keys(SPEEDS) as Speed[]).map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  role="radio"
-                  aria-checked={speed === name}
-                  onClick={() => setSpeed(name)}
-                  className={`rounded-full border-2 px-4 py-2 text-sm font-semibold transition ${
-                    speed === name ? "border-charcoal bg-bluebell text-ink" : "border-charcoal/25 bg-cream text-muted hover:border-charcoal"
-                  }`}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="mt-5 space-y-5" data-spell-result>
             {spelling.words.map((word, wordIndex) => (
               <section key={wordIndex} aria-label={`Word ${wordIndex + 1}: ${word.join("")}`}>
@@ -117,18 +58,13 @@ export default function SpellIt() {
                   <h2 className="mb-2 font-display text-lg font-bold text-ink">{word.join("")}</h2>
                 )}
                 <ol className="grid grid-cols-4 gap-2">
-                  {word.map((letter) => {
-                    const position = index++;
+                  {word.map((letter, position) => {
                     const sign = getSign(`letter-${letter.toLowerCase()}`);
-                    const active = position === at;
                     return (
                       <li
                         key={position}
                         data-spell-letter={letter}
-                        data-spell-current={active ? "true" : undefined}
-                        className={`flex flex-col items-center rounded-2xl p-2 ring-2 transition ${
-                          active ? "bg-bluebell ring-charcoal" : "bg-white ring-line-strong"
-                        }`}
+                        className="flex flex-col items-center rounded-2xl bg-white p-2 ring-2 ring-line-strong"
                       >
                         {sign && <HandshapeImage sign={sign} className="h-24 w-16" />}
                         <span className="mt-1 font-display text-xl font-bold text-ink">{letter}</span>
@@ -139,10 +75,6 @@ export default function SpellIt() {
               </section>
             ))}
           </div>
-
-          <p className="sr-only" aria-live="polite">
-            {current ? `Letter ${current.letter}` : ""}
-          </p>
 
           <div className="mt-5 space-y-2 rounded-2xl bg-fennel px-4 py-3 text-sm text-charcoal" data-spell-tips>
             <p>
