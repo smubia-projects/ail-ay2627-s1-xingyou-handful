@@ -576,6 +576,44 @@ for (let attempt = 0; attempt < 14 && !(wordTested && redChecked); attempt++) {
 check("R9 the word camera check found BLUE to test", wordTested);
 check("R10 RED was reached and checked", redChecked);
 
+// ---------- S. Spell it ----------
+await go("/");
+check("S1 the home page has a 'Spell it' card that links to /spell", await ev(`!![...document.querySelectorAll('a')].find(a => a.getAttribute('href') === '/spell' && a.innerText.includes('Spell it'))`));
+await go("/spell");
+check(
+  "S2 the page opens empty, with example names to tap",
+  (await ev("document.title")) === "Spell it · Handful" && (await ev("!!document.querySelector('[data-spell-empty]')")) && (await ev("document.querySelectorAll('[data-spell-empty] button').length")) === 3 && (await ev("!document.querySelector('[data-spell-result]')")),
+);
+const typeSpelling = async (value) => {
+  await ev(`(() => { const i = document.getElementById('spell-text'); i.focus(); i.select(); })()`);
+  await send("Input.insertText", { text: value });
+  await sleep(500);
+};
+await typeSpelling("Anna Lee");
+const spellShown = await ev(`(() => { const items = [...document.querySelectorAll('[data-spell-letter]')]; const imgs = items.map(li => li.querySelector('img')); return { letters: items.map(li => li.dataset.spellLetter).join(''), headings: [...document.querySelectorAll('[data-spell-result] h2')].map(h => h.innerText), loaded: imgs.every(img => img && img.complete && img.naturalWidth > 0), alts: imgs.every(img => img.alt.startsWith('Handshape:')), mirrored: imgs.every(img => img.className.includes('hand-mirror')) }; })()`);
+check("S3 'Anna Lee' shows 7 letters in two words, each with its handshape drawing", spellShown.letters === "ANNALEE" && spellShown.headings.join() === "ANNA,LEE" && spellShown.loaded && spellShown.alts, JSON.stringify(spellShown));
+check("S3b the drawings follow the signing-hand setting (mirror view)", spellShown.mirrored);
+check("S4 double letters (NN, EE) get the bounce tip, and a pause tip appears between words", (await ev("!!document.querySelector('[data-spell-tip=double]')")) && !(await ev("!!document.querySelector('[data-spell-tip=moving]')")) && (await text()).includes("Pause briefly between words"));
+await shot("S-spell-it");
+await typeSpelling("Jazz");
+check("S5 'Jazz' shows J, A, Z, Z with both the moving-letter and double-letter tips", (await ev(`[...document.querySelectorAll('[data-spell-letter]')].map(li => li.dataset.spellLetter).join('')`)) === "JAZZ" && (await ev("!!document.querySelector('[data-spell-tip=moving]')")) && (await ev("!!document.querySelector('[data-spell-tip=double]')")));
+await typeSpelling("R2-D2");
+check("S6 digits are left out, and the page says so", (await ev(`[...document.querySelectorAll('[data-spell-letter]')].map(li => li.dataset.spellLetter).join('')`)) === "RD" && (await ev("document.querySelector('[data-spell-skipped]')?.innerText ?? ''")).includes("2"));
+await typeSpelling("Sam");
+await clickText("Play");
+await sleep(400);
+const first = await ev(`document.querySelector('[data-spell-current]')?.dataset.spellLetter ?? ''`);
+await sleep(1100);
+const second = await ev(`document.querySelector('[data-spell-current]')?.dataset.spellLetter ?? ''`);
+check("S7 Play highlights the letters one after another (S, then A)", first === "S" && second === "A", `${first} then ${second}`);
+await sleep(3200);
+check("S8 when it reaches the end, playing stops by itself and the button says Play again", !(await ev("!!document.querySelector('[data-spell-current]')")) && (await ev("document.querySelector('[data-spell-play]')?.innerText")) === "Play");
+await typeSpelling("");
+check("S9 clearing the text brings back the empty state", await ev("!!document.querySelector('[data-spell-empty]') && !document.querySelector('[data-spell-result]')"));
+await clickText("Maya");
+await sleep(400);
+check("S10 tapping an example fills it in and spells it", (await ev(`[...document.querySelectorAll('[data-spell-letter]')].map(li => li.dataset.spellLetter).join('')`)) === "MAYA");
+
 // ---------- K. Face line ----------
 await go("/lesson/questions-1");
 t = await text();
