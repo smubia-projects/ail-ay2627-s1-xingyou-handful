@@ -281,6 +281,21 @@ export default function LessonPath() {
             <span className="block text-sm text-muted">Check your fingerspelling with your camera</span>
           </span>
         </Link>
+        <Link
+          href="/spell"
+          className="flex items-center gap-4 rounded-[28px] bg-surface p-4 transition hover:bg-line/70 active:scale-[0.97]"
+        >
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-honey font-display text-[13px] font-bold tracking-tight text-charcoal"
+            aria-hidden="true"
+          >
+            ABC
+          </span>
+          <span className="flex-1">
+            <span className="block font-display text-xl font-bold text-ink">Spell it</span>
+            <span className="block text-sm text-muted">See how to fingerspell any name or word</span>
+          </span>
+        </Link>
       </div>
       {units.map((unit, unitIndex) => {
         const theme = UNIT_THEMES[unitIndex % UNIT_THEMES.length];
