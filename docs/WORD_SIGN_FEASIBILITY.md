@@ -81,12 +81,24 @@ what to fix (hand shape, movement size, speed) rather than a grade, and keep the
 "practice, not a grade" wording. Don't offer the camera for signs it can't check reliably (as already
 done for word signs now).
 
-## Built (2026-10-04)
-The camera now checks 11 one-handed words in "Sign it yourself": BLUE, YELLOW, WHERE, SORRY, MILK, NO, YES,
-TWO, EIGHT, PLEASE and WHY. `tools/build-word-refs.mjs` picks them by rule (one hand; not defined by
-location or a wave; hand shapes at least 0.40 apart) from its own measurements, so GREEN, THREE and others
-dropped out when they were too close to another word. The check uses hand shape and direction only. It says
-"That matches", "Close" or "Not yet" with one hint, and names the word an attempt looked more like.
-On the learner's 15 real attempts through the shipped code: 14 matched, 1 was close, and a wrong word was
-accepted as a full match 0 times in 150 (14 times as "close"). The limits were tuned on those same attempts,
-so expect slightly worse with other people.
+## Second round of real attempts (2026-10-05)
+The same learner filmed six more words, 3 tries each: PLEASE, NO, YES, TWO, EIGHT and WHY. These had been
+chosen by rule from the Signbank videos only, and a tester had already seen PLEASE and NO fail in the app.
+- **Matched all 3 tries:** EIGHT (distance 0.19 to 0.21), WHY (0.28 to 0.32) and YES (0.33 to 0.35, close to the
+  0.35 limit, so a slightly different signer may get "Close" instead of "That matches").
+- **NO:** close every time (0.40 to 0.42, closest word WHERE), never a match.
+- **PLEASE:** not yet every time (0.50 to 0.61). **TWO:** not yet every time (0.57 to 0.62, closest word SORRY).
+  Why was not investigated. PLEASE is a flat hand circling on the chest, where the tracker has to read a hand
+  over the body.
+- Across all 11 words (33 tries): a wrong word was accepted as a full match 0 times in 330 comparisons, and as
+  "close" 25 times. Run it again with `node tools/build-word-refs.mjs --check <folder of clips>`.
+
+## Built (2026-10-05)
+The camera checks **8 words** in "Sign it yourself": BLUE, YELLOW, WHERE, SORRY, MILK, EIGHT, WHY and YES. These
+are exactly the words a real learner got right 3 tries out of 3. NO, PLEASE and TWO are switched off (they
+failed), and no word is offered that nobody has tried. `tools/build-word-refs.mjs` holds the list and applies a
+rule (one hand; not defined by location or a wave; hand shapes at least 0.40 apart). The check uses hand shape
+and direction only. It says "That matches", "Close" or "Not yet" with one hint, and names the word an attempt
+looked more like.
+Limits were tuned on one learner's tries, so expect slightly worse with other people. To add a word, have
+someone film it 3 times, run the tool with `--check`, and add it to the list if all 3 match.

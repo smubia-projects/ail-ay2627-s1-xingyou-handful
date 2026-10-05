@@ -39,7 +39,7 @@ Nobody else can test it, but there's nothing to set up.
 Keep it to 10 minutes. Ask them to:
 1. Open the link, go through the welcome, and do one lesson.
 2. Open Camera practice and try letters A, B, L, S and T.
-3. In a lesson, find a word with "Check with my camera" (BLUE, WHERE, SORRY, MILK, YES, NO…) and try it two or three times.
+3. In a lesson, find a word with "Check with my camera" (BLUE, YELLOW, WHERE, SORRY, MILK, EIGHT, WHY or YES) and try it two or three times.
 4. Tell you: Did it find your hand? Did the answer feel fair? Was anything confusing?
 5. If they sign ASL, which signs or descriptions looked wrong?
 
