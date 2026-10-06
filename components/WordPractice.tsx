@@ -44,8 +44,9 @@ export default function WordPractice() {
         ))}
       </div>
       <p className="mt-2 text-xs text-muted">
-        These are the words the camera can check. Each was tried on a real learner. Other words don&apos;t have camera practice
-        yet, because the check follows one hand and can&apos;t see where your hand is on your body.
+        These are the only words the camera can check reliably. Each was tried on a real learner and tested against other
+        gestures, including waves. Other words don&apos;t have camera practice, because the check follows one hand and can&apos;t
+        see where your hand is on your body or tell small movements from a still hand.
       </p>
 
       {sign && (
