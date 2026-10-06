@@ -515,24 +515,24 @@ for (let attempt = 0; attempt < 5 && !stayed; attempt++) {
 }
 check("Q9 the camera-in-lesson check found a letter with a clip to test", stayed);
 
-// One-handed words: BLUE is checked with the camera, RED (too close to other words) is not.
-await go("/lesson/colors-1");
+// One-handed words: YES is checked with the camera, NO (and BLUE and others that were left out) is not.
+await go("/lesson/basics-1");
 let wordTested = false;
-let redChecked = false;
-// The lesson's exercises come in no fixed order, so keep going until both BLUE and RED have been seen.
-for (let attempt = 0; attempt < 14 && !(wordTested && redChecked); attempt++) {
+let noChecked = false;
+// The lesson's exercises come in no fixed order, so keep going until both YES and NO have been seen.
+for (let attempt = 0; attempt < 14 && !(wordTested && noChecked); attempt++) {
   if (!(await reachSignIt())) break;
   const heading = (await ev("__heading()")).toLowerCase();
-  if (heading !== "sign “blue”" || wordTested) {
-    if (heading === "sign “red”" && !redChecked) {
-      redChecked = true;
-      check("R1 a word the camera can't check reliably (RED) doesn't offer it", !(await lower()).includes("check with my camera"));
+  if (heading !== "sign “yes”" || wordTested) {
+    if (heading === "sign “no”" && !noChecked) {
+      noChecked = true;
+      check("R1 a word the camera can't check reliably (NO) doesn't offer it", !(await lower()).includes("check with my camera"));
     }
     await ev("__solve(false)");
     await sleep(500);
     continue;
   }
-  check("R2 BLUE offers the camera", (await lower()).includes("check with my camera"));
+  check("R2 YES offers the camera", (await lower()).includes("check with my camera"));
   await clickText("Check with my camera");
   await sleep(600);
   check(
@@ -555,26 +555,31 @@ for (let attempt = 0; attempt < 14 && !(wordTested && redChecked); attempt++) {
     }
     return { verdict, distance: await ev(`document.querySelector('[data-word-result]')?.dataset.wordDistance ?? ''`), closest: await ev(`document.querySelector('[data-word-result]')?.dataset.wordClosest ?? ''`) };
   };
-  // YELLOW's real video, with BLUE as the target: not a match, and it says what it looked like.
-  const wrong = await play("yellow");
-  check("R4 YELLOW's video is not accepted as BLUE", wrong.verdict !== "" && wrong.verdict !== "match" && wrong.closest === "yellow", JSON.stringify(wrong));
-  check("R5 the not-yet verdict names the word it looked like and gives a hint", /looked more like YELLOW/.test(await text()) && /Watch the video again/.test(await text()));
+  // HELLO, a wave, with YES as the target: not a match (this is the "I can just wave" case).
+  const wave = await play("hello");
+  check("R4 a HELLO wave is not accepted as YES", wave.verdict !== "" && wave.verdict !== "match", JSON.stringify(wave));
   await clickText("Stop");
   await sleep(500);
-  const right = await play("blue");
-  check("R6 BLUE's real video is accepted as BLUE", right.verdict === "match" && right.closest === "blue", JSON.stringify(right));
+  // EIGHT's real video, with YES as the target: not a match, and it says what it looked like.
+  const wrong = await play("eight");
+  check("R5 EIGHT's video is not accepted as YES, and the verdict names the word it looked like and gives a hint", wrong.verdict !== "" && wrong.verdict !== "match" && wrong.closest === "eight" && /looked more like EIGHT/.test(await text()) && /Watch the video again/.test(await text()), JSON.stringify(wrong));
+  await clickText("Stop");
+  await sleep(500);
+  const right = await play("yes");
+  check("R6 YES's real video is accepted as YES", right.verdict === "match" && right.closest === "yes", JSON.stringify(right));
   await sleep(1500);
+  // The clip loops, so a new try can start and clear the verdict. What matters is that a match never jumps to the answer.
   check(
-    "R7 the match stays on the camera panel (it doesn't jump to the answer)",
-    (await text()).includes("That matches BLUE") && (await ev("!!document.querySelector('[data-word-status]')")) && !(await lower()).includes("got it"),
+    "R7 after a match the learner stays on the camera panel (it doesn't jump to the answer)",
+    (await ev("__heading()")).startsWith("Sign “") && (await ev("!!document.querySelector('[data-word-status]')")) && !(await lower()).includes("got it"),
   );
   await clickText("Show the sign");
   await sleep(500);
   check("R8 'Show the sign' then reveals the answer, with 'the camera agrees'", (await lower()).includes("got it") && (await ev("!!document.querySelector('[data-camera-agrees]')")));
   wordTested = true;
 }
-check("R9 the word camera check found BLUE to test", wordTested);
-check("R10 RED was reached and checked", redChecked);
+check("R9 the word camera check found YES to test", wordTested);
+check("R10 NO was reached and checked", noChecked);
 
 // ---------- S. Spell it ----------
 await go("/");
@@ -615,12 +620,12 @@ check(
 );
 await go("/camera/words");
 const wordChoices = await ev(`[...document.querySelectorAll('[data-word-choice]')].map(b => b.dataset.wordChoice).join()`);
-check("X2 the Words page lists exactly the 8 words the camera checks, alphabetically", wordChoices === "blue,eight,milk,sorry,where,why,yellow,yes", wordChoices);
+check("X2 the Words page lists exactly the 3 words the camera checks, alphabetically", wordChoices === "eight,why,yes", wordChoices);
 check(
-  "X3 BLUE is chosen first, with its video, a description and a switched-off camera panel",
+  "X3 EIGHT is chosen first, with its video, a description and a switched-off camera panel",
   (await ev("document.querySelector('[data-camera-tabs] [aria-current=page]')?.innerText")) === "Words" &&
-    (await text()).includes("Make the sign for Blue") &&
-    (await ev("document.querySelector('[data-word-practice=blue] video')?.getAttribute('src')")) === "/videos/blue.mp4" &&
+    (await text()).includes("Make the sign for Eight") &&
+    (await ev("document.querySelector('[data-word-practice=eight] video')?.getAttribute('src')")) === "/videos/eight.mp4" &&
     (await ev("document.querySelector('[data-word-status]')?.dataset.wordStatus")) === "idle",
 );
 await shot("X-word-practice");
@@ -637,22 +642,26 @@ const playWord = async (clip) => {
   }
   return { verdict, distance: await ev(`document.querySelector('[data-word-result]')?.dataset.wordDistance ?? ''`), closest: await ev(`document.querySelector('[data-word-result]')?.dataset.wordClosest ?? ''`) };
 };
-const wrongWord = await playWord("yellow");
-check("X4 YELLOW's real video is not accepted as BLUE, and it says what it looked like", wrongWord.verdict !== "" && wrongWord.verdict !== "match" && wrongWord.closest === "yellow" && /looked more like YELLOW/.test(await text()), JSON.stringify(wrongWord));
+const wrongWave = await playWord("hello");
+check("X4 a HELLO wave is not accepted as EIGHT", wrongWave.verdict !== "" && wrongWave.verdict !== "match", JSON.stringify(wrongWave));
 await clickText("Stop");
 await sleep(500);
-const rightWord = await playWord("blue");
-check("X5 BLUE's real video is accepted as BLUE", rightWord.verdict === "match" && rightWord.closest === "blue", JSON.stringify(rightWord));
-await ev(`document.querySelector('[data-word-choice=yellow]').click()`);
+const wrongWord = await playWord("yes");
+check("X5 YES's real video is not accepted as EIGHT, and it says what it looked like", wrongWord.verdict !== "" && wrongWord.verdict !== "match" && wrongWord.closest === "yes" && /looked more like YES/.test(await text()), JSON.stringify(wrongWord));
+await clickText("Stop");
+await sleep(500);
+const rightWord = await playWord("eight");
+check("X6 EIGHT's real video is accepted as EIGHT", rightWord.verdict === "match" && rightWord.closest === "eight", JSON.stringify(rightWord));
+await ev(`document.querySelector('[data-word-choice=why]').click()`);
 await sleep(600);
 check(
-  "X6 choosing another word starts fresh: its video and description, no leftover result, camera off",
-  (await text()).includes("Make the sign for Yellow") &&
-    (await ev("document.querySelector('[data-word-practice=yellow] video')?.getAttribute('src')")) === "/videos/yellow.mp4" &&
+  "X7 choosing another word starts fresh: its video and description, no leftover result, camera off",
+  (await text()).includes("Make the sign for Why") &&
+    (await ev("document.querySelector('[data-word-practice=why] video')?.getAttribute('src')")) === "/videos/why.mp4" &&
     (await ev("document.querySelector('[data-word-status]')?.dataset.wordStatus")) === "idle" &&
     (await ev("document.querySelector('[data-word-result]')?.dataset.wordResult ?? ''")) === "",
 );
-check("X7 the Letters tab leads back to /camera", await ev(`(() => { const a = document.querySelector('[data-camera-tabs] a[href="/camera"]'); a.click(); return true; })()`) && (await sleep(1500), (await ev("location.pathname")) === "/camera"));
+check("X8 the Letters tab leads back to /camera", await ev(`(() => { const a = document.querySelector('[data-camera-tabs] a[href="/camera"]'); a.click(); return true; })()`) && (await sleep(1500), (await ev("location.pathname")) === "/camera"));
 
 // ---------- K. Face line ----------
 await go("/lesson/questions-1");
