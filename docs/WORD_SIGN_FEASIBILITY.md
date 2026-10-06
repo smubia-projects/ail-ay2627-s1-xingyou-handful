@@ -93,12 +93,48 @@ chosen by rule from the Signbank videos only, and a tester had already seen PLEA
 - Across all 11 words (33 tries): a wrong word was accepted as a full match 0 times in 330 comparisons, and as
   "close" 25 times. Run it again with `node tools/build-word-refs.mjs --check <folder of clips>`.
 
-## Built (2026-10-05)
-The camera checks **8 words** in "Sign it yourself": BLUE, YELLOW, WHERE, SORRY, MILK, EIGHT, WHY and YES. These
-are exactly the words a real learner got right 3 tries out of 3. NO, PLEASE and TWO are switched off (they
-failed), and no word is offered that nobody has tried. `tools/build-word-refs.mjs` holds the list and applies a
-rule (one hand; not defined by location or a wave; hand shapes at least 0.40 apart). The check uses hand shape
-and direction only. It says "That matches", "Close" or "Not yet" with one hint, and names the word an attempt
-looked more like.
-Limits were tuned on one learner's tries, so expect slightly worse with other people. To add a word, have
-someone film it 3 times, run the tool with `--check`, and add it to the list if all 3 match.
+## False positives found, and the fix (2026-10-06)
+The learner reported that **waving a hand anywhere in front of the camera was accepted as BLUE.** The earlier
+"0 wrong matches in 330" only tested other *signs from the learner's clips*, never random gestures or a wave.
+A wider test (the other 45 Signbank signs, which include the HELLO and GOODBYE waves, run against each word)
+showed it: 10 wrong full matches and 40 wrong "close" results in 360 comparisons. BLUE was matched by HELLO, SIX,
+FOUR and DRINK; WHERE by WHO and GREEN; SORRY by LOVE and RED; EIGHT by SEVEN and NINE.
+
+The room between a right attempt and the closest wrong gesture, per word (smaller is closer; one shared limit of
+0.35 was too generous):
+
+| Word | Learner's right tries | Closest wrong gesture | Room |
+|---|---|---|---|
+| BLUE | 0.21 to 0.24 | SIX and HELLO, 0.30 | 0.06, too little |
+| YELLOW | 0.29 to 0.32 | WHY, 0.36 | 0.04, too little |
+| SORRY | 0.29 to 0.31 | RED, 0.32 | 0.02, too little |
+| MILK | 0.30 to 0.34 | TEN, 0.36 | 0.02, too little |
+| WHERE | 0.18 to 0.22 | WHO, 0.32 | 0.10 |
+| EIGHT | 0.19 to 0.21 | SEVEN and NINE, 0.33 | 0.12 |
+| WHY | 0.28 to 0.32 | THANK-YOU, 0.40 | 0.08 |
+| YES | 0.33 to 0.35 | LOVE, 0.43 | 0.08 |
+
+A second false-positive path: a hand **held still** in the middle pose of WHERE, WHY or YES was accepted. A
+movement measure (`motionAmount`) separates a still hand from a real try for WHY (tries 5.0 to 7.1, still hand with
+ordinary tracker shake 2.3 to 2.5) and YES (4.5 to 6.1 against 2.7 to 3.2), but not for WHERE (2.3 to 3.8 against
+2.7 to 3.2), whose finger wag barely changes the hand.
+
+**What changed:** each word now has its own accept limit, set halfway between the worst right try and the closest
+wrong gesture, and "Close" is only 0.03 beyond it. BLUE, YELLOW, SORRY and MILK were switched off (too little
+room). WHERE was switched off (a still finger matches). WHY and YES need movement above a floor of 3.7. EIGHT is a
+still handshape and needs none. Result for the **three words EIGHT, WHY and YES**: all 9 of the learner's tries
+match; 0 of 90 wrong-word comparisons are accepted or called close; none of 15 other gestures (including both
+waves) is accepted or called close against any of the three words (45 comparisons); a still hand is not a match
+for WHY or YES.
+
+**What this does not prove:** only one learner's tries, and the 15 other gestures are one Signbank signer. A
+learner's own random waving, thumbs up or fist wasn't filmed. To test that, film those gestures and run
+`node tools/build-word-refs.mjs --check <folder>`, then anything accepted as a word is a false positive.
+
+## Built (2026-10-06)
+The camera checks **3 words** in "Sign it yourself" and on the Words practice page: **EIGHT, WHY and YES**. Each
+was matched on all 3 of a real learner's tries, has room between its right tries and the closest wrong gesture, and
+(for WHY and YES) needs movement. The check uses hand shape, which way the hand turns, and (for moving signs) how
+much it moves. It says "That matches", "Close" or "Not yet" with one hint, and names the word an attempt looked
+more like. To add a word: have someone film it 3 times and film gestures that must NOT match, run the tool with
+`--check`, and add it to `tools/build-word-refs.mjs` only if the room is at least 0.08.
