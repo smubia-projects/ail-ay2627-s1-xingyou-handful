@@ -17,7 +17,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compare, describeAttempt, judgeAttempt, STEPS } from "../lib/wordsign.ts";
+import { compare, describeAttempt, judgeAttempt, motionAmount, STEPS } from "../lib/wordsign.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
@@ -25,14 +25,24 @@ const PORT = 3300;
 const FPS = 15;
 
 // Which signs the camera checks:
-//  1. Only words a real learner has tried on camera, 3 tries each, and all 3 matched. The learner's tries
-//     are in docs/WORD_SIGN_FEASIBILITY.md. Tried and left out: NO (close, never a match), PLEASE and TWO (not
-//     yet every time). Words nobody has tried yet are not offered, whatever their Signbank video looks like.
+//  1. Only words a real learner has tried on camera, 3 tries each, all 3 matched, AND that no other gesture
+//     we have comes close to (room of at least 0.08 between a right try and the closest wrong gesture). The tries
+//     are in docs/WORD_SIGN_FEASIBILITY.md. Left out: NO (close, never a match), PLEASE and TWO (not yet every
+//     time), BLUE, YELLOW, SORRY and MILK (too little room). Words nobody has tried are not offered.
 //  2. One hand only (the check sees one hand), and not defined by where the hand is on the body (MOTHER, BLACK)
 //     or by a wave (GOODBYE), which this check can't see.
 //  3. Hand shapes at least MIN_GAP apart. The sign closest to another is dropped, one at a time, until all are.
 // To add a word: have a learner film it 3 times, run this tool with --check, and add it here if all 3 match.
-const CANDIDATES = ["blue", "yellow", "where", "sorry", "milk", "eight", "why", "yes"];
+const CANDIDATES = ["eight", "why", "yes"];
+// The most each word may differ from its Signbank video and still match: halfway between the worst of a real
+// learner's 3 right tries and the closest WRONG gesture (the other 45 Signbank signs and the learner's other
+// words). Measured 2026-10-06, see docs/WORD_SIGN_FEASIBILITY.md. BLUE, YELLOW, SORRY and MILK were taken out
+// because a wrong gesture came within 0.06 of a right attempt (a wave matched BLUE). WHERE was taken out because
+// a raised finger held still matches it and its movement is too small to tell from tracker shake.
+const LIMITS = { eight: 0.27, why: 0.36, yes: 0.39 };
+// For signs that move: the least movement (motionAmount) a match needs, between a hand held still with ordinary
+// tracker shake (2.3 to 3.3) and the learner's real tries (WHY 5.0 to 7.1, YES 4.5 to 6.1). EIGHT is a still handshape.
+const MIN_MOTION = { why: 3.7, yes: 3.7 };
 const TESTED = new Set(["blue", "yellow", "where", "sorry", "milk"]);
 const MIN_GAP = 0.4;
 
@@ -122,7 +132,12 @@ const chrome = spawn(
 const cleanUp = () => {
   chrome.kill();
   server.close();
-  rmSync(profile, { recursive: true, force: true });
+  // The browser may still be writing to its folder for a moment; a leftover temp folder is harmless.
+  try {
+    rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  } catch {
+    // ignored
+  }
 };
 process.on("exit", cleanUp);
 
@@ -228,8 +243,14 @@ for (;;) {
   console.log(`dropped ${drop}: ${a} and ${b} are only ${closest.d.toFixed(2)} apart`);
   offered = offered.filter((x) => x !== drop);
 }
-const out = { std: std.map(round), signs: {} };
-for (const id of offered) out.signs[id] = all[id].map((row) => row.map(round));
+const out = { std: std.map(round), signs: {}, limits: {}, minMotion: {} };
+for (const id of offered) {
+  out.signs[id] = all[id].map((row) => row.map(round));
+  out.limits[id] = LIMITS[id];
+  if (MIN_MOTION[id] !== undefined) out.minMotion[id] = MIN_MOTION[id];
+  // The reference itself must pass its own movement test, with room to spare.
+  if (MIN_MOTION[id] !== undefined && motionAmount(all[id], std) < MIN_MOTION[id] * 1.2) throw new Error(`The ${id} video barely moves, so its movement test is too strict.`);
+}
 writeFileSync(join(ROOT, "data/word-refs.json"), JSON.stringify(out) + "\n");
 console.log(`wrote data/word-refs.json: ${offered.length} signs (${offered.join(" ")}), ${STEPS} steps each`);
 process.exit(0);

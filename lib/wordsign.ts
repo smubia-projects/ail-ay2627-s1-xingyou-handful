@@ -15,16 +15,24 @@ export const STEPS = 30;
 // How far the time-stretching match may bend the timing, in steps (about a quarter of the sign).
 const BAND = 8;
 
-// Distance limits, measured on a real learner's attempts at five signs against 45 other signs: at 0.35
-// 14 in 15 right attempts were accepted and 2.7 in 100 wrong signs; at 0.40, 15 in 15 and 8.4 in 100.
-export const MATCH_WITHIN = 0.35;
-export const CLOSE_WITHIN = 0.45;
+// How far an attempt may be from the sign and still count. Each word has its own limit (WordRefs.limits),
+// set between a real learner's right attempts and the closest wrong gesture, because words differ a lot
+// in how much room there is: one shared limit let other gestures through (a wave matched BLUE). This is
+// the fallback for a word with no limit of its own.
+export const MATCH_WITHIN = 0.3;
+// A little over the limit is "Close" rather than "Not yet". Kept small, since a wrong gesture shouldn't get praise.
+export const CLOSE_MARGIN = 0.03;
 
 export type WordRefs = {
   // How much each of the 24 measures varies across all 46 Signbank signs, for putting them on one scale.
   std: number[];
   // The signs the camera can check, each as STEPS rows of 24 numbers.
   signs: Record<string, number[][]>;
+  // The most an attempt may differ from each sign and still be a match.
+  limits?: Record<string, number>;
+  // For signs that move: the least movement an attempt needs to be a match (see motionAmount). A hand held
+  // still in the sign's pose is otherwise close enough to match. Left out for a sign that is a still handshape.
+  minMotion?: Record<string, number>;
 };
 
 type V3 = [number, number, number];
@@ -79,8 +87,9 @@ export function describeAttempt(samples: Sample[], mirrored = false): number[][]
 }
 
 // Which kind of difference to point the learner at.
-export type Hint = "fingers" | "positions" | "direction";
-const GROUPS: [Hint, number, number][] = [
+type ShapeHint = "fingers" | "positions" | "direction";
+export type Hint = ShapeHint | "movement";
+const GROUPS: [ShapeHint, number, number][] = [
   ["fingers", 0, 4],
   ["positions", 4, 19],
   ["direction", 19, 24],
@@ -89,11 +98,24 @@ export const HINT_TEXT: Record<Hint, string> = {
   fingers: "Check which of your fingers are straight and which are bent",
   positions: "Check where your fingers and thumb go",
   direction: "Turn your hand so it faces the way it does in the video",
+  movement: "Keep your hand moving the way it does in the video, without holding it still",
 };
+
+// How much the hand's measures change over an attempt: the summed step-to-step change, on the shared scale.
+// A hand held still scores low (but not zero, the tracker shakes a little), a signed movement scores higher.
+export function motionAmount(steps: number[][], std: number[]): number {
+  let total = 0;
+  for (let i = 1; i < steps.length; i++) {
+    let sum = 0;
+    for (let k = 0; k < std.length; k++) sum += ((steps[i][k] - steps[i - 1][k]) / std[k]) ** 2;
+    total += Math.sqrt(sum / std.length);
+  }
+  return total;
+}
 
 // How far apart two descriptions are: a time-stretching match (so timing can differ), on measures put
 // on one scale, summed along the best alignment. Also says which kind of difference was biggest.
-export function compare(a: number[][], b: number[][], std: number[]): { distance: number; hint: Hint } {
+export function compare(a: number[][], b: number[][], std: number[]): { distance: number; hint: ShapeHint } {
   const cost = (i: number, j: number) => {
     let s = 0;
     for (let k = 0; k < std.length; k++) s += ((a[i][k] - b[j][k]) / std[k]) ** 2;
@@ -107,7 +129,7 @@ export function compare(a: number[][], b: number[][], std: number[]): { distance
     }
   }
   // Walk back along the best alignment, adding up how much each group of measures differs.
-  const spent: Record<Hint, number> = { fingers: 0, positions: 0, direction: 0 };
+  const spent: Record<ShapeHint, number> = { fingers: 0, positions: 0, direction: 0 };
   let i = STEPS - 1;
   let j = STEPS - 1;
   for (;;) {
@@ -124,7 +146,7 @@ export function compare(a: number[][], b: number[][], std: number[]): { distance
     ].filter(([x, y]) => x >= 0 && y >= 0 && D[x][y] < Infinity);
     [i, j] = options.sort((p, q) => D[p[0]][p[1]] - D[q[0]][q[1]])[0];
   }
-  const hint = (Object.keys(spent) as Hint[]).sort((p, q) => spent[q] - spent[p])[0];
+  const hint = (Object.keys(spent) as ShapeHint[]).sort((p, q) => spent[q] - spent[p])[0];
   return { distance: D[STEPS - 1][STEPS - 1] / (2 * STEPS), hint };
 }
 
@@ -150,6 +172,11 @@ export function judgeAttempt(samples: Sample[], target: string, refs: WordRefs):
   });
   const mine = scores.find((s) => s.id === target)!;
   const closest = scores.reduce((best, s) => (s.distance < best.distance ? s : best)).id;
-  const verdict: Verdict = mine.distance <= MATCH_WITHIN && closest === target ? "match" : mine.distance <= CLOSE_WITHIN ? "close" : "not-yet";
-  return { verdict, distance: mine.distance, closest, hint: mine.hint };
+  const limit = refs.limits?.[target] ?? MATCH_WITHIN;
+  // A sign that moves needs some movement. A hand held in its pose would otherwise match.
+  const needed = refs.minMotion?.[target];
+  const still = needed !== undefined && motionAmount(plain, refs.std) < needed;
+  const verdict: Verdict =
+    mine.distance <= limit && closest === target && !still ? "match" : mine.distance <= limit + CLOSE_MARGIN || (still && mine.distance <= limit) ? "close" : "not-yet";
+  return { verdict, distance: mine.distance, closest, hint: still && mine.distance <= limit ? "movement" : mine.hint };
 }
