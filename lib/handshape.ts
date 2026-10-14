@@ -40,6 +40,14 @@ const THUMB_OUT_FROM = 0.35;
 // Thumb tip to a fingertip, in palm widths, counts as touching (touching pairs read 0.27 to 0.41 on
 // signing videos; on the same real hands, 0.55 accepts 85 to 97 in 100 touching pairs).
 const TOUCH_WITHIN = 0.55;
+// How close the thumb tip is to the middle of the palm, in palm widths, for the thumb to count as folded
+// across the palm (the B hand). "Not sticking out sideways" isn't enough: a thumb held up beside the
+// fingers also isn't sticking out. Measured on real hands with the thumb folded across the palm (a B hand),
+// the thumb tip sits 0.56 to 1.08 palm widths from the palm's middle (median 0.73). The same hands with the
+// thumb moved along the index finger read 0.75 to 1.33 (median 1.01), and with the thumb half out to the side
+// 0.88 to 0.93. At 0.8, 67 in 100 real frames are accepted, against 7 in 100 with the thumb along the
+// index finger and 0 in 100 with it half out. A looser 0.9 let a half-out thumb through 73 times in 100.
+const THUMB_ON_PALM_WITHIN = 0.8;
 // Index to middle fingertip, in palm widths, counts as spread apart.
 const APART_FROM = 0.5;
 // The thumb tip within this many palm widths of the middle finger's middle joint counts as resting
@@ -60,6 +68,8 @@ export type HandReading = {
   facing: Facing;
   // True when the thumb tip is resting on the middle finger's middle joint.
   thumbOnMiddle: boolean;
+  // True when the thumb tip is close to the middle of the palm: folded across it.
+  thumbOnPalm: boolean;
   // True when the index fingertip has crossed over (or sits level with) the middle fingertip.
   crossed: boolean;
   // Which fist letter the whole hand shape looks most like. Added by the caller, and only when all
@@ -107,6 +117,7 @@ export function measureHand(points: Point[]) {
     axisY: round(axis.y / (Math.hypot(axis.x, axis.y, axis.z) || 1)),
     thumbToMiddleJoint: round(distance(points[4], points[10]) / palmWidth),
     thumbLateral: round(thumbLateral(points, palmWidth)),
+    thumbToPalmCentre: round(thumbToPalmCentre(points, palmWidth)),
     thumbTo: Object.fromEntries(FINGERS.map((f) => [f, round(distance(points[4], points[TIP[f]]) / palmWidth)])),
     indexMiddleGap: round(distance(points[8], points[12]) / palmWidth),
   };
@@ -122,6 +133,13 @@ const unit = (a: Point): Point => {
 
 // How far the thumb tip sticks out sideways past the index knuckle, in palm widths. Positive is
 // away from the palm. This works for either hand and any way the hand faces.
+// How far the thumb tip is from the middle of the palm (the average of the wrist and the four knuckles),
+// in palm widths. Small when the thumb is folded across the palm.
+function thumbToPalmCentre(points: Point[], palmWidth: number): number {
+  const middle = [0, 5, 9, 13, 17].reduce((sum, k) => ({ x: sum.x + points[k].x / 5, y: sum.y + points[k].y / 5, z: sum.z + points[k].z / 5 }), { x: 0, y: 0, z: 0 });
+  return distance(points[4], middle) / palmWidth;
+}
+
 function thumbLateral(points: Point[], palmWidth: number): number {
   const across = unit(sub(points[5], points[17]));
   return dot(sub(points[4], points[5]), across) / palmWidth;
@@ -159,6 +177,7 @@ export function analyzeHand(points: Point[]): HandReading {
     indexMiddleApart,
     facing: handFacing(points),
     thumbOnMiddle: distance(points[4], points[10]) / palmWidth < ON_MIDDLE_JOINT,
+    thumbOnPalm: thumbToPalmCentre(points, palmWidth) <= THUMB_ON_PALM_WITHIN,
     crossed: tipOrder(points, palmWidth) < CROSSED_WITHIN,
   };
 }
@@ -166,6 +185,8 @@ export function analyzeHand(points: Point[]): HandReading {
 export type LetterSpec = {
   fingers: Partial<Record<Finger, FingerState>>;
   thumb?: ThumbState;
+  // The thumb must be folded across the palm, not just tucked away (B).
+  thumbAcrossPalm?: boolean;
   // The thumb tip must touch this fingertip; "none" means it must not touch any.
   touch?: Finger | "none";
   // Index and middle must be spread apart (true) or together (false).
@@ -223,7 +244,7 @@ const BENT: Partial<Record<Finger, FingerState>> = { index: "bent", middle: "ben
 // What each letter needs, as far as finger positions go. The drawings show the full detail.
 export const LETTER_SPECS: Record<string, LetterSpec> = {
   A: { fingers: BENT, fist: "Make a fist with your thumb resting along the side of your index finger" },
-  B: { fingers: { index: "extended", middle: "extended", ring: "extended", pinky: "extended" }, thumb: "tucked", touch: "none", apart: false },
+  B: { fingers: { index: "extended", middle: "extended", ring: "extended", pinky: "extended" }, thumb: "tucked", thumbAcrossPalm: true, touch: "none", apart: false },
   C: { fingers: {}, thumb: "out", touch: "none", alike: true, tricky: CURVED },
   D: { fingers: { index: "extended", middle: "bent", ring: "bent", pinky: "bent" }, touch: "middle", tricky: POINTING },
   E: { fingers: BENT, fist: "Curl your fingertips down onto your thumb, with the thumb tucked under them" },
@@ -288,6 +309,13 @@ export function checkLetter(letter: string, reading: HandReading): Check[] {
     // The model's other guess is a letter, or "other" for hands that aren't one of the fist letters.
     const other = seen && !ok && seen.letter in LETTER_SPECS ? `That looks more like ${seen.letter}. ` : "";
     checks.push({ label: `Thumb and fist look like ${letter.toUpperCase()}`, ok, tip: other + spec.fist });
+  }
+  if (spec.thumbAcrossPalm) {
+    checks.push({
+      label: "Thumb folded across your palm",
+      ok: reading.thumbOnPalm,
+      tip: "Fold your thumb across your palm, not up beside your fingers",
+    });
   }
   if (spec.touch === "none") {
     checks.push({ label: "Thumb not touching a finger", ok: reading.touching === null, tip: "Keep a gap between your thumb and fingers" });
