@@ -476,7 +476,9 @@ let stayed = false;
 for (let attempt = 0; attempt < 5 && !stayed; attempt++) {
   if (!(await reachSignIt())) break;
   const heading = await ev("__heading()");
-  const clip = { "Sign “B”": "blue", "Sign “A”": "sorry" }[heading];
+  // The letter A with the SORRY video (a fist). The BLUE video's B hand holds its thumb loosely, which B no longer accepts
+  // every frame since B needs the thumb folded across the palm, so it isn't a steady stand-in for a match.
+  const clip = { "Sign “A”": "sorry" }[heading];
   if (!clip) {
     await ev("__solve(false)"); // not a letter with a clip to play: do it and move on to the next one
     await sleep(500);

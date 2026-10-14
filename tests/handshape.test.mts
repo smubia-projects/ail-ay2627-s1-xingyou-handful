@@ -225,6 +225,40 @@ check("a mirrored picture (the other hand) gives the same answers", mirroredRigh
 const wideRight = recorded.filter((sample) => guessFist(sample.points.map(([x, y, z]) => ({ x, y, z })), 16 / 9, fistModel).letter === sample.letter).length;
 check("a 16:9 camera gives almost the same answers", wideRight >= 48, `${wideRight} of ${recorded.length}`);
 
+// ---- B needs the thumb folded across the palm, not just "not sticking out" ----
+// A thumb held straight up beside the index finger isn't sticking out sideways either, and used to pass.
+const alongsideIndex = (points: Point[]): Point[] => {
+  // The thumb held up beside the index finger: its tip sits just to the thumb side of the index finger's middle joint.
+  const palm = Math.hypot(points[5].x - points[17].x, points[5].y - points[17].y, points[5].z - points[17].z);
+  const side = { x: points[5].x - points[17].x, y: points[5].y - points[17].y, z: points[5].z - points[17].z };
+  const l = Math.hypot(side.x, side.y, side.z);
+  const tip = { x: points[6].x + (side.x / l) * palm * 0.25, y: points[6].y + (side.y / l) * palm * 0.25, z: points[6].z + (side.z / l) * palm * 0.25 };
+  const middle = { x: (points[2].x + tip.x) / 2, y: (points[2].y + tip.y) / 2, z: (points[2].z + tip.z) / 2 };
+  return points.map((point, i) => (i === 3 ? middle : i === 4 ? tip : point));
+};
+const halfOut = (points: Point[]): Point[] => {
+  const palm = Math.hypot(points[5].x - points[17].x, points[5].y - points[17].y, points[5].z - points[17].z);
+  const side = { x: points[5].x - points[17].x, y: points[5].y - points[17].y, z: points[5].z - points[17].z };
+  const l = Math.hypot(side.x, side.y, side.z);
+  return points.map((point, i) => (i === 4 ? { x: points[5].x + (side.x / l) * palm * 0.3, y: points[5].y + (side.y / l) * palm * 0.3, z: points[5].z + (side.z / l) * palm * 0.3 } : point));
+};
+const bHand = buildHand(POSES.B);
+check("a B with the thumb across the palm is accepted", letterMatches(checkLetter("B", analyzeHand(bHand))) && analyzeHand(bHand).thumbOnPalm);
+const bBeside = analyzeHand(alongsideIndex(bHand));
+check("a B with the thumb held up beside the index finger is NOT accepted", !letterMatches(checkLetter("B", bBeside)) && !bBeside.thumbOnPalm);
+check("... and the learner is told to fold the thumb across the palm", checkLetter("B", bBeside).some((c) => !c.ok && c.label === "Thumb folded across your palm" && /across your palm, not up beside/.test(c.tip)));
+const bHalfOut = analyzeHand(halfOut(bHand));
+check("a B with the thumb stuck half out to the side is NOT accepted", !letterMatches(checkLetter("B", bHalfOut)));
+check("only B asks for it: the other letters with a tucked thumb are unchanged", ["I", "U", "V"].every((letter) => letterMatches(checkLetter(letter, analyzeHand(buildHand(POSES[letter]))))));
+// Real hands, recorded from the Signbank FOUR sign (four straight fingers, thumb folded across the palm) and the same
+// frames with the thumb moved beside the index finger. The cutoff was set on these (see lib/handshape.ts).
+const toPoints = (frames: { world: number[][] }[]) => frames.map((f) => f.world.map(([x, y, z]) => ({ x, y, z })));
+const fourFrames = toPoints(JSON.parse(readFileSync(new URL("./word-others.json", import.meta.url), "utf8")).four);
+const share = (frames: Point[][]) => frames.filter((f) => analyzeHand(f).thumbOnPalm).length / frames.length;
+check("real hands with the thumb folded across the palm are accepted more often than not", share(fourFrames) >= 0.55, `${Math.round(share(fourFrames) * 100)}%`);
+check("the same real hands with the thumb moved beside the index finger are almost never accepted", share(fourFrames.map(alongsideIndex)) <= 0.15, `${Math.round(share(fourFrames.map(alongsideIndex)) * 100)}%`);
+check("... and with the thumb stuck half out, never", share(fourFrames.map(halfOut)) === 0, `${Math.round(share(fourFrames.map(halfOut)) * 100)}%`);
+
 // ---- Advice when it's wrong ----
 const tips = (letter: string, pose: Pose) => checkLetter(letter, read(pose)).filter((c) => !c.ok).map((c) => c.tip);
 check("V with the ring finger up: told to fold the ring finger", tips("V", { ...POSES.V, ring: "extended" }).includes("Fold your ring finger down"), tips("V", { ...POSES.V, ring: "extended" }).join("; "));
