@@ -42,12 +42,14 @@ const THUMB_OUT_FROM = 0.35;
 const TOUCH_WITHIN = 0.55;
 // How close the thumb tip is to the middle of the palm, in palm widths, for the thumb to count as folded
 // across the palm (the B hand). "Not sticking out sideways" isn't enough: a thumb held up beside the
-// fingers also isn't sticking out. Measured on real hands with the thumb folded across the palm (a B hand),
-// the thumb tip sits 0.56 to 1.08 palm widths from the palm's middle (median 0.73). The same hands with the
-// thumb moved along the index finger read 0.75 to 1.33 (median 1.01), and with the thumb half out to the side
-// 0.88 to 0.93. At 0.8, 67 in 100 real frames are accepted, against 7 in 100 with the thumb along the
-// index finger and 0 in 100 with it half out. A looser 0.9 let a half-out thumb through 73 times in 100.
-const THUMB_ON_PALM_WITHIN = 0.8;
+// fingers also isn't sticking out. Only the position across the palm's surface counts, not how far the thumb
+// sits in front of it: the tracker's depth numbers are noisy, and a first version that included depth
+// rejected a correct B on a learner's own camera (the thumb tip was plainly on the palm). Measured this way
+// on real hands with the thumb folded across the palm, the tip sits 0.23 to 0.91 palm widths from the palm's
+// middle (median 0.33). The same hands with the thumb moved up beside the index finger read a median of 1.11,
+// and with the thumb half out to the side 0.89. At 0.7, 87 in 100 real frames are accepted, against 0 in 100
+// with the thumb beside the index finger and 0 in 100 with it half out. At 0.9 a half-out thumb got through.
+const THUMB_ON_PALM_WITHIN = 0.7;
 // Index to middle fingertip, in palm widths, counts as spread apart.
 const APART_FROM = 0.5;
 // The thumb tip within this many palm widths of the middle finger's middle joint counts as resting
@@ -133,11 +135,17 @@ const unit = (a: Point): Point => {
 
 // How far the thumb tip sticks out sideways past the index knuckle, in palm widths. Positive is
 // away from the palm. This works for either hand and any way the hand faces.
-// How far the thumb tip is from the middle of the palm (the average of the wrist and the four knuckles),
-// in palm widths. Small when the thumb is folded across the palm.
+// How far the thumb tip is from the middle of the palm (the average of the wrist and the four knuckles), in
+// palm widths, measured along the palm's surface: up the hand and across it, ignoring how far in front of the
+// palm the thumb is. Small when the thumb is folded across the palm.
 function thumbToPalmCentre(points: Point[], palmWidth: number): number {
   const middle = [0, 5, 9, 13, 17].reduce((sum, k) => ({ x: sum.x + points[k].x / 5, y: sum.y + points[k].y / 5, z: sum.z + points[k].z / 5 }), { x: 0, y: 0, z: 0 });
-  return distance(points[4], middle) / palmWidth;
+  const up = unit(sub(points[9], points[0]));
+  const knuckles = sub(points[5], points[17]);
+  const along = dot(knuckles, up);
+  const across = unit({ x: knuckles.x - up.x * along, y: knuckles.y - up.y * along, z: knuckles.z - up.z * along });
+  const offset = sub(points[4], middle);
+  return Math.hypot(dot(offset, up), dot(offset, across)) / palmWidth;
 }
 
 function thumbLateral(points: Point[], palmWidth: number): number {
