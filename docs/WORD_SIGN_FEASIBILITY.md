@@ -138,3 +138,19 @@ was matched on all 3 of a real learner's tries, has room between its right tries
 much it moves. It says "That matches", "Close" or "Not yet" with one hint, and names the word an attempt looked
 more like. To add a word: have someone film it 3 times and film gestures that must NOT match, run the tool with
 `--check`, and add it to `tools/build-word-refs.mjs` only if the room is at least 0.08.
+
+## The learner's own "not a sign" gestures (2026-10-15)
+The learner filmed 8 gestures that are not signs, one clip each: a hello wave, a wave with a twisted wrist, a fist held
+still, a fist moving, a thumbs up, a pointing finger moving, fidgeting, and an open hand held still. Run against EIGHT,
+WHY and YES with `node tools/build-word-refs.mjs --check <folder>`:
+- **A thumbs up was accepted as YES** (distance 0.38 against YES's limit of 0.39). Everything else was rejected: the
+  nearest others were an open hand held still against EIGHT (0.34 against a limit of 0.27), a hello wave against EIGHT
+  (0.38) and a wave with a twist against EIGHT (0.41).
+- **The thumb tells them apart.** The thumb sticks out sideways in 91 in 100 frames of the thumbs up, 17 in 100 of the
+  learner's YES, and 1 in 100 of a plain fist. YES now needs the thumb tucked in for most frames (`maxThumbOut` 0.5),
+  and a thumb that sticks out gives "Not yet" with the hint to tuck it in.
+- **After the fix:** the learner's 9 tries at the three words still match, 0 of 90 wrong-word comparisons are accepted,
+  and 0 of 24 comparisons of the gesture clips are accepted or called close.
+- **Room:** YES now has about 0.03 between its worst right try (0.35) and the thumbs up (0.38) on distance alone, below the
+  0.08 rule for new words, and relies on the thumb check to keep them apart. If more people use it, this is the first word to
+  re-test.
