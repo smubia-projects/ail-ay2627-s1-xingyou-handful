@@ -3,7 +3,7 @@
 **Learn American Sign Language, a small handful of signs a day. Free, in your browser, no account.**
 
 Live app: **https://handful-asl.vercel.app**
-Demo video: [EDIT: paste your demo video link here]
+Demo video: coming soon
 
 Handful is an early version. It teaches signs in short lessons, helps you practise and repeat them, and uses your camera to give practice feedback on your fingerspelling and a few signs. The camera runs on your own device, and your video never leaves it.
 
@@ -158,6 +158,10 @@ node tests/camera.mjs               # real signing videos through the hand track
 
 - The word check is tested on **one learner** and covers **three words**. The letter check is weakest on a
   few letters (such as W, K, P, R) and can't separate C from O.
+- **YES is the most fragile of the three words.** On hand shape alone it sits close to a thumbs up, so it
+  relies on a thumb check to tell them apart. It's the first word to re-test if more people use the app.
+- **B is now strict about the thumb.** It has to be folded across the palm, so a loosely held thumb may
+  need a second try.
 - It follows **one hand** and can't see where your hand is on your body or your facial expression, so many
   signs (two-handed signs, signs at the face) have no camera check at all.
 - Hand tracking depends on light and camera quality, and I haven't tested it across a wide range of
