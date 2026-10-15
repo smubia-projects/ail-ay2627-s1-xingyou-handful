@@ -135,7 +135,11 @@ node tests/camera.mjs               # real signing videos through the hand track
   out in my clips (about 91 in 100 frames for a thumbs up, 17 in 100 for my YES). Now none of the 8 is
   accepted, or called close, for any of the three words.
 - **Letter B passing with the wrong thumb.** Testing it on my own hand, I noticed B passed with the thumb
-  held beside the fingers. B now requires the thumb folded across the palm, with the cutoff set on real hands.
+  held beside the fingers. B now requires the thumb folded across the palm. The first version of that fix was
+  too strict on my own camera, because it counted how far the thumb sat in front of the palm and the tracker's
+  depth numbers are noisy. The final version looks only at where the thumb sits on the palm, with the cutoff
+  set on real hands: it accepts about 85 in 100 real frames, and none with the thumb held beside the fingers
+  or stuck out.
 - **Overclaiming.** Letters have confidence levels. Where the camera genuinely can't tell signs apart (for
   example G/Q, C/O) it says "the finger shape fits, but the camera can't be sure" instead of "That looks
   like…". The app says plainly that it's practice feedback, not a grade.
@@ -160,10 +164,12 @@ node tests/camera.mjs               # real signing videos through the hand track
   few letters (such as W, K, P, R) and can't separate C from O.
 - **YES is the most fragile of the three words.** On hand shape alone it sits close to a thumbs up, so it
   relies on a thumb check to tell them apart. It's the first word to re-test if more people use the app.
-- **B is now strict about the thumb.** It has to be folded across the palm, so a loosely held thumb may
-  need a second try.
+- **B asks for the thumb folded across the palm.** A thumb held up beside the fingers or stuck out doesn't
+  count, and a correct B is accepted most of the time, so a very loosely held thumb may need a second try.
+- **WHY is checked by its hand shape and movement only.** It starts at the forehead, but the camera can't see
+  where your hand is on your body, so it can't tell if you start somewhere else.
 - It follows **one hand** and can't see where your hand is on your body or your facial expression, so many
-  signs (two-handed signs, signs at the face) have no camera check at all.
+  signs (two-handed signs, and most signs made at the face or body) have no camera check at all.
 - Hand tracking depends on light and camera quality, and I haven't tested it across a wide range of
   hands, skin tones or lighting.
 - It's an early version. It's practice, not a replacement for a Deaf teacher.
