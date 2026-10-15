@@ -255,8 +255,8 @@ check("only B asks for it: the other letters with a tucked thumb are unchanged",
 const toPoints = (frames: { world: number[][] }[]) => frames.map((f) => f.world.map(([x, y, z]) => ({ x, y, z })));
 const fourFrames = toPoints(JSON.parse(readFileSync(new URL("./word-others.json", import.meta.url), "utf8")).four);
 const share = (frames: Point[][]) => frames.filter((f) => analyzeHand(f).thumbOnPalm).length / frames.length;
-check("real hands with the thumb folded across the palm are accepted more often than not", share(fourFrames) >= 0.55, `${Math.round(share(fourFrames) * 100)}%`);
-check("the same real hands with the thumb moved beside the index finger are almost never accepted", share(fourFrames.map(alongsideIndex)) <= 0.15, `${Math.round(share(fourFrames.map(alongsideIndex)) * 100)}%`);
+check("real hands with the thumb folded across the palm are accepted (about 85 in 100 frames)", share(fourFrames) >= 0.8, `${Math.round(share(fourFrames) * 100)}%`);
+check("the same real hands with the thumb moved beside the index finger are never accepted", share(fourFrames.map(alongsideIndex)) <= 0.05, `${Math.round(share(fourFrames.map(alongsideIndex)) * 100)}%`);
 check("... and with the thumb stuck half out, never", share(fourFrames.map(halfOut)) === 0, `${Math.round(share(fourFrames.map(halfOut)) * 100)}%`);
 
 // ---- Advice when it's wrong ----

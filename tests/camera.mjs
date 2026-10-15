@@ -184,17 +184,18 @@ const CASES = [
   { video: "five", accept: null, reject: ["B", "L", "V"] },
   { video: "please", accept: null, reject: ["B", "V", "Y"] },
 ];
-// Detection is slow and patchy in headless Chrome, so a window with almost no frames is retried.
+// Detection is slow and patchy in headless Chrome, so a window with too few frames to judge (under 6) is retried.
 async function sample(video, letter) {
   let result = await sampleVideo(video, letter);
-  for (let attempt = 0; attempt < 2 && !result.error && result.frames < 3; attempt++) {
+  for (let attempt = 0; attempt < 2 && !result.error && result.frames < 6; attempt++) {
     result = await sampleVideo(video, letter);
   }
   return result;
 }
 const results = [];
 // QUICK=1 skips the long video-by-video sampling, for fast checks while developing.
-for (const test of process.env.QUICK ? [] : CASES) {
+// ONLY=blue runs just that one video's cases (for checking one letter quickly).
+for (const test of process.env.QUICK ? [] : CASES.filter((c) => !process.env.ONLY || c.video === process.env.ONLY)) {
   if (test.accept) {
     const result = await sample(test.video, test.accept);
     results.push([test.video, test.accept, result]);
