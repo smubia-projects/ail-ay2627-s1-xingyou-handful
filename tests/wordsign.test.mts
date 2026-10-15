@@ -4,7 +4,7 @@
 // No camera needed.
 // Run with:  node tests/wordsign.test.mts
 import { readFileSync } from "node:fs";
-import { compare, describeAttempt, judgeAttempt, motionAmount, STEPS, type Sample, type WordRefs } from "../lib/wordsign.ts";
+import { compare, describeAttempt, judgeAttempt, motionAmount, STEPS, thumbOutShare, type Sample, type WordRefs } from "../lib/wordsign.ts";
 
 let passed = 0;
 let failed = 0;
@@ -91,6 +91,32 @@ for (const id of ["why", "yes"]) {
   check(`${id}: a still hand is told to keep moving`, results.some((r) => r.hint === "movement"));
 }
 check("eight: a still hand IS a match, because EIGHT is a still handshape", judgeAttempt(heldStill("eight", 0.002), "eight", refs)!.verdict === "match");
+
+// ---- A thumbs up is not YES ----
+// A thumbs up is a fist with the thumb out, and looked like a nodding YES (distance 0.38 against a limit of 0.39 on the
+// learner's own clip). The thumb is what tells them apart. Simulated here from the Signbank YES hand with the thumb stuck up
+// beside the index finger, so no one's own hand recordings are kept in the project.
+const thumbsUp = (list: Sample[]): Sample[] =>
+  list.map((sample) => {
+    const w = sample.world;
+    const palm = Math.hypot(w[5].x - w[17].x, w[5].y - w[17].y, w[5].z - w[17].z);
+    const side = { x: w[5].x - w[17].x, y: w[5].y - w[17].y, z: w[5].z - w[17].z };
+    const up = { x: w[5].x - w[0].x, y: w[5].y - w[0].y, z: w[5].z - w[0].z };
+    const sl = Math.hypot(side.x, side.y, side.z);
+    const ul = Math.hypot(up.x, up.y, up.z);
+    const tip = {
+      x: w[5].x + (side.x / sl) * palm * 0.6 + (up.x / ul) * palm * 0.5,
+      y: w[5].y + (side.y / sl) * palm * 0.6 + (up.y / ul) * palm * 0.5,
+      z: w[5].z + (side.z / sl) * palm * 0.6 + (up.z / ul) * palm * 0.5,
+    };
+    return { t: sample.t, world: w.map((p, i) => (i === 4 ? tip : p)) };
+  });
+check("YES has a limit on how often the thumb may stick out; EIGHT and WHY (which use the thumb) have none", (refs.maxThumbOut?.yes ?? 1) <= 0.6 && refs.maxThumbOut?.eight === undefined && refs.maxThumbOut?.why === undefined);
+check("the Signbank YES video keeps its thumb tucked (sticks out in few frames)", thumbOutShare(samples("yes")) <= 0.3, `${Math.round(thumbOutShare(samples("yes")) * 100)}%`);
+check("a simulated thumbs up has its thumb out in nearly every frame", thumbOutShare(thumbsUp(samples("yes"))) >= 0.9, `${Math.round(thumbOutShare(thumbsUp(samples("yes"))) * 100)}%`);
+const upAsYes = judgeAttempt(thumbsUp(samples("yes")), "yes", refs)!;
+check("a thumbs up is NOT accepted as YES, nor called close, and the learner is told to tuck the thumb in", upAsYes.verdict === "not-yet" && upAsYes.hint === "thumb", `${upAsYes.verdict} ${upAsYes.distance.toFixed(2)} hint ${upAsYes.hint}`);
+check("the thumb rule is only for YES: moving the thumb out doesn't stop EIGHT or WHY matching their own video", ["eight", "why"].every((id) => judgeAttempt(samples(id), id, refs)!.verdict === "match"));
 
 // ---- Wrong signs and bad input ----
 const yesAsEight = judgeAttempt(samples("yes"), "eight", refs)!;

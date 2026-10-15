@@ -431,6 +431,26 @@ const spelled = r.log.filter((entry) => entry.startsWith("spell:")).map((entry) 
 check("J3 letters lesson includes 2 fingerspelling-reading questions", spelled.length === 2 && spelled.every((word) => /^[ABCD]+$/.test(word)), spelled.join(", "));
 check("J4 letters lesson completes", t.includes("Lesson complete!"), r.order.join(","));
 
+// Waits for the word camera's verdict on a looping video. The clip loops, so a try can be caught partway through; a
+// real learner would just try again. With retries, the wait goes on through further loops until one matches. A check that a
+// wrong gesture is rejected uses retries = 0 so that the first verdict is what counts. Returns what was seen.
+async function waitForWordVerdict(retries = 0) {
+  const seen = [];
+  let last = "";
+  for (let i = 0; i < 700; i++) {
+    await sleep(200);
+    // Everything is read in one step, so the verdict and the sentence beside it always belong together.
+    const now = await ev(`(() => { const r = document.querySelector('[data-word-result]'); const v = document.querySelector('[data-word-verdict]'); return { verdict: r?.dataset.wordResult ?? '', distance: r?.dataset.wordDistance ?? '', closest: r?.dataset.wordClosest ?? '', pageText: v?.innerText ?? '' }; })()`);
+    if (now.verdict && now.verdict + now.distance !== last) {
+      last = now.verdict + now.distance;
+      seen.push(now);
+      if (now.verdict === "match" || seen.length > retries) break;
+    }
+  }
+  const matched = seen.find((entry) => entry.verdict === "match");
+  return { ...(matched ?? seen[seen.length - 1] ?? { verdict: "", distance: "", closest: "", pageText: "" }), tries: seen.length };
+}
+
 // ---------- Q. Camera option in "Sign it yourself" ----------
 // Plays a lesson until the "Sign it yourself" screen for one sign comes up.
 async function reachSignIt() {
@@ -544,18 +564,13 @@ for (let attempt = 0; attempt < 14 && !(wordTested && noChecked); attempt++) {
       (await ev("document.querySelector('[data-word-note]')?.innerText ?? ''")).includes("not a grade"),
   );
   await shot("R-word-camera");
-  const play = async (clip) => {
+  const play = async (clip, retries = 0) => {
     const doc = await send("DOM.getDocument", {});
     const input = await send("DOM.querySelector", { nodeId: doc.result.root.nodeId, selector: "input[type=file]" });
     await send("DOM.setFileInputFiles", { nodeId: input.result.nodeId, files: [join(ROOT, "public/videos", `${clip}.mp4`)] });
     await sleep(1200);
     await ev(`(() => { const v = document.querySelector('video'); if (v) v.playbackRate = 0.3; })()`);
-    let verdict = "";
-    for (let i = 0; i < 400 && !verdict; i++) {
-      await sleep(200);
-      verdict = await ev(`document.querySelector('[data-word-result]')?.dataset.wordResult ?? ''`);
-    }
-    return { verdict, distance: await ev(`document.querySelector('[data-word-result]')?.dataset.wordDistance ?? ''`), closest: await ev(`document.querySelector('[data-word-result]')?.dataset.wordClosest ?? ''`) };
+    return waitForWordVerdict(retries);
   };
   // HELLO, a wave, with YES as the target: not a match (this is the "I can just wave" case).
   const wave = await play("hello");
@@ -564,10 +579,10 @@ for (let attempt = 0; attempt < 14 && !(wordTested && noChecked); attempt++) {
   await sleep(500);
   // EIGHT's real video, with YES as the target: not a match, and it says what it looked like.
   const wrong = await play("eight");
-  check("R5 EIGHT's video is not accepted as YES, and the verdict names the word it looked like and gives a hint", wrong.verdict !== "" && wrong.verdict !== "match" && wrong.closest === "eight" && /looked more like EIGHT/.test(await text()) && /Watch the video again/.test(await text()), JSON.stringify(wrong));
+  check("R5 EIGHT's video is not accepted as YES, and the verdict names the word it looked like and gives a hint", wrong.verdict !== "" && wrong.verdict !== "match" && wrong.closest === "eight" && /looked more like EIGHT/.test(wrong.pageText) && /Watch the video again/.test(wrong.pageText), JSON.stringify({ ...wrong, pageText: undefined }));
   await clickText("Stop");
   await sleep(500);
-  const right = await play("yes");
+  const right = await play("yes", 2);
   check("R6 YES's real video is accepted as YES", right.verdict === "match" && right.closest === "yes", JSON.stringify(right));
   await sleep(1500);
   // The clip loops, so a new try can start and clear the verdict. What matters is that a match never jumps to the answer.
@@ -631,28 +646,23 @@ check(
     (await ev("document.querySelector('[data-word-status]')?.dataset.wordStatus")) === "idle",
 );
 await shot("X-word-practice");
-const playWord = async (clip) => {
+const playWord = async (clip, retries = 0) => {
   const doc = await send("DOM.getDocument", {});
   const input = await send("DOM.querySelector", { nodeId: doc.result.root.nodeId, selector: "input[type=file]" });
   await send("DOM.setFileInputFiles", { nodeId: input.result.nodeId, files: [join(ROOT, "public/videos", `${clip}.mp4`)] });
   await sleep(1200);
   await ev(`(() => { const vs = [...document.querySelectorAll('video')]; const v = vs.find(x => x.srcObject === null && x.src.startsWith('blob:')); if (v) v.playbackRate = 0.3; })()`);
-  let verdict = "";
-  for (let i = 0; i < 400 && !verdict; i++) {
-    await sleep(200);
-    verdict = await ev(`document.querySelector('[data-word-result]')?.dataset.wordResult ?? ''`);
-  }
-  return { verdict, distance: await ev(`document.querySelector('[data-word-result]')?.dataset.wordDistance ?? ''`), closest: await ev(`document.querySelector('[data-word-result]')?.dataset.wordClosest ?? ''`) };
+  return waitForWordVerdict(retries);
 };
 const wrongWave = await playWord("hello");
 check("X4 a HELLO wave is not accepted as EIGHT", wrongWave.verdict !== "" && wrongWave.verdict !== "match", JSON.stringify(wrongWave));
 await clickText("Stop");
 await sleep(500);
 const wrongWord = await playWord("yes");
-check("X5 YES's real video is not accepted as EIGHT, and it says what it looked like", wrongWord.verdict !== "" && wrongWord.verdict !== "match" && wrongWord.closest === "yes" && /looked more like YES/.test(await text()), JSON.stringify(wrongWord));
+check("X5 YES's real video is not accepted as EIGHT, and it says what it looked like", wrongWord.verdict !== "" && wrongWord.verdict !== "match" && wrongWord.closest === "yes" && /looked more like YES/.test(wrongWord.pageText), JSON.stringify({ ...wrongWord, pageText: undefined }));
 await clickText("Stop");
 await sleep(500);
-const rightWord = await playWord("eight");
+const rightWord = await playWord("eight", 2);
 check("X6 EIGHT's real video is accepted as EIGHT", rightWord.verdict === "match" && rightWord.closest === "eight", JSON.stringify(rightWord));
 await ev(`document.querySelector('[data-word-choice=why]').click()`);
 await sleep(600);
