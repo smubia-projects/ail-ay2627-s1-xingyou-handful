@@ -17,7 +17,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { compare, describeAttempt, judgeAttempt, motionAmount, STEPS } from "../lib/wordsign.ts";
+import { compare, describeAttempt, judgeAttempt, motionAmount, STEPS, thumbOutShare } from "../lib/wordsign.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
@@ -43,6 +43,10 @@ const LIMITS = { eight: 0.27, why: 0.36, yes: 0.39 };
 // For signs that move: the least movement (motionAmount) a match needs, between a hand held still with ordinary
 // tracker shake (2.3 to 3.3) and the learner's real tries (WHY 5.0 to 7.1, YES 4.5 to 6.1). EIGHT is a still handshape.
 const MIN_MOTION = { why: 3.7, yes: 3.7 };
+// For YES (a fist with the thumb tucked in): the most the thumb may stick out sideways, as a share of the frames. The
+// learner's own gesture clips found that a THUMBS UP matched YES (distance 0.38 against a limit of 0.39). The thumb
+// sticks out in 91 in 100 frames of a thumbs up, against 17 in 100 for the learner's YES tries and 1 in 100 for a fist.
+const MAX_THUMB_OUT = { yes: 0.5 };
 const TESTED = new Set(["blue", "yellow", "where", "sorry", "milk"]);
 const MIN_GAP = 0.4;
 
@@ -175,6 +179,12 @@ for (let waited = 0; waited < 30 * 60_000; waited += 3000) {
 if (last !== "DONE") throw new Error("The hand tracker did not finish all the videos.");
 const results = JSON.parse(await evaluate("JSON.stringify(window.__results)"));
 
+// Also save the raw hand points (in check mode too), for studying a clip afterwards.
+if (rawFolder) {
+  mkdirSync(rawFolder, { recursive: true });
+  for (const [name, samples] of Object.entries(results)) writeFileSync(join(rawFolder, `${name}.json`), JSON.stringify(samples));
+}
+
 if (checkFolder) {
   // Split each clip into its tries (the hand is gone for over 0.6 s between them), and judge each one as the app would.
   const refs = JSON.parse(readFileSync(join(ROOT, "data/word-refs.json"), "utf8"));
@@ -202,13 +212,18 @@ if (checkFolder) {
         perWord[word][own.verdict === "not-yet" ? "notYet" : own.verdict]++;
         console.log(`  try ${i + 1}: ${own.verdict.padEnd(7)} distance ${own.distance.toFixed(2)}  closest ${own.closest}  hint ${own.hint}`);
       }
+      // For a gesture that isn't one of the offered words, show how near it came to each offered word.
+      const nearness = [];
       for (const other of offered.filter((o) => o !== word)) {
         const wrong = judgeAttempt(t, other, refs);
         if (!wrong) continue;
         tally.wrongTotal++;
         if (wrong.verdict === "match") tally.wrongMatch++;
         if (wrong.verdict === "close") tally.wrongClose++;
+        nearness.push(`${other} ${wrong.distance.toFixed(2)} (limit ${refs.limits?.[other] ?? "?"}, ${wrong.verdict})`);
+        if (wrong.verdict !== "not-yet") console.log(`  !! ${word} try ${i + 1} was accepted as ${other.toUpperCase()}: ${wrong.verdict}, distance ${wrong.distance.toFixed(2)}`);
       }
+      if (!offered.includes(word)) console.log(`  ${word} try ${i + 1}: ${nearness.join(" | ")}`);
     });
   }
   console.log("\nPER WORD (match / close / not yet):");
@@ -218,10 +233,6 @@ if (checkFolder) {
   process.exit(0);
 }
 
-if (rawFolder) {
-  mkdirSync(rawFolder, { recursive: true });
-  for (const [name, samples] of Object.entries(results)) writeFileSync(join(rawFolder, `${name}.json`), JSON.stringify(samples));
-}
 
 // Put the 24 measures on one scale: how much each varies across every sign's every step.
 const all = Object.fromEntries(names.map((n) => [n, describeAttempt(results[n])]));
@@ -243,11 +254,16 @@ for (;;) {
   console.log(`dropped ${drop}: ${a} and ${b} are only ${closest.d.toFixed(2)} apart`);
   offered = offered.filter((x) => x !== drop);
 }
-const out = { std: std.map(round), signs: {}, limits: {}, minMotion: {} };
+const out = { std: std.map(round), signs: {}, limits: {}, minMotion: {}, maxThumbOut: {} };
 for (const id of offered) {
   out.signs[id] = all[id].map((row) => row.map(round));
   out.limits[id] = LIMITS[id];
   if (MIN_MOTION[id] !== undefined) out.minMotion[id] = MIN_MOTION[id];
+  if (MAX_THUMB_OUT[id] !== undefined) {
+    out.maxThumbOut[id] = MAX_THUMB_OUT[id];
+    // The reference itself must pass its own thumb test, with room to spare.
+    if (thumbOutShare(results[id]) > MAX_THUMB_OUT[id] * 0.6) throw new Error(`The ${id} video has its thumb out too often for the thumb test.`);
+  }
   // The reference itself must pass its own movement test, with room to spare.
   if (MIN_MOTION[id] !== undefined && motionAmount(all[id], std) < MIN_MOTION[id] * 1.2) throw new Error(`The ${id} video barely moves, so its movement test is too strict.`);
 }

@@ -33,6 +33,9 @@ export type WordRefs = {
   // For signs that move: the least movement an attempt needs to be a match (see motionAmount). A hand held
   // still in the sign's pose is otherwise close enough to match. Left out for a sign that is a still handshape.
   minMotion?: Record<string, number>;
+  // For signs made with the thumb tucked in (YES, a fist): the most that the thumb may stick out sideways, as a
+  // share of the frames. A thumbs up is a fist with the thumb out, and otherwise looks like a nodding YES.
+  maxThumbOut?: Record<string, number>;
 };
 
 type V3 = [number, number, number];
@@ -88,7 +91,7 @@ export function describeAttempt(samples: Sample[], mirrored = false): number[][]
 
 // Which kind of difference to point the learner at.
 type ShapeHint = "fingers" | "positions" | "direction";
-export type Hint = ShapeHint | "movement";
+export type Hint = ShapeHint | "movement" | "thumb";
 const GROUPS: [ShapeHint, number, number][] = [
   ["fingers", 0, 4],
   ["positions", 4, 19],
@@ -99,7 +102,25 @@ export const HINT_TEXT: Record<Hint, string> = {
   positions: "Check where your fingers and thumb go",
   direction: "Turn your hand so it faces the way it does in the video",
   movement: "Keep your hand moving the way it does in the video, without holding it still",
+  thumb: "Keep your thumb tucked in against your hand, not sticking out",
 };
+
+// How far the thumb tip sticks out sideways past the index knuckle, in palm widths, at or above which the thumb
+// counts as out. The same cutoff the letter checks use (lib/handshape.ts), measured on real hands.
+const THUMB_OUT_FROM = 0.35;
+
+// The share of frames in which the thumb sticks out sideways. On the learner's clips: a thumbs up 91 in 100, a nodding
+// YES 17 in 100, a plain fist 1 in 100.
+export function thumbOutShare(samples: Sample[]): number {
+  if (samples.length === 0) return 0;
+  const out = samples.filter((s) => {
+    const w = s.world.map(vec);
+    const palm = length(sub(w[5], w[17]));
+    const across = unit(sub(w[5], w[17]));
+    return dot(sub(w[4], w[5]), across) / palm >= THUMB_OUT_FROM;
+  });
+  return out.length / samples.length;
+}
 
 // How much the hand's measures change over an attempt: the summed step-to-step change, on the shared scale.
 // A hand held still scores low (but not zero, the tracker shakes a little), a signed movement scores higher.
@@ -176,7 +197,16 @@ export function judgeAttempt(samples: Sample[], target: string, refs: WordRefs):
   // A sign that moves needs some movement. A hand held in its pose would otherwise match.
   const needed = refs.minMotion?.[target];
   const still = needed !== undefined && motionAmount(plain, refs.std) < needed;
-  const verdict: Verdict =
-    mine.distance <= limit && closest === target && !still ? "match" : mine.distance <= limit + CLOSE_MARGIN || (still && mine.distance <= limit) ? "close" : "not-yet";
-  return { verdict, distance: mine.distance, closest, hint: still && mine.distance <= limit ? "movement" : mine.hint };
+  // A sign made with the thumb tucked in isn't a match when the thumb is out for much of the attempt (a thumbs up).
+  const allowedOut = refs.maxThumbOut?.[target];
+  const thumbOut = allowedOut !== undefined && thumbOutShare(samples) > allowedOut;
+  const verdict: Verdict = thumbOut
+    ? "not-yet"
+    : mine.distance <= limit && closest === target && !still
+      ? "match"
+      : mine.distance <= limit + CLOSE_MARGIN || (still && mine.distance <= limit)
+        ? "close"
+        : "not-yet";
+  const hint: Hint = thumbOut ? "thumb" : still && mine.distance <= limit ? "movement" : mine.hint;
+  return { verdict, distance: mine.distance, closest, hint };
 }
