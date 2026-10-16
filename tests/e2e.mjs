@@ -768,6 +768,12 @@ check(
     (await text()).includes("ASLNow!") &&
     (await text()).includes("ASL Signbank"),
 );
+check(
+  "L1d About links to the source code on GitHub, in a new tab",
+  (await ev("document.querySelector('[data-about-source] a')?.getAttribute('href')")) === "https://github.com/xingyou07/handful" &&
+    (await ev("document.querySelector('[data-about-source] a')?.getAttribute('target')")) === "_blank" &&
+    (await ev("document.querySelector('[data-about-source] a')?.getAttribute('rel') ?? ''")).includes("noopener"),
+);
 check("L1c every page carries the 'Early version' label in the header", (await ev("document.querySelector('header [data-early-label]')?.innerText ?? ''")) === "Early version");
 await ev(`[...document.querySelectorAll('[role=radio]')].find(b=>b.innerText.includes('Serious')).click()`);
 await sleep(300);

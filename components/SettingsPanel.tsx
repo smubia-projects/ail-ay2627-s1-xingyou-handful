@@ -296,6 +296,17 @@ export default function SettingsPanel() {
           </a>
           . Your video never leaves your device.
         </p>
+        <p className="mt-3 text-sm text-muted" data-about-source>
+          Handful is open source. Source code:{" "}
+          <a
+            href="https://github.com/xingyou07/handful"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-charcoal underline underline-offset-2"
+          >
+            github.com/xingyou07/handful
+          </a>
+        </p>
       </Section>
     </div>
   );
