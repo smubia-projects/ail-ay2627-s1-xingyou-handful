@@ -65,7 +65,7 @@ model, all running **in your browser**.
    and for left hands. The limits are set per word from real attempts. Build script:
    `tools/build-word-refs.mjs`.
 
-**Built with AI assistance.** I built Handful together with Claude Code. Claude Code wrote the code, the tests, the model-training and data-building scripts, and ran the measurements. My part was the idea and the reasons for it, deciding what to build and what to keep or cut, testing it on my own hands, filming my own signing attempts so it could be tested on a real person, and finding problems for it to fix, such as the waving bug and the B thumb problem described below.
+**Built with AI assistance.** I built Handful together with Claude Code, Anthropic's AI coding assistant. Claude Code wrote the code, the tests, the model-training and data-building scripts, and ran the measurements. My part was the idea and the reasons for it, deciding what to build and what to keep or cut, testing it on my own hands, filming my own signing attempts so it could be tested on a real person, and finding problems for it to fix, such as the waving bug and the B thumb problem described below.
 
 ## 5. External Tools & Datasets
 
