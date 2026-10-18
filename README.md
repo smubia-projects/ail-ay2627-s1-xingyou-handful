@@ -3,7 +3,7 @@
 **Learn American Sign Language, a small handful of signs a day. Free, in your browser, no account.**
 
 Live app: **https://handful-asl.vercel.app**
-Demo video: coming soon
+Demo video: **https://youtu.be/1c9r0VlZqDg**
 
 Handful is an early version. It teaches signs in short lessons, helps you practise and repeat them, and uses your camera to give practice feedback on your fingerspelling and a few signs. The camera runs on your own device, and your video never leaves it.
 
@@ -65,7 +65,7 @@ model, all running **in your browser**.
    and for left hands. The limits are set per word from real attempts. Build script:
    `tools/build-word-refs.mjs`.
 
-**Built with AI assistance.** I built Handful together with Claude Code (Anthropic's AI coding assistant). Claude Code wrote the code, the tests, the model-training and data-building scripts, and ran the measurements. My part was the idea and the reasons for it, deciding what to build and what to keep or cut, testing it on my own hands, filming my own signing attempts so it could be tested on a real person, and finding problems for it to fix, such as the waving bug and the B thumb problem described below.
+**Built with AI assistance.** I built Handful together with Claude Code. Claude Code wrote the code, the tests, the model-training and data-building scripts, and ran the measurements. My part was the idea and the reasons for it, deciding what to build and what to keep or cut, testing it on my own hands, filming my own signing attempts so it could be tested on a real person, and finding problems for it to fix, such as the waving bug and the B thumb problem described below.
 
 ## 5. External Tools & Datasets
 
