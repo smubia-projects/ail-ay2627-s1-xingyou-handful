@@ -146,7 +146,7 @@ node tests/camera.mjs               # real signing videos through the hand track
 - **Privacy.** The camera and the tracker run in your browser. No video is recorded, stored or sent, and
   there are no accounts or analytics.
 - **Teaching something wrong.** The written sign descriptions were drafted by a non-signer and have **not**
-  been reviewed by a Deaf ASL signer. The app says so in Settings → About and on the welcome screen. The
+  been reviewed by a fluent ASL signer. The app says so in Settings → About and on the welcome screen. The
   videos from ASL Signbank, made by real signers, are the reliable part.
 
 **Testing done**
@@ -172,7 +172,7 @@ node tests/camera.mjs               # real signing videos through the hand track
   signs (two-handed signs, and most signs made at the face or body) have no camera check at all.
 - Hand tracking depends on light and camera quality, and I haven't tested it across a wide range of
   hands, skin tones or lighting.
-- It's an early version. It's practice, not a replacement for a Deaf teacher.
+- It's an early version. It's practice, not a replacement for a real ASL teacher.
 
 ## Where things are
 
