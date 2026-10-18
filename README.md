@@ -3,7 +3,7 @@
 **Learn American Sign Language, a small handful of signs a day. Free, in your browser, no account.**
 
 Live app: **https://handful-asl.vercel.app**
-Demo video: **https://youtu.be/1c9r0VlZqDg**
+Demo video: **https://youtu.be/M8t5aKvvzmU**
 
 Handful is an early version. It teaches signs in short lessons, helps you practise and repeat them, and uses your camera to give practice feedback on your fingerspelling and a few signs. The camera runs on your own device, and your video never leaves it.
 
