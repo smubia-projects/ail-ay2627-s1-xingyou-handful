@@ -12,6 +12,7 @@ import {
   type Exercise,
 } from "@/components/Exercises";
 import SignCard, { type Sign } from "@/components/SignCard";
+import { countPractice } from "@/lib/cta";
 import {
   buildExercises,
   buildLessonSteps,
@@ -210,6 +211,7 @@ export default function LessonRunner({
     });
     setCelebration({ milestone: result.milestone, goalReached: result.goalReached });
     setDone(true);
+    countPractice();
   }
 
   function advance(nextQueue: QueueItem[], firstTryTotal: number, missed: string[]) {
