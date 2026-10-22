@@ -4,9 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { CTA_EVENT } from "@/lib/cta";
 
 const LINKS = [
-  { label: "Join AI Lodge", href: "https://www.smubia.com/ai-lodge", primary: true },
-  { label: "Self-host from GitHub", href: "https://github.com/smubia-projects/ail-ay2627-s1-xingyou-handful" },
-  { label: "Explore other projects", href: "https://www.smubia.com/showcase" },
+  { label: "Join AI Lodge", href: "https://www.smubia.com/ailodge", primary: true },
+  { label: "Explore other projects", href: "https://www.smubia.com/Projects" },
+  { label: "View on GitHub", href: "https://github.com/smubia-projects/ail-ay2627-s1-xingyou-handful" },
 ];
 
 // Listens for the invitation event (see lib/cta.ts) and shows it once. It never blocks:
