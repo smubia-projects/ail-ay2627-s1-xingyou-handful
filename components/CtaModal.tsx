@@ -22,10 +22,10 @@ export default function CtaModal() {
   }, []);
 
   if (count === null) return null;
-  return <CtaDialog count={count} onDismiss={dismiss} />;
+  return <CtaDialog onDismiss={dismiss} />;
 }
 
-function CtaDialog({ count, onDismiss }: { count: number; onDismiss: () => void }) {
+function CtaDialog({ onDismiss }: { onDismiss: () => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -82,9 +82,8 @@ function CtaDialog({ count, onDismiss }: { count: number; onDismiss: () => void 
             You&apos;re getting the hang of it <span aria-hidden="true">🤟</span>
           </h2>
           <p id="cta-description" className="relative mt-2 text-sm leading-relaxed text-muted">
-            {count} lessons and camera checks done. Handful tracks your hand right in the browser with MediaPipe and a
-            small model trained to tell the fist letters apart. It was built by a student in SMU BIA&apos;s AI Lodge. Want
-            to build something like it?
+            Want to build AI that teaches sign language through nothing but a webcam? Code alongside teammates at AI Lodge
+            and watch your build go from laptop to live link.
           </p>
         </div>
 
