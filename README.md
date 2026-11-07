@@ -100,6 +100,14 @@ npm run build
 npm start
 ```
 
+**Deploy.** Handful is a static-friendly Next.js app with no server routes, so it deploys to Vercel alone:
+import the repo, keep the default Next.js preset (`npm run build`), and set no environment variables. There is
+no backend, Cloud Run service, database or API key. Vercel serves it over `https`, which the camera needs, and
+the hand-tracking engine and model load from `public/mediapipe/`. The AI Lodge copy lives at
+[smubia-projects/ail-ay2627-s1-xingyou-handful](https://github.com/smubia-projects/ail-ay2627-s1-xingyou-handful);
+after a few finished lessons or camera checks it shows a one-time, dismissible invitation to AI Lodge
+(`lib/cta.ts`, `components/CtaModal.tsx`), counted in the browser's localStorage and never blocking anything.
+
 **Checks.** The unit tests need nothing running. The browser tests need the app running and Google Chrome
 on macOS:
 
