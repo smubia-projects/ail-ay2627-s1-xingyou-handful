@@ -251,6 +251,8 @@ let r;
 
 // ---------- W. First-time welcome ----------
 await go("/");
+// The AI Lodge invitation (lib/cta.ts) would otherwise open after the third session and add a second dialog.
+await ev("localStorage.setItem('ail-ay2627-s1-xingyou-handful:cta-shown', '1')");
 const welcomeText = () => ev(`document.querySelector('[role=dialog]')?.innerText ?? ''`);
 check("W1 a new learner is welcomed, and told this is an early version", (await welcomeText()).includes("Welcome to Handful") && (await welcomeText()).includes("An early version"));
 await clickText("Next");

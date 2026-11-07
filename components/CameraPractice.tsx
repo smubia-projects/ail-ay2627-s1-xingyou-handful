@@ -5,6 +5,7 @@ import { useState } from "react";
 import CameraCheck from "@/components/CameraCheck";
 import { HandshapeImage } from "@/components/SignCard";
 import { getSign } from "@/lib/content";
+import { countPractice } from "@/lib/cta";
 import { letterConfidence } from "@/lib/handshape";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -104,7 +105,7 @@ export default function CameraPractice() {
       </div>
 
       <div className="mt-4">
-        <CameraCheck letter={letter} />
+        <CameraCheck letter={letter} onMatch={countPractice} />
       </div>
     </div>
   );

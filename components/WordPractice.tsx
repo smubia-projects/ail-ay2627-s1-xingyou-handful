@@ -5,6 +5,7 @@ import { CameraTabs } from "@/components/CameraPractice";
 import SignVideo from "@/components/SignVideo";
 import WordCameraCheck, { checkableWordIds } from "@/components/WordCameraCheck";
 import { getSign } from "@/lib/content";
+import { countPractice } from "@/lib/cta";
 
 // The words the camera can check, in alphabetical order, each with its Signbank video.
 const WORDS = checkableWordIds()
@@ -60,7 +61,7 @@ export default function WordPractice() {
           </div>
           <div className="mt-4">
             {/* Starting over for each word, so the last result never carries across. */}
-            <WordCameraCheck key={sign.id} signId={sign.id} word={sign.word} />
+            <WordCameraCheck key={sign.id} signId={sign.id} word={sign.word} onMatch={countPractice} />
           </div>
         </>
       )}

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Fraunces } from "next/font/google";
+import CtaModal from "@/components/CtaModal";
 import HandPreference from "@/components/HandPreference";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col font-sans">
         <HandPreference />
         {children}
+        <CtaModal />
       </body>
     </html>
   );
