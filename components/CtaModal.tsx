@@ -5,7 +5,7 @@ import { CTA_EVENT } from "@/lib/cta";
 
 const LINKS = [
   { label: "Join AI Lodge", href: "https://www.smubia.com/ailodge", primary: true },
-  { label: "Explore other projects", href: "https://www.smubia.com/Projects" },
+  { label: "Explore other projects", href: "https://www.smubia.com/projects" },
   { label: "View on GitHub", href: "https://github.com/smubia-projects/ail-ay2627-s1-xingyou-handful" },
 ];
 
